@@ -4,7 +4,7 @@ import { useMemo, useEffect, useCallback } from 'react';
 
 import { useSetState } from 'src/hooks/use-set-state';
 
-import axios, { endpoints } from 'src/utils/axios';
+import { authControllerMe } from 'src/lib/orval/generated/auth/auth';
 
 import { STORAGE_KEY } from './constant';
 import { AuthContext } from '../auth-context';
@@ -37,9 +37,10 @@ export function AuthProvider({ children }: Props) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const res = await axios.get(endpoints.auth.me);
+        const res = await authControllerMe();
+        console.log('res auth',res,accessToken)
 
-        const { user } = res.data;
+        const  user  = res as unknown as object;
 
         setState({ user: { ...user, accessToken }, loading: false });
       } else {
