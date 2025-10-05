@@ -18,12 +18,16 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { useAuthControllerLogin } from 'src/lib/orval/generated/auth/auth';
+import type { LoginDto } from 'src/lib/orval/generated/model';
+
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from '../../hooks';
 import { FormHead } from '../../components/form-head';
-import { signInWithPassword } from '../../context/jwt';
+import { setSession } from '../../context/jwt/utils';
+import { STORAGE_KEY } from '../../context/jwt/constant';
 
 // ----------------------------------------------------------------------
 
@@ -51,9 +55,11 @@ export function JwtSignInView() {
 
   const password = useBoolean();
 
+  const { mutateAsync: login, isPending } = useAuthControllerLogin();
+
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: '@demo1',
+    email: 'amir@example.com',
+    password: '12345678',
   };
 
   const methods = useForm<SignInSchemaType>({
@@ -68,10 +74,34 @@ export function JwtSignInView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await signInWithPassword({ email: data.email, password: data.password });
+      const response = await login({ data: { email: data.email, password: data.password } });
+
+      // Extract user data and tokens from response
+      const { user, tokens } = response as any;
+      console.log('respone',response)
+
+      // Check if user role is allowed (ultra, super, or admin)
+      if (user?.role === 'student') {
+        setErrorMsg('Students are not allowed to access this portal');
+        return;
+      }
+
+      // Validate allowed roles
+      if (!['ultra', 'super', 'admin'].includes(user?.role)) {
+        setErrorMsg('You do not have permission to access this portal');
+        return;
+      }
+
+      // Store access token
+      if (tokens.accessToken) {
+        setSession(tokens.accessToken);
+      }
+
+      // Update auth context
       await checkUserSession?.();
 
-      router.refresh();
+      // Navigate to dashboard
+      router.push(paths.dashboard.root);
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
@@ -117,7 +147,7 @@ export function JwtSignInView() {
         size="large"
         type="submit"
         variant="contained"
-        loading={isSubmitting}
+        loading={isSubmitting || isPending}
         loadingIndicator="Sign in..."
       >
         Sign in
