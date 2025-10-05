@@ -19,7 +19,9 @@
     "dev:ts": "yarn dev & yarn ts:watch",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "yarn ts --watch",
-    "start:out": "npx serve@latest out -p 8083"
+    "start:out": "npx serve@latest out -p 8083",
+    "orval": "orval --config ./orval.config.ts",
+    "orval:watch": "orval --config ./orval.config.ts --watch"
   },
   "engines": {
     "node": "20.x"
@@ -59,6 +61,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@orval/axios": "^7.13.1",
+    "@orval/core": "^7.13.1",
     "@svgr/webpack": "^8.1.0",
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/node": "^22.4.2",
@@ -80,6 +84,7 @@
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-unused-imports": "^3.2.0",
+    "orval": "^7.13.1",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4"
   }

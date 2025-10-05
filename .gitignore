@@ -36,3 +36,6 @@ build
 .eslintcache
 .unimportedrc.json
 tsconfig.tsbuildinfo
+
+# Orval generated files (optional - uncomment to ignore generated API clients)
+# src/lib/orval/generated/
