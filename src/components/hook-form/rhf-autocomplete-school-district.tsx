@@ -14,6 +14,8 @@ import { useSchoolDistrictsControllerFindAll } from 'src/lib/orval/generated/sch
 
 // ----------------------------------------------------------------------
 
+
+type SchoolDistrictWithId = SchoolDistrict & {_id?:string}
 type Props = {
   name: string;
   label?: string;
@@ -34,7 +36,7 @@ export function RHFAutocompleteSchoolDistrict({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [allOptions, setAllOptions] = useState<SchoolDistrict[]>([]);
+  const [allOptions, setAllOptions] = useState<SchoolDistrictWithId[]>([]);
 
   const debouncedSearch = useDebounce(searchQuery, 500);
 
@@ -82,6 +84,7 @@ export function RHFAutocompleteSchoolDistrict({
     [isFetching, data]
   );
 
+  console.log('optons', allOptions)
   return (
     <Controller
       name={name}
@@ -90,6 +93,7 @@ export function RHFAutocompleteSchoolDistrict({
         <Autocomplete
           {...field}
           options={allOptions}
+        
           loading={isLoading}
           getOptionLabel={(option) =>
             typeof option === 'string' ? option : option.agancy_name || ''
@@ -97,6 +101,7 @@ export function RHFAutocompleteSchoolDistrict({
           isOptionEqualToValue={(option, value) => option.agancy_id === value?.agancy_id}
           onInputChange={handleInputChange}
           onChange={(_event, value) => {
+          
             field.onChange(value);
           }}
           filterOptions={(x) => x} // Disable client-side filtering since we're doing server-side search
@@ -125,8 +130,10 @@ export function RHFAutocompleteSchoolDistrict({
               }}
             />
           )}
-          renderOption={(props, option) => (
-            <li {...props} key={option.agancy_id}>
+          renderOption={(props, option:SchoolDistrictWithId) => { 
+        
+            return (
+            <li {...props} key={option._id}>
               <div>
                 <div style={{ fontWeight: 500 }}>{option.agancy_name}</div>
                 <div style={{ fontSize: '0.875rem', color: 'text.secondary' }}>
@@ -134,7 +141,7 @@ export function RHFAutocompleteSchoolDistrict({
                 </div>
               </div>
             </li>
-          )}
+          )}}
           {...other}
         />
       )}
