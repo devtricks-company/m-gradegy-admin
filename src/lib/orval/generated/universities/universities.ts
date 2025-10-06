@@ -24,6 +24,7 @@ import type {
 import type {
   CreateUniversityDto,
   UniversitiesControllerFindAll200,
+  UniversitiesControllerFindAllParams,
   University,
   UpdateUniversityDto,
 } from '.././model';
@@ -122,35 +123,41 @@ export const useUniversitiesControllerCreate = <TError = void, TContext = unknow
  * @summary Retrieve a paginated list of universities
  */
 export const universitiesControllerFindAll = (
+  params?: UniversitiesControllerFindAllParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<UniversitiesControllerFindAll200>(
-    { url: `http://localhost:5400/universities`, method: 'GET', signal },
+    { url: `http://localhost:5400/universities`, method: 'GET', params, signal },
     options
   );
 };
 
-export const getUniversitiesControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/universities`] as const;
+export const getUniversitiesControllerFindAllQueryKey = (
+  params?: UniversitiesControllerFindAllParams
+) => {
+  return [`http://localhost:5400/universities`, ...(params ? [params] : [])] as const;
 };
 
 export const getUniversitiesControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof universitiesControllerFindAll>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof universitiesControllerFindAll>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}) => {
+>(
+  params?: UniversitiesControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof universitiesControllerFindAll>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getUniversitiesControllerFindAllQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getUniversitiesControllerFindAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof universitiesControllerFindAll>>> = ({
     signal,
-  }) => universitiesControllerFindAll(requestOptions, signal);
+  }) => universitiesControllerFindAll(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof universitiesControllerFindAll>>,
@@ -168,6 +175,7 @@ export function useUniversitiesControllerFindAll<
   TData = Awaited<ReturnType<typeof universitiesControllerFindAll>>,
   TError = unknown,
 >(
+  params: undefined | UniversitiesControllerFindAllParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof universitiesControllerFindAll>>, TError, TData>
@@ -188,6 +196,7 @@ export function useUniversitiesControllerFindAll<
   TData = Awaited<ReturnType<typeof universitiesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: UniversitiesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof universitiesControllerFindAll>>, TError, TData>
@@ -208,6 +217,7 @@ export function useUniversitiesControllerFindAll<
   TData = Awaited<ReturnType<typeof universitiesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: UniversitiesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof universitiesControllerFindAll>>, TError, TData>
@@ -224,6 +234,7 @@ export function useUniversitiesControllerFindAll<
   TData = Awaited<ReturnType<typeof universitiesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: UniversitiesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof universitiesControllerFindAll>>, TError, TData>
@@ -232,7 +243,7 @@ export function useUniversitiesControllerFindAll<
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getUniversitiesControllerFindAllQueryOptions(options);
+  const queryOptions = getUniversitiesControllerFindAllQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
