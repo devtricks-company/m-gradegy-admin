@@ -5,8 +5,13 @@ import { useMemo, useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import InputAdornment from '@mui/material/InputAdornment';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -27,6 +32,7 @@ type OrganizationRow = Organization & { _id: string };
 
 export function OrganizationsView() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -43,6 +49,14 @@ export function OrganizationsView() {
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
     setPaginationModel((prev) => ({ ...prev, page: 0 }));
+  }, []);
+
+  const handleOpenDialog = useCallback(() => {
+    setOpenDialog(true);
+  }, []);
+
+  const handleCloseDialog = useCallback(() => {
+    setOpenDialog(false);
   }, []);
 
   const columns: GridColDef<OrganizationRow>[] = useMemo(
@@ -105,6 +119,15 @@ export function OrganizationsView() {
       <CustomBreadcrumbs
         heading="Organizations"
         links={[{ name: 'Dashboard', href: '/dashboard' }, { name: 'Organizations' }]}
+        action={
+          <Button
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={handleOpenDialog}
+          >
+            New Organization
+          </Button>
+        }
         sx={{ mb: 3 }}
       />
 
@@ -160,6 +183,19 @@ export function OrganizationsView() {
         </Card>
         )}
       </Stack>
+
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>New Organization</DialogTitle>
+        <DialogContent>
+          <Typography>Add organization form content here</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button variant="contained" onClick={handleCloseDialog}>
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
     </DashboardContent>
   );
 }
