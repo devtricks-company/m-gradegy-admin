@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -13,12 +14,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import InputAdornment from '@mui/material/InputAdornment';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 import { useDebounce } from 'src/hooks/use-debounce';
 
 import { Iconify } from 'src/components/iconify';
+import { Field, Form } from 'src/components/hook-form';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
@@ -184,18 +186,52 @@ export function OrganizationsView() {
         )}
       </Stack>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>New Organization</DialogTitle>
+      <OrganizationFormDialog open={openDialog} onClose={handleCloseDialog} />
+    </DashboardContent>
+  );
+}
+
+// ----------------------------------------------------------------------
+
+type OrganizationFormDialogProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
+function OrganizationFormDialog({ open, onClose }: OrganizationFormDialogProps) {
+  const methods = useForm({
+    defaultValues: {
+      schoolDistrict: null,
+    },
+  });
+
+  const onSubmit = methods.handleSubmit(async (data) => {
+    console.log('Form data:', data);
+    // TODO: Implement organization creation
+    onClose();
+  });
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>New Organization</DialogTitle>
+      <Form methods={methods} onSubmit={onSubmit}>
         <DialogContent>
-          <Typography>Add organization form content here</Typography>
+          <Stack spacing={3} sx={{ pt: 1 }}>
+            <Field.AutocompleteSchoolDistrict
+              name="schoolDistrict"
+              label="School District"
+              placeholder="Search school districts..."
+              required
+            />
+          </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button variant="contained" onClick={handleCloseDialog}>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button type="submit" variant="contained">
             Create
           </Button>
         </DialogActions>
-      </Dialog>
-    </DashboardContent>
+      </Form>
+    </Dialog>
   );
 }

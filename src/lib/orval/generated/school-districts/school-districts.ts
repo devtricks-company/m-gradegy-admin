@@ -21,7 +21,13 @@ import type {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import type { CreateSchoolDistrictDto, SchoolDistrict, UpdateSchoolDistrictDto } from '.././model';
+import type {
+  CreateSchoolDistrictDto,
+  SchoolDistrict,
+  SchoolDistrictsControllerFindAll200,
+  SchoolDistrictsControllerFindAllParams,
+  UpdateSchoolDistrictDto,
+} from '.././model';
 
 import { customInstance } from '../../custom-instance';
 
@@ -117,35 +123,41 @@ export const useSchoolDistrictsControllerCreate = <TError = unknown, TContext = 
  * @summary Retrieve all school districts
  */
 export const schoolDistrictsControllerFindAll = (
+  params?: SchoolDistrictsControllerFindAllParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<SchoolDistrict[]>(
-    { url: `http://localhost:5400/school-districts`, method: 'GET', signal },
+  return customInstance<SchoolDistrictsControllerFindAll200>(
+    { url: `http://localhost:5400/school-districts`, method: 'GET', params, signal },
     options
   );
 };
 
-export const getSchoolDistrictsControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/school-districts`] as const;
+export const getSchoolDistrictsControllerFindAllQueryKey = (
+  params?: SchoolDistrictsControllerFindAllParams
+) => {
+  return [`http://localhost:5400/school-districts`, ...(params ? [params] : [])] as const;
 };
 
 export const getSchoolDistrictsControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}) => {
+>(
+  params?: SchoolDistrictsControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getSchoolDistrictsControllerFindAllQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getSchoolDistrictsControllerFindAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>> = ({
     signal,
-  }) => schoolDistrictsControllerFindAll(requestOptions, signal);
+  }) => schoolDistrictsControllerFindAll(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>,
@@ -163,6 +175,7 @@ export function useSchoolDistrictsControllerFindAll<
   TData = Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>,
   TError = unknown,
 >(
+  params: undefined | SchoolDistrictsControllerFindAllParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>, TError, TData>
@@ -183,6 +196,7 @@ export function useSchoolDistrictsControllerFindAll<
   TData = Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>,
   TError = unknown,
 >(
+  params?: SchoolDistrictsControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>, TError, TData>
@@ -203,6 +217,7 @@ export function useSchoolDistrictsControllerFindAll<
   TData = Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>,
   TError = unknown,
 >(
+  params?: SchoolDistrictsControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>, TError, TData>
@@ -219,6 +234,7 @@ export function useSchoolDistrictsControllerFindAll<
   TData = Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>,
   TError = unknown,
 >(
+  params?: SchoolDistrictsControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof schoolDistrictsControllerFindAll>>, TError, TData>
@@ -227,7 +243,7 @@ export function useSchoolDistrictsControllerFindAll<
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getSchoolDistrictsControllerFindAllQueryOptions(options);
+  const queryOptions = getSchoolDistrictsControllerFindAllQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
