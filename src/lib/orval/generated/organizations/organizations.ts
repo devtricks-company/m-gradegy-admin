@@ -26,6 +26,7 @@ import type {
   Organization,
   OrganizationsControllerFindAll200,
   OrganizationsControllerFindAllParams,
+  OrganizationsControllerFindOne200,
   UpdateOrganizationDto,
 } from '.././model';
 
@@ -262,7 +263,7 @@ export const organizationsControllerFindOne = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<Organization>(
+  return customInstance<OrganizationsControllerFindOne200>(
     { url: `http://localhost:5400/organizations/${id}`, method: 'GET', signal },
     options
   );

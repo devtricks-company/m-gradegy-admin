@@ -1,0 +1,154 @@
+'use client';
+
+import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
+import Alert from '@mui/material/Alert';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
+import CircularProgress from '@mui/material/CircularProgress';
+
+import { paths } from 'src/routes/paths';
+
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { DashboardContent } from 'src/layouts/dashboard';
+
+import { useOrganizationsControllerFindOne } from 'src/lib/orval/generated/organizations/organizations';
+import { User } from 'src/lib/orval/generated/model';
+
+// ----------------------------------------------------------------------
+
+type Props = {
+  id: string;
+};
+
+export function OrganizationDetailsView({ id }: Props) {
+  const { data: organization, isLoading, error } = useOrganizationsControllerFindOne(id);
+
+  return (
+    <DashboardContent maxWidth="xl">
+      <CustomBreadcrumbs
+        heading="Organization Details"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Organizations', href: paths.dashboard.organizations },
+          { name: organization?.title || 'Details' },
+        ]}
+        sx={{ mb: 3 }}
+      />
+
+      {isLoading ? (
+        <Stack alignItems="center" justifyContent="center" sx={{ minHeight: 400 }}>
+          <CircularProgress />
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            Loading organization details...
+          </Typography>
+        </Stack>
+      ) : error ? (
+        <Alert severity="error">Failed to load organization details</Alert>
+      ) : organization ? (
+        <Stack spacing={3}>
+          <Card>
+            <CardContent>
+              <Stack direction="row" spacing={3} alignItems="center" sx={{ mb: 3 }}>
+                <Avatar
+                  src={organization.image}
+                  alt={organization.title}
+                  sx={{ width: 80, height: 80 }}
+                >
+                  {organization.title?.charAt(0)}
+                </Avatar>
+                <Stack>
+                  <Typography variant="h4">{organization.title}</Typography>
+                  {organization.short_title && (
+                    <Typography variant="body2" color="text.secondary">
+                      {organization.short_title as unknown as string}
+                    </Typography>
+                  )}
+                </Stack>
+              </Stack>
+
+              <Stack spacing={2}>
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle2" sx={{ minWidth: 150 }}>
+                    Organization Type:
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {organization.organization_type || 'N/A'}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle2" sx={{ minWidth: 150 }}>
+                    School District :
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {organization.school_district?.agancy_name || 'N/A'}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle2" sx={{ minWidth: 150 }}>
+                    Lead Contact :
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {organization.lead_contact.firstName +
+                      ' ' +
+                      organization.lead_contact.lastName || 'N/A'}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle2" sx={{ minWidth: 150 }}>
+                    UFCS Member:
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {organization.ufcs_member ? 'Yes' : 'No'}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle2" sx={{ minWidth: 150 }}>
+                    Paid:
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {organization.paid ? 'Yes' : 'No'}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle2" sx={{ minWidth: 150 }}>
+                    Reward System:
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {organization.reward_system ? 'Enabled' : 'Disabled'}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle2" sx={{ minWidth: 150 }}>
+                    Survey System:
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {organization.survey_system ? 'Enabled' : 'Disabled'}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle2" sx={{ minWidth: 150 }}>
+                    Status:
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {organization.is_active ? 'Active' : 'Inactive'}
+                  </Typography>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Stack>
+      ) : (
+        <Alert severity="warning">Organization not found</Alert>
+      )}
+    </DashboardContent>
+  );
+}
