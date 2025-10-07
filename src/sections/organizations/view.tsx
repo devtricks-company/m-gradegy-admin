@@ -152,37 +152,37 @@ export function OrganizationsView() {
           <Alert severity="error">Failed to load organizations</Alert>
         ) : (
           <Card>
-          {isLoading ? (
-            <Stack alignItems="center" justifyContent="center" sx={{ height: 400 }}>
-              <CircularProgress />
-              <Typography variant="body2" sx={{ mt: 2 }}>
-                Loading organizations...
-              </Typography>
-            </Stack>
-          ) : (
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              rowCount={rowCount}
-              loading={isLoading}
-              pageSizeOptions={[5, 10, 25, 50]}
-              paginationModel={paginationModel}
-              paginationMode="server"
-              onPaginationModelChange={setPaginationModel}
-              getRowId={(row) => row._id}
-              disableRowSelectionOnClick
-              sx={{
-                border: 0,
-                '& .MuiDataGrid-cell:focus': {
-                  outline: 'none',
-                },
-                '& .MuiDataGrid-row:hover': {
-                  cursor: 'pointer',
-                },
-              }}
-            />
-          )}
-        </Card>
+            {isLoading ? (
+              <Stack alignItems="center" justifyContent="center" sx={{ height: 400 }}>
+                <CircularProgress />
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                  Loading organizations...
+                </Typography>
+              </Stack>
+            ) : (
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                rowCount={rowCount}
+                loading={isLoading}
+                pageSizeOptions={[5, 10, 25, 50]}
+                paginationModel={paginationModel}
+                paginationMode="server"
+                onPaginationModelChange={setPaginationModel}
+                getRowId={(row) => row._id}
+                disableRowSelectionOnClick
+                sx={{
+                  border: 0,
+                  '& .MuiDataGrid-cell:focus': {
+                    outline: 'none',
+                  },
+                  '& .MuiDataGrid-row:hover': {
+                    cursor: 'pointer',
+                  },
+                }}
+              />
+            )}
+          </Card>
         )}
       </Stack>
 
@@ -202,6 +202,7 @@ function OrganizationFormDialog({ open, onClose }: OrganizationFormDialogProps) 
   const methods = useForm({
     defaultValues: {
       schoolDistrict: null,
+      university: null,
     },
   });
 
@@ -221,6 +222,14 @@ function OrganizationFormDialog({ open, onClose }: OrganizationFormDialogProps) 
               name="schoolDistrict"
               label="School District"
               placeholder="Search school districts..."
+              required
+            />
+          </Stack>
+          <Stack spacing={3} sx={{ pt: 1 }}>
+            <Field.AutocompleteUniversity
+              name="university"
+              label="Select University"
+              placeholder="Search universities..."
               required
             />
           </Stack>
