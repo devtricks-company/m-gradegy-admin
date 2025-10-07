@@ -1,18 +1,13 @@
 'use client';
 
 import { useMemo, useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -20,14 +15,14 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useDebounce } from 'src/hooks/use-debounce';
 
 import { Iconify } from 'src/components/iconify';
-import { Field, Form } from 'src/components/hook-form';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { useOrganizationsControllerFindAll } from 'src/lib/orval/generated/organizations/organizations';
 
 import type { Organization } from 'src/lib/orval/generated/model';
-import { FileUpload } from 'src/components/file-upload';
+
+import { OrganizationForm } from './form/organization-form';
 
 // ----------------------------------------------------------------------
 
@@ -187,79 +182,7 @@ export function OrganizationsView() {
         )}
       </Stack>
 
-      <OrganizationFormDialog open={openDialog} onClose={handleCloseDialog} />
+      <OrganizationForm open={openDialog} onClose={handleCloseDialog} />
     </DashboardContent>
-  );
-}
-
-// ----------------------------------------------------------------------
-
-type OrganizationFormDialogProps = {
-  open: boolean;
-  onClose: () => void;
-};
-
-function OrganizationFormDialog({ open, onClose }: OrganizationFormDialogProps) {
-  const methods = useForm({
-    defaultValues: {
-      schoolDistrict: null,
-      university: null,
-      leadContact: null,
-    },
-  });
-
-  const onSubmit = methods.handleSubmit(async (data) => {
-    console.log('Form data:', data);
-    // TODO: Implement organization creation
-    onClose();
-  });
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>New Organization</DialogTitle>
-      <Form methods={methods} onSubmit={onSubmit}>
-        <DialogContent>
-          <Stack spacing={3} sx={{ p: 1 }}>
-            <Field.Upload
-              name="logo"
-              onSuccess={(result) => console.log(result.url)}
-              defaultFile={
-                'https://gradegy.blob.core.windows.net/images/e4a6e975-3c0b-452e-8aec-61b983f83623.jpg'
-              }
-            />
-          </Stack>
-          <Stack spacing={3} sx={{ pt: 1 }}>
-            <Field.AutocompleteSchoolDistrict
-              name="schoolDistrict"
-              label="School District"
-              placeholder="Search school districts..."
-              required
-            />
-          </Stack>
-          <Stack spacing={3} sx={{ pt: 1 }}>
-            <Field.AutocompleteUniversity
-              name="university"
-              label="Select University"
-              placeholder="Search universities..."
-              required
-            />
-          </Stack>
-          <Stack spacing={3} sx={{ pt: 1 }}>
-            <Field.AutocompleteLeadContact
-              name="leadContact"
-              label="Select Lead Contact"
-              placeholder="Search Lead Contact..."
-              required
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained">
-            Create
-          </Button>
-        </DialogActions>
-      </Form>
-    </Dialog>
   );
 }
