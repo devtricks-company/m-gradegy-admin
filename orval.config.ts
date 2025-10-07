@@ -1,4 +1,4 @@
-import { defineConfig } from 'orval'
+import { defineConfig } from 'orval';
 
 export default defineConfig({
   api: {
@@ -21,6 +21,29 @@ export default defineConfig({
           useQuery: true,
           useMutation: true,
           signal: true,
+        },
+        zod: {
+          strict: {
+            response: true,
+            query: true,
+            param: true,
+            header: true,
+            body: true,
+          },
+          generate: {
+            response: true,
+            query: true,
+            param: true,
+            header: true,
+            body: true,
+          },
+          coerce: {
+            response: false,
+            query: false,
+            param: false,
+            header: false,
+            body: false,
+          },
         },
       },
       clean: true,
