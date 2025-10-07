@@ -6,6 +6,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -59,6 +60,21 @@ export function OrganizationsView() {
 
   const columns: GridColDef<OrganizationRow>[] = useMemo(
     () => [
+      {
+        field: 'image',
+        headerName: 'Logo',
+        width: 80,
+        sortable: false,
+        renderCell: (params) => (
+          <Avatar
+            src={params.value}
+            alt={params.row.title}
+            sx={{ width: 40, height: 40 }}
+          >
+            {params.row.title?.charAt(0)}
+          </Avatar>
+        ),
+      },
       {
         field: 'title',
         headerName: 'Title',
