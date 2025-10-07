@@ -203,6 +203,7 @@ function OrganizationFormDialog({ open, onClose }: OrganizationFormDialogProps) 
     defaultValues: {
       schoolDistrict: null,
       university: null,
+      leadContact: null,
     },
   });
 
@@ -230,6 +231,14 @@ function OrganizationFormDialog({ open, onClose }: OrganizationFormDialogProps) 
               name="university"
               label="Select University"
               placeholder="Search universities..."
+              required
+            />
+          </Stack>
+          <Stack spacing={3} sx={{ pt: 1 }}>
+            <Field.AutocompleteLeadContact
+              name="leadContact"
+              label="Select Lead Contact"
+              placeholder="Search Lead Contact..."
               required
             />
           </Stack>
