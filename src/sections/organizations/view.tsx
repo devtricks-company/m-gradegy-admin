@@ -13,6 +13,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import { useDebounce } from 'src/hooks/use-debounce';
 
 import { Iconify } from 'src/components/iconify';
@@ -30,6 +33,7 @@ import { OrganizationForm } from './form/organization-form';
 type OrganizationRow = Organization & { _id: string };
 
 export function OrganizationsView() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
@@ -57,6 +61,13 @@ export function OrganizationsView() {
   const handleCloseDialog = useCallback(() => {
     setOpenDialog(false);
   }, []);
+
+  const handleRowClick = useCallback(
+    (params: any) => {
+      router.push(paths.dashboard.organizationDetails(params.row._id));
+    },
+    [router]
+  );
 
   const columns: GridColDef<OrganizationRow>[] = useMemo(
     () => [
@@ -181,6 +192,7 @@ export function OrganizationsView() {
                 paginationModel={paginationModel}
                 paginationMode="server"
                 onPaginationModelChange={setPaginationModel}
+                onRowClick={handleRowClick}
                 getRowId={(row) => row._id}
                 disableRowSelectionOnClick
                 sx={{
