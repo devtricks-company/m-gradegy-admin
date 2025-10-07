@@ -51,6 +51,7 @@ export const paths = {
       six: `${ROOTS.DASHBOARD}/group/six`,
     },
     organizations: `${ROOTS.DASHBOARD}/organizations`,
+    organizationDetails: (id: string) => `${ROOTS.DASHBOARD}/organizations/${id}`,
     administrator: `${ROOTS.DASHBOARD}/administrator`,
   },
 };
