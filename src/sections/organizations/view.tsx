@@ -27,6 +27,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { useOrganizationsControllerFindAll } from 'src/lib/orval/generated/organizations/organizations';
 
 import type { Organization } from 'src/lib/orval/generated/model';
+import { FileUpload } from 'src/components/file-upload';
 
 // ----------------------------------------------------------------------
 
@@ -218,6 +219,15 @@ function OrganizationFormDialog({ open, onClose }: OrganizationFormDialogProps) 
       <DialogTitle>New Organization</DialogTitle>
       <Form methods={methods} onSubmit={onSubmit}>
         <DialogContent>
+          <Stack spacing={3} sx={{ p: 1 }}>
+            <Field.Upload
+              name="logo"
+              onSuccess={(result) => console.log(result.url)}
+              defaultFile={
+                'https://gradegy.blob.core.windows.net/images/e4a6e975-3c0b-452e-8aec-61b983f83623.jpg'
+              }
+            />
+          </Stack>
           <Stack spacing={3} sx={{ pt: 1 }}>
             <Field.AutocompleteSchoolDistrict
               name="schoolDistrict"
