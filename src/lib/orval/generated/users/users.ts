@@ -21,7 +21,13 @@ import type {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import type { CreateUserDto, UpdateUserDto, User } from '.././model';
+import type {
+  CreateUserDto,
+  UpdateUserDto,
+  User,
+  UsersControllerFindAllAdministrative200,
+  UsersControllerFindAllAdministrativeParams,
+} from '.././model';
 
 import { customInstance } from '../../custom-instance';
 
@@ -227,6 +233,162 @@ export function useUsersControllerFindAll<
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getUsersControllerFindAllQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Retrieve administrative users with pagination and filters
+ */
+export const usersControllerFindAllAdministrative = (
+  params?: UsersControllerFindAllAdministrativeParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<UsersControllerFindAllAdministrative200>(
+    { url: `http://localhost:5400/users/admins`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getUsersControllerFindAllAdministrativeQueryKey = (
+  params?: UsersControllerFindAllAdministrativeParams
+) => {
+  return [`http://localhost:5400/users/admins`, ...(params ? [params] : [])] as const;
+};
+
+export const getUsersControllerFindAllAdministrativeQueryOptions = <
+  TData = Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+  TError = unknown,
+>(
+  params?: UsersControllerFindAllAdministrativeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getUsersControllerFindAllAdministrativeQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>
+  > = ({ signal }) => usersControllerFindAllAdministrative(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type UsersControllerFindAllAdministrativeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>
+>;
+export type UsersControllerFindAllAdministrativeQueryError = unknown;
+
+export function useUsersControllerFindAllAdministrative<
+  TData = Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+  TError = unknown,
+>(
+  params: undefined | UsersControllerFindAllAdministrativeParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useUsersControllerFindAllAdministrative<
+  TData = Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+  TError = unknown,
+>(
+  params?: UsersControllerFindAllAdministrativeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+          TError,
+          Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useUsersControllerFindAllAdministrative<
+  TData = Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+  TError = unknown,
+>(
+  params?: UsersControllerFindAllAdministrativeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Retrieve administrative users with pagination and filters
+ */
+
+export function useUsersControllerFindAllAdministrative<
+  TData = Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+  TError = unknown,
+>(
+  params?: UsersControllerFindAllAdministrativeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof usersControllerFindAllAdministrative>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getUsersControllerFindAllAdministrativeQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

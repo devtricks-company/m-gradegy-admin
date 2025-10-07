@@ -88,3 +88,6 @@ export * from './urlResponseDto';
 export * from './user';
 export * from './userAssignment';
 export * from './userRole';
+export * from './usersControllerFindAllAdministrative200';
+export * from './usersControllerFindAllAdministrative200Meta';
+export * from './usersControllerFindAllAdministrativeParams';
