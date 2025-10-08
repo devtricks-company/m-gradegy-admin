@@ -142,8 +142,8 @@ export function ProjectForm({
         survey_system: project.survey_system,
         organizations: orgIds,
         is_active: project.is_active,
-        school_district: schoolDistrictId,
-        university: universityId,
+        school_district: project.school_district,
+        university: project.university,
       });
     } else if (open && !isEdit) {
       reset({
