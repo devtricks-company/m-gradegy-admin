@@ -25,7 +25,7 @@ export const OrganizationBaseSchema = z.object({
 
   organization_type: OrganizationTypeEnum,
 
-  image: z.string().trim().url('Must be a valid URL').optional(),
+  image: z.string().trim().url('Must be a valid URL').or(z.literal('')).optional(),
 
   ufcs_member: z.boolean().default(false),
 
