@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,6 +10,7 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import CircularProgress from '@mui/material/CircularProgress';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 
@@ -18,7 +19,8 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { useOrganizationsControllerFindOne } from 'src/lib/orval/generated/organizations/organizations';
-import { User } from 'src/lib/orval/generated/model';
+import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
+import type { Project } from 'src/lib/orval/generated/model';
 
 import { OrganizationForm } from './form/organization-form';
 
@@ -28,9 +30,83 @@ type Props = {
   id: string;
 };
 
+type ProjectRow = Project & { _id: string };
+
 export function OrganizationDetailsView({ id }: Props) {
   const { data: organization, isLoading, error } = useOrganizationsControllerFindOne(id);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+
+  const {
+    data: projectsData,
+    isLoading: projectsLoading,
+    error: projectsError,
+  } = useProjectsControllerFindByOrganization(id, {
+    page: paginationModel.page + 1,
+    limit: paginationModel.pageSize,
+  });
+
+  const projectColumns: GridColDef<ProjectRow>[] = useMemo(
+    () => [
+      {
+        field: 'image',
+        headerName: 'Image',
+        width: 80,
+        sortable: false,
+        renderCell: (params) => (
+          <Avatar src={params.value} alt={params.row.title} sx={{ width: 40, height: 40 }}>
+            {params.row.title?.charAt(0)}
+          </Avatar>
+        ),
+      },
+      {
+        field: 'title',
+        headerName: 'Title',
+        flex: 1,
+        minWidth: 200,
+      },
+      {
+        field: 'project_type',
+        headerName: 'Type',
+        width: 150,
+      },
+      {
+        field: 'condition',
+        headerName: 'Condition',
+        width: 130,
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        width: 130,
+      },
+      {
+        field: 'reward_system',
+        headerName: 'Rewards',
+        width: 120,
+        type: 'boolean',
+      },
+      {
+        field: 'survey_system',
+        headerName: 'Surveys',
+        width: 120,
+        type: 'boolean',
+      },
+      {
+        field: 'is_active',
+        headerName: 'Active',
+        width: 100,
+        type: 'boolean',
+      },
+    ],
+    []
+  );
+
+  const projectRows = (projectsData?.data || []) as ProjectRow[];
+  const projectRowCount = projectsData?.meta?.totalItems || 0;
 
   return (
     <DashboardContent maxWidth="xl">
@@ -161,6 +237,49 @@ export function OrganizationDetailsView({ id }: Props) {
                   </Typography>
                 </Stack>
               </Stack>
+            </CardContent>
+          </Card>
+
+          {/* Projects Section */}
+          <Card>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Projects
+              </Typography>
+
+              {projectsError ? (
+                <Alert severity="error">Failed to load projects</Alert>
+              ) : projectsLoading ? (
+                <Stack alignItems="center" justifyContent="center" sx={{ minHeight: 300 }}>
+                  <CircularProgress />
+                  <Typography variant="body2" sx={{ mt: 2 }}>
+                    Loading projects...
+                  </Typography>
+                </Stack>
+              ) : (
+                <DataGrid
+                  rows={projectRows}
+                  columns={projectColumns}
+                  rowCount={projectRowCount}
+                  loading={projectsLoading}
+                  pageSizeOptions={[5, 10, 25, 50]}
+                  paginationModel={paginationModel}
+                  paginationMode="server"
+                  onPaginationModelChange={setPaginationModel}
+                  getRowId={(row) => row._id}
+                  disableRowSelectionOnClick
+                  sx={{
+                    border: 0,
+                    minHeight: 400,
+                    '& .MuiDataGrid-cell:focus': {
+                      outline: 'none',
+                    },
+                    '& .MuiDataGrid-row:hover': {
+                      cursor: 'pointer',
+                    },
+                  }}
+                />
+              )}
             </CardContent>
           </Card>
         </Stack>

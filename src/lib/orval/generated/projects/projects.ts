@@ -25,6 +25,8 @@ import type {
   CreateProjectDto,
   Project,
   ProjectsControllerFindAll200,
+  ProjectsControllerFindByOrganization200,
+  ProjectsControllerFindByOrganizationParams,
   UpdateProjectDto,
 } from '.././model';
 
@@ -248,17 +250,29 @@ export function useProjectsControllerFindAll<
  */
 export const projectsControllerFindByOrganization = (
   organizationId: string,
+  params?: ProjectsControllerFindByOrganizationParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<Project[]>(
-    { url: `http://localhost:5400/projects/organization/${organizationId}`, method: 'GET', signal },
+  return customInstance<ProjectsControllerFindByOrganization200>(
+    {
+      url: `http://localhost:5400/projects/organization/${organizationId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
     options
   );
 };
 
-export const getProjectsControllerFindByOrganizationQueryKey = (organizationId?: string) => {
-  return [`http://localhost:5400/projects/organization/${organizationId}`] as const;
+export const getProjectsControllerFindByOrganizationQueryKey = (
+  organizationId?: string,
+  params?: ProjectsControllerFindByOrganizationParams
+) => {
+  return [
+    `http://localhost:5400/projects/organization/${organizationId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getProjectsControllerFindByOrganizationQueryOptions = <
@@ -266,6 +280,7 @@ export const getProjectsControllerFindByOrganizationQueryOptions = <
   TError = unknown,
 >(
   organizationId: string,
+  params?: ProjectsControllerFindByOrganizationParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -280,11 +295,13 @@ export const getProjectsControllerFindByOrganizationQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getProjectsControllerFindByOrganizationQueryKey(organizationId);
+    queryOptions?.queryKey ??
+    getProjectsControllerFindByOrganizationQueryKey(organizationId, params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof projectsControllerFindByOrganization>>
-  > = ({ signal }) => projectsControllerFindByOrganization(organizationId, requestOptions, signal);
+  > = ({ signal }) =>
+    projectsControllerFindByOrganization(organizationId, params, requestOptions, signal);
 
   return { queryKey, queryFn, enabled: !!organizationId, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof projectsControllerFindByOrganization>>,
@@ -303,6 +320,7 @@ export function useProjectsControllerFindByOrganization<
   TError = unknown,
 >(
   organizationId: string,
+  params: undefined | ProjectsControllerFindByOrganizationParams,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -328,6 +346,7 @@ export function useProjectsControllerFindByOrganization<
   TError = unknown,
 >(
   organizationId: string,
+  params?: ProjectsControllerFindByOrganizationParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -353,6 +372,7 @@ export function useProjectsControllerFindByOrganization<
   TError = unknown,
 >(
   organizationId: string,
+  params?: ProjectsControllerFindByOrganizationParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -374,6 +394,7 @@ export function useProjectsControllerFindByOrganization<
   TError = unknown,
 >(
   organizationId: string,
+  params?: ProjectsControllerFindByOrganizationParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -386,7 +407,11 @@ export function useProjectsControllerFindByOrganization<
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProjectsControllerFindByOrganizationQueryOptions(organizationId, options);
+  const queryOptions = getProjectsControllerFindByOrganizationQueryOptions(
+    organizationId,
+    params,
+    options
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
