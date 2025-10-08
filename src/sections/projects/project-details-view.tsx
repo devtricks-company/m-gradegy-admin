@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -18,6 +19,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { useProjectsControllerFindOne } from 'src/lib/orval/generated/projects/projects';
+import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 
 import { ProjectForm } from '../organizations/form/project-form';
 
@@ -29,6 +31,7 @@ type Props = {
 
 export function ProjectDetailsView({ id }: Props) {
   const { data: project, isLoading, error } = useProjectsControllerFindOne(id);
+  const { data: categoriesData, isLoading: loadingCategories } = useCategoriesControllerFindByProject(id);
   const [openEditDialog, setOpenEditDialog] = useState(false);
 
   return (
@@ -152,6 +155,37 @@ export function ProjectDetailsView({ id }: Props) {
         </Card>
       ) : (
         <Alert severity="warning">Project not found</Alert>
+      )}
+
+      {/* Categories Section */}
+      {project && (
+        <Card sx={{ mt: 3 }}>
+          <CardContent>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Categories
+            </Typography>
+            {loadingCategories ? (
+              <Stack alignItems="center" justifyContent="center" sx={{ py: 2 }}>
+                <CircularProgress size={24} />
+              </Stack>
+            ) : categoriesData?.data && categoriesData.data.length > 0 ? (
+              <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                {categoriesData.data.map((category, index) => (
+                  <Chip
+                    key={`${category.title}-${index}`}
+                    label={category.title}
+                    color="primary"
+                    variant="outlined"
+                  />
+                ))}
+              </Stack>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No categories found for this project
+              </Typography>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       {/* Edit Project Dialog */}
