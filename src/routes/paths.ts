@@ -52,6 +52,7 @@ export const paths = {
     },
     organizations: `${ROOTS.DASHBOARD}/organizations`,
     organizationDetails: (id: string) => `${ROOTS.DASHBOARD}/organizations/${id}`,
+    projectDetails: (id: string) => `${ROOTS.DASHBOARD}/projects/${id}`,
     administrator: `${ROOTS.DASHBOARD}/administrator`,
   },
 };
