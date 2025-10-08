@@ -23,6 +23,7 @@ import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/ca
 
 import { ProjectForm } from '../organizations/form/project-form';
 import { CategoryForm } from '../categories/category-form';
+import { CategoryDetailsDrawer } from '../categories/category-details-drawer';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ export function ProjectDetailsView({ id }: Props) {
   const { data: project, isLoading, error } = useProjectsControllerFindOne(id);
   const { data: categoriesData, isLoading: loadingCategories } = useCategoriesControllerFindByProject(id);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   return (
     <DashboardContent maxWidth="xl">
@@ -172,12 +174,14 @@ export function ProjectDetailsView({ id }: Props) {
               </Stack>
             ) : categoriesData?.data && categoriesData.data.length > 0 ? (
               <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-                {categoriesData.data.map((category, index) => (
+                {categoriesData.data.map((category: any) => (
                   <Chip
-                    key={`${category.title}-${index}`}
+                    key={category._id || category.id}
                     label={category.title}
                     color="primary"
                     variant="outlined"
+                    onClick={() => setSelectedCategoryId(category._id || category.id)}
+                    sx={{ cursor: 'pointer' }}
                   />
                 ))}
               </Stack>
@@ -201,6 +205,14 @@ export function ProjectDetailsView({ id }: Props) {
           isEdit
         />
       )}
+
+      {/* Category Details Drawer */}
+      <CategoryDetailsDrawer
+        open={!!selectedCategoryId}
+        onClose={() => setSelectedCategoryId(null)}
+        categoryId={selectedCategoryId}
+        projectId={id}
+      />
     </DashboardContent>
   );
 }
