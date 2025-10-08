@@ -47,11 +47,21 @@ export function CategoryDetailsDrawer({
     data: category,
     isLoading,
     error: fetchError,
+    refetch,
   } = useCategoriesControllerFindOne(categoryId || '', {
     query: {
       enabled: !!categoryId,
+      refetchOnMount: 'always',
+      staleTime: 0,
     },
   });
+
+  // Refetch data when drawer opens
+  React.useEffect(() => {
+    if (open && categoryId) {
+      refetch();
+    }
+  }, [open, categoryId, refetch]);
 
   const {
     mutate: updateCategory,
