@@ -22,6 +22,7 @@ import { useProjectsControllerFindOne } from 'src/lib/orval/generated/projects/p
 import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 
 import { ProjectForm } from '../organizations/form/project-form';
+import { CategoryForm } from '../categories/category-form';
 
 // ----------------------------------------------------------------------
 
@@ -161,9 +162,10 @@ export function ProjectDetailsView({ id }: Props) {
       {project && (
         <Card sx={{ mt: 3 }}>
           <CardContent>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Categories
-            </Typography>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+              <Typography variant="h6">Categories</Typography>
+              <CategoryForm projectId={id} />
+            </Stack>
             {loadingCategories ? (
               <Stack alignItems="center" justifyContent="center" sx={{ py: 2 }}>
                 <CircularProgress size={24} />
