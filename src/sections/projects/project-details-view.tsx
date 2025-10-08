@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
@@ -10,10 +13,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
 
+import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { useProjectsControllerFindOne } from 'src/lib/orval/generated/projects/projects';
+
+import { ProjectForm } from '../organizations/form/project-form';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +29,7 @@ type Props = {
 
 export function ProjectDetailsView({ id }: Props) {
   const { data: project, isLoading, error } = useProjectsControllerFindOne(id);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
   return (
     <DashboardContent maxWidth="xl">
@@ -33,6 +40,17 @@ export function ProjectDetailsView({ id }: Props) {
           { name: 'Organizations', href: paths.dashboard.organizations },
           { name: project?.title || 'Project Details' },
         ]}
+        action={
+          project && (
+            <Button
+              variant="contained"
+              startIcon={<Iconify icon="solar:pen-bold" />}
+              onClick={() => setOpenEditDialog(true)}
+            >
+              Edit Project
+            </Button>
+          )
+        }
         sx={{ mb: 3 }}
       />
 
@@ -134,6 +152,18 @@ export function ProjectDetailsView({ id }: Props) {
         </Card>
       ) : (
         <Alert severity="warning">Project not found</Alert>
+      )}
+
+      {/* Edit Project Dialog */}
+      {project && project.organizations && project.organizations.length > 0 && (
+        <ProjectForm
+          open={openEditDialog}
+          onClose={() => setOpenEditDialog(false)}
+          organizationId={typeof project.organizations[0] === 'string' ? project.organizations[0] : project.organizations[0]?.id || ''}
+          project={project}
+          projectId={id}
+          isEdit
+        />
       )}
     </DashboardContent>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -94,8 +95,45 @@ export function OrganizationForm({
         },
   });
 
-  const { watch, setValue } = methods;
+  const { watch, setValue, reset } = methods;
   const organizationType = watch('organization_type');
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open && currentOrganization) {
+      // Edit mode - populate with organization data
+      reset({
+        title: currentOrganization.title || '',
+        short_title: currentOrganization.short_title || '',
+        organization_type: currentOrganization.organization_type || 'secondary',
+        image: currentOrganization.image || '',
+        ufcs_member: currentOrganization.ufcs_member || false,
+        lead_contact: currentOrganization.lead_contact,
+        paid: currentOrganization.paid || false,
+        reward_system: currentOrganization.reward_system || false,
+        survey_system: currentOrganization.survey_system || false,
+        school_district: currentOrganization.school_district || undefined,
+        university: currentOrganization.university || undefined,
+        is_active: currentOrganization.is_active ?? true,
+      });
+    } else if (open && !currentOrganization) {
+      // Create mode - reset to defaults
+      reset({
+        title: '',
+        short_title: '',
+        organization_type: 'secondary',
+        image: '',
+        ufcs_member: false,
+        lead_contact: '',
+        paid: false,
+        reward_system: false,
+        survey_system: false,
+        school_district: undefined,
+        university: undefined,
+        is_active: true,
+      });
+    }
+  }, [open, currentOrganization, reset]);
 
   const onSubmit = methods.handleSubmit(async (data) => {
     // Transform the data to match DTO

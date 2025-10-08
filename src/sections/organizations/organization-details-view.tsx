@@ -190,9 +190,9 @@ export function OrganizationDetailsView({ id }: Props) {
                     Lead Contact :
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {organization.lead_contact.firstName +
+                    {organization.lead_contact?.firstName +
                       ' ' +
-                      organization.lead_contact.lastName || 'N/A'}
+                      organization.lead_contact?.lastName || 'N/A'}
                   </Typography>
                 </Stack>
 
@@ -247,10 +247,13 @@ export function OrganizationDetailsView({ id }: Props) {
           {/* Projects Section */}
           <Card>
             <CardContent>
-              <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-                <Typography variant="h6">
-                  Projects
-                </Typography>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ mb: 2 }}
+              >
+                <Typography variant="h6">Projects</Typography>
                 <Button
                   variant="contained"
                   startIcon={<Iconify icon="mingcute:add-line" />}
