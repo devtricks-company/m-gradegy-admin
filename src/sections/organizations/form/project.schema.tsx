@@ -39,9 +39,9 @@ export const ProjectSchema = z
 
     is_active: z.boolean().default(true),
 
-    school_district: z.string().optional(),
+    school_district: z.any().optional(),
 
-    university: z.string().optional(),
+    university: z.any().optional(),
   })
   .refine(
     (data) => {
@@ -88,8 +88,8 @@ export const CreateProjectSchema = z
     survey_system: z.boolean().optional(),
     organizations: z.array(z.string()).min(1, 'A project must belong to at least one organization'),
     is_active: z.boolean().optional(),
-    school_district: z.string().optional(),
-    university: z.string().optional(),
+    school_district: z.any().optional(),
+    university: z.any().optional(),
   })
   .refine(
     (data) => {
@@ -119,8 +119,8 @@ export const UpdateProjectSchema = z
       .min(1, 'A project must belong to at least one organization')
       .optional(),
     is_active: z.boolean().optional(),
-    school_district: z.string().optional(),
-    university: z.string().optional(),
+    school_district: z.any().optional(),
+    university: z.any().optional(),
   })
   .refine(
     (data) => {
