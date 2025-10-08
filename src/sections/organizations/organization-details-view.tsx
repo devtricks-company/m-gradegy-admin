@@ -12,6 +12,7 @@ import CardContent from '@mui/material/CardContent';
 import CircularProgress from '@mui/material/CircularProgress';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
+import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 
 import { Iconify } from 'src/components/iconify';
@@ -34,6 +35,7 @@ type Props = {
 type ProjectRow = Project & { _id: string };
 
 export function OrganizationDetailsView({ id }: Props) {
+  const router = useRouter();
   const { data: organization, isLoading, error } = useOrganizationsControllerFindOne(id);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openProjectDialog, setOpenProjectDialog] = useState(false);
@@ -277,6 +279,9 @@ export function OrganizationDetailsView({ id }: Props) {
                   paginationModel={paginationModel}
                   paginationMode="server"
                   onPaginationModelChange={setPaginationModel}
+                  onRowClick={(params) => {
+                    router.push(paths.dashboard.projectDetails(params.row._id));
+                  }}
                   getRowId={(row) => row._id}
                   disableRowSelectionOnClick
                   sx={{

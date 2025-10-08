@@ -27,6 +27,7 @@ import type {
   ProjectsControllerFindAll200,
   ProjectsControllerFindByOrganization200,
   ProjectsControllerFindByOrganizationParams,
+  ProjectsControllerFindOne200,
   UpdateProjectDto,
 } from '.././model';
 
@@ -430,7 +431,7 @@ export const projectsControllerFindOne = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<Project>(
+  return customInstance<ProjectsControllerFindOne200>(
     { url: `http://localhost:5400/projects/${id}`, method: 'GET', signal },
     options
   );
