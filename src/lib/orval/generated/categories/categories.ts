@@ -23,6 +23,8 @@ import type {
 
 import type {
   CategoriesControllerFindAll200,
+  CategoriesControllerFindByProject200,
+  CategoriesControllerFindByProjectParams,
   Category,
   CreateCategoryDto,
   UpdateCategoryDto,
@@ -233,6 +235,152 @@ export function useCategoriesControllerFindAll<
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getCategoriesControllerFindAllQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Retrieve categories associated with a project
+ */
+export const categoriesControllerFindByProject = (
+  projectId: string,
+  params?: CategoriesControllerFindByProjectParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CategoriesControllerFindByProject200>(
+    { url: `http://localhost:5400/categories/project/${projectId}`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getCategoriesControllerFindByProjectQueryKey = (
+  projectId?: string,
+  params?: CategoriesControllerFindByProjectParams
+) => {
+  return [
+    `http://localhost:5400/categories/project/${projectId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getCategoriesControllerFindByProjectQueryOptions = <
+  TData = Awaited<ReturnType<typeof categoriesControllerFindByProject>>,
+  TError = unknown,
+>(
+  projectId: string,
+  params?: CategoriesControllerFindByProjectParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof categoriesControllerFindByProject>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCategoriesControllerFindByProjectQueryKey(projectId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof categoriesControllerFindByProject>>> = ({
+    signal,
+  }) => categoriesControllerFindByProject(projectId, params, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!projectId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof categoriesControllerFindByProject>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CategoriesControllerFindByProjectQueryResult = NonNullable<
+  Awaited<ReturnType<typeof categoriesControllerFindByProject>>
+>;
+export type CategoriesControllerFindByProjectQueryError = unknown;
+
+export function useCategoriesControllerFindByProject<
+  TData = Awaited<ReturnType<typeof categoriesControllerFindByProject>>,
+  TError = unknown,
+>(
+  projectId: string,
+  params: undefined | CategoriesControllerFindByProjectParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof categoriesControllerFindByProject>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof categoriesControllerFindByProject>>,
+          TError,
+          Awaited<ReturnType<typeof categoriesControllerFindByProject>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useCategoriesControllerFindByProject<
+  TData = Awaited<ReturnType<typeof categoriesControllerFindByProject>>,
+  TError = unknown,
+>(
+  projectId: string,
+  params?: CategoriesControllerFindByProjectParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof categoriesControllerFindByProject>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof categoriesControllerFindByProject>>,
+          TError,
+          Awaited<ReturnType<typeof categoriesControllerFindByProject>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useCategoriesControllerFindByProject<
+  TData = Awaited<ReturnType<typeof categoriesControllerFindByProject>>,
+  TError = unknown,
+>(
+  projectId: string,
+  params?: CategoriesControllerFindByProjectParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof categoriesControllerFindByProject>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Retrieve categories associated with a project
+ */
+
+export function useCategoriesControllerFindByProject<
+  TData = Awaited<ReturnType<typeof categoriesControllerFindByProject>>,
+  TError = unknown,
+>(
+  projectId: string,
+  params?: CategoriesControllerFindByProjectParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof categoriesControllerFindByProject>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getCategoriesControllerFindByProjectQueryOptions(projectId, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
