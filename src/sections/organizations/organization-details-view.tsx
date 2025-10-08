@@ -23,6 +23,7 @@ import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated
 import type { Project } from 'src/lib/orval/generated/model';
 
 import { OrganizationForm } from './form/organization-form';
+import { ProjectForm } from './form/project-form';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +36,7 @@ type ProjectRow = Project & { _id: string };
 export function OrganizationDetailsView({ id }: Props) {
   const { data: organization, isLoading, error } = useOrganizationsControllerFindOne(id);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openProjectDialog, setOpenProjectDialog] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -243,9 +245,18 @@ export function OrganizationDetailsView({ id }: Props) {
           {/* Projects Section */}
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Projects
-              </Typography>
+              <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+                <Typography variant="h6">
+                  Projects
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                  onClick={() => setOpenProjectDialog(true)}
+                >
+                  New Project
+                </Button>
+              </Stack>
 
               {projectsError ? (
                 <Alert severity="error">Failed to load projects</Alert>
@@ -288,11 +299,18 @@ export function OrganizationDetailsView({ id }: Props) {
       )}
 
       {organization && (
-        <OrganizationForm
-          open={openEditDialog}
-          onClose={() => setOpenEditDialog(false)}
-          currentOrganization={organization}
-        />
+        <>
+          <OrganizationForm
+            open={openEditDialog}
+            onClose={() => setOpenEditDialog(false)}
+            currentOrganization={organization}
+          />
+          <ProjectForm
+            open={openProjectDialog}
+            onClose={() => setOpenProjectDialog(false)}
+            organizationId={id}
+          />
+        </>
       )}
     </DashboardContent>
   );
