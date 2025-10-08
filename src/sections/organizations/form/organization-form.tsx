@@ -21,10 +21,16 @@ import Switch from '@mui/material/Switch';
 import { Field, Form } from 'src/components/hook-form';
 import {
   useOrganizationsControllerCreate,
+  useOrganizationsControllerUpdate,
   getOrganizationsControllerFindAllQueryKey,
+  getOrganizationsControllerFindOneQueryKey,
 } from 'src/lib/orval/generated/organizations/organizations';
 
-import type { CreateOrganizationDto } from 'src/lib/orval/generated/model';
+import type {
+  CreateOrganizationDto,
+  UpdateOrganizationDto,
+  OrganizationsControllerFindOne200,
+} from 'src/lib/orval/generated/model';
 
 import {
   CreateOrganizationWithRefinements,
@@ -37,65 +43,113 @@ type OrganizationFormProps = {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  currentOrganization?: OrganizationsControllerFindOne200;
 };
 
-export function OrganizationForm({ open, onClose, onSuccess }: OrganizationFormProps) {
+export function OrganizationForm({
+  open,
+  onClose,
+  onSuccess,
+  currentOrganization,
+}: OrganizationFormProps) {
   const queryClient = useQueryClient();
-  const { mutate: createOrganization, isPending, error } = useOrganizationsControllerCreate();
+  const isEditMode = !!currentOrganization;
+
+  const { mutate: createOrganization, isPending: isCreating, error: createError } = useOrganizationsControllerCreate();
+  const { mutate: updateOrganization, isPending: isUpdating, error: updateError } = useOrganizationsControllerUpdate();
+
+  const isPending = isCreating || isUpdating;
+  const error = createError || updateError;
 
   const methods = useForm<CreateOrganizationWithRefinementsInput>({
     resolver: zodResolver(CreateOrganizationWithRefinements),
-    defaultValues: {
-      title: '',
-      short_title: '',
-      organization_type: 'secondary',
-      image: '',
-      ufcs_member: false,
-      lead_contact: '',
-      paid: false,
-      reward_system: false,
-      survey_system: false,
-      school_district: undefined,
-      university: undefined,
-      is_active: true,
-    },
+    defaultValues: currentOrganization
+      ? {
+          title: currentOrganization.title || '',
+          short_title: currentOrganization.short_title || '',
+          organization_type: currentOrganization.organization_type || 'secondary',
+          image: currentOrganization.image || '',
+          ufcs_member: currentOrganization.ufcs_member || false,
+          lead_contact: currentOrganization.lead_contact,
+          paid: currentOrganization.paid || false,
+          reward_system: currentOrganization.reward_system || false,
+          survey_system: currentOrganization.survey_system || false,
+          school_district: currentOrganization.school_district || undefined,
+          university: currentOrganization.university || undefined,
+          is_active: currentOrganization.is_active ?? true,
+        }
+      : {
+          title: '',
+          short_title: '',
+          organization_type: 'secondary',
+          image: '',
+          ufcs_member: false,
+          lead_contact: '',
+          paid: false,
+          reward_system: false,
+          survey_system: false,
+          school_district: undefined,
+          university: undefined,
+          is_active: true,
+        },
   });
 
   const { watch, setValue } = methods;
   const organizationType = watch('organization_type');
 
   const onSubmit = methods.handleSubmit(async (data) => {
-    // Transform the data to match CreateOrganizationDto
-    const payload: CreateOrganizationDto = {
+    // Transform the data to match DTO
+    const payload = {
       title: data.title,
       short_title: data.short_title || undefined,
       organization_type: data.organization_type,
       image: data.image || undefined,
       ufcs_member: data.ufcs_member,
-      lead_contact: data.lead_contact._id,
+      lead_contact: typeof data.lead_contact === 'object' ? data.lead_contact._id : data.lead_contact,
       paid: data.paid,
       reward_system: data.reward_system,
       survey_system: data.survey_system,
-      school_district: data.school_district && data.school_district._id,
-      university: data.university && data.university._id,
+      school_district: data.school_district && (typeof data.school_district === 'object' ? data.school_district._id : data.school_district),
+      university: data.university && (typeof data.university === 'object' ? data.university._id : data.university),
       is_active: data.is_active,
     };
 
-    console.log(payload);
-    createOrganization(
-      { data: payload },
-      {
-        onSuccess: () => {
-          // Invalidate organizations query to refetch the list
-          queryClient.invalidateQueries({
-            queryKey: getOrganizationsControllerFindAllQueryKey(),
-          });
-          methods.reset();
-          onSuccess?.();
-          onClose();
-        },
-      }
-    );
+    if (isEditMode && currentOrganization) {
+      // Update existing organization
+      updateOrganization(
+        { id: currentOrganization._id, data: payload as UpdateOrganizationDto },
+        {
+          onSuccess: () => {
+            // Invalidate both list and detail queries
+            queryClient.invalidateQueries({
+              queryKey: getOrganizationsControllerFindAllQueryKey(),
+            });
+            queryClient.invalidateQueries({
+              queryKey: getOrganizationsControllerFindOneQueryKey(currentOrganization._id),
+            });
+            methods.reset();
+            onSuccess?.();
+            onClose();
+          },
+        }
+      );
+    } else {
+      // Create new organization
+      createOrganization(
+        { data: payload as CreateOrganizationDto },
+        {
+          onSuccess: () => {
+            // Invalidate organizations query to refetch the list
+            queryClient.invalidateQueries({
+              queryKey: getOrganizationsControllerFindAllQueryKey(),
+            });
+            methods.reset();
+            onSuccess?.();
+            onClose();
+          },
+        }
+      );
+    }
   });
 
   const handleClose = () => {
@@ -105,14 +159,14 @@ export function OrganizationForm({ open, onClose, onSuccess }: OrganizationFormP
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Create New Organization</DialogTitle>
+      <DialogTitle>{isEditMode ? 'Edit Organization' : 'Create New Organization'}</DialogTitle>
 
       <Form methods={methods} onSubmit={onSubmit}>
         <DialogContent>
           <Stack spacing={3}>
             {!!error && (
               <Alert severity="error">
-                Failed to create organization. Please check your input and try again.
+                Failed to {isEditMode ? 'update' : 'create'} organization. Please check your input and try again.
               </Alert>
             )}
 
@@ -248,7 +302,7 @@ export function OrganizationForm({ open, onClose, onSuccess }: OrganizationFormP
             Cancel
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isPending}>
-            Create Organization
+            {isEditMode ? 'Update Organization' : 'Create Organization'}
           </LoadingButton>
         </DialogActions>
       </Form>

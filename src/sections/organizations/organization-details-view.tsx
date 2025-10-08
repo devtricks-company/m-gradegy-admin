@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
@@ -10,11 +13,14 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
 
+import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { useOrganizationsControllerFindOne } from 'src/lib/orval/generated/organizations/organizations';
 import { User } from 'src/lib/orval/generated/model';
+
+import { OrganizationForm } from './form/organization-form';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +30,7 @@ type Props = {
 
 export function OrganizationDetailsView({ id }: Props) {
   const { data: organization, isLoading, error } = useOrganizationsControllerFindOne(id);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
   return (
     <DashboardContent maxWidth="xl">
@@ -34,6 +41,17 @@ export function OrganizationDetailsView({ id }: Props) {
           { name: 'Organizations', href: paths.dashboard.organizations },
           { name: organization?.title || 'Details' },
         ]}
+        action={
+          organization && (
+            <Button
+              variant="contained"
+              startIcon={<Iconify icon="solar:pen-bold" />}
+              onClick={() => setOpenEditDialog(true)}
+            >
+              Edit
+            </Button>
+          )
+        }
         sx={{ mb: 3 }}
       />
 
@@ -148,6 +166,14 @@ export function OrganizationDetailsView({ id }: Props) {
         </Stack>
       ) : (
         <Alert severity="warning">Organization not found</Alert>
+      )}
+
+      {organization && (
+        <OrganizationForm
+          open={openEditDialog}
+          onClose={() => setOpenEditDialog(false)}
+          currentOrganization={organization}
+        />
       )}
     </DashboardContent>
   );
