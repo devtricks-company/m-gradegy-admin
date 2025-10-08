@@ -56,8 +56,16 @@ export function OrganizationForm({
   const queryClient = useQueryClient();
   const isEditMode = !!currentOrganization;
 
-  const { mutate: createOrganization, isPending: isCreating, error: createError } = useOrganizationsControllerCreate();
-  const { mutate: updateOrganization, isPending: isUpdating, error: updateError } = useOrganizationsControllerUpdate();
+  const {
+    mutate: createOrganization,
+    isPending: isCreating,
+    error: createError,
+  } = useOrganizationsControllerCreate();
+  const {
+    mutate: updateOrganization,
+    isPending: isUpdating,
+    error: updateError,
+  } = useOrganizationsControllerUpdate();
 
   const isPending = isCreating || isUpdating;
   const error = createError || updateError;
@@ -115,7 +123,7 @@ export function OrganizationForm({
         school_district: currentOrganization.school_district || undefined,
         university: currentOrganization.university || undefined,
         is_active: currentOrganization.is_active ?? true,
-      });
+      } as any);
     } else if (open && !currentOrganization) {
       // Create mode - reset to defaults
       reset({
@@ -141,14 +149,21 @@ export function OrganizationForm({
       title: data.title,
       short_title: data.short_title || undefined,
       organization_type: data.organization_type,
-      image: data.image || undefined,
+      image: data.image && data.image.trim() !== '' ? data.image : undefined,
       ufcs_member: data.ufcs_member,
-      lead_contact: typeof data.lead_contact === 'object' ? data.lead_contact._id : data.lead_contact,
+      lead_contact:
+        typeof data.lead_contact === 'object' ? data.lead_contact._id : data.lead_contact,
       paid: data.paid,
       reward_system: data.reward_system,
       survey_system: data.survey_system,
-      school_district: data.school_district && (typeof data.school_district === 'object' ? data.school_district._id : data.school_district),
-      university: data.university && (typeof data.university === 'object' ? data.university._id : data.university),
+      school_district:
+        data.school_district &&
+        (typeof data.school_district === 'object'
+          ? data.school_district._id
+          : data.school_district),
+      university:
+        data.university &&
+        (typeof data.university === 'object' ? data.university._id : data.university),
       is_active: data.is_active,
     };
 
@@ -204,7 +219,8 @@ export function OrganizationForm({
           <Stack spacing={3}>
             {!!error && (
               <Alert severity="error">
-                Failed to {isEditMode ? 'update' : 'create'} organization. Please check your input and try again.
+                Failed to {isEditMode ? 'update' : 'create'} organization. Please check your input
+                and try again.
               </Alert>
             )}
 
