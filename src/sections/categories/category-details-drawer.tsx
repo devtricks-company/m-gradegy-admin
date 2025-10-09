@@ -27,6 +27,7 @@ import {
 import {
   useSubcategoriesControllerCreate,
   useSubcategoriesControllerUpdate,
+  useSubcategoriesControllerRemove,
   useSubcategoriesControllerFindAllByCategory,
   getSubcategoriesControllerFindAllByCategoryQueryKey,
 } from 'src/lib/orval/generated/subcategories/subcategories';
@@ -110,6 +111,11 @@ export function CategoryDetailsDrawer({
     isPending: isUpdatingSubcategory,
     error: updateSubcategoryError,
   } = useSubcategoriesControllerUpdate();
+
+  const {
+    mutate: removeSubcategory,
+    isPending: isRemovingSubcategory,
+  } = useSubcategoriesControllerRemove();
 
   const {
     register,
@@ -240,6 +246,26 @@ export function CategoryDetailsDrawer({
   const handleCancelEdit = () => {
     setEditingSubcategoryId(null);
     setEditSubcategoryData({});
+  };
+
+  const handleDeleteSubcategory = (subcategoryId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!categoryId) return;
+
+    removeSubcategory(
+      { id: subcategoryId },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getSubcategoriesControllerFindAllByCategoryQueryKey(categoryId),
+          });
+          if (editingSubcategoryId === subcategoryId) {
+            setEditingSubcategoryId(null);
+            setEditSubcategoryData({});
+          }
+        },
+      }
+    );
   };
 
   return (
@@ -433,6 +459,14 @@ export function CategoryDetailsDrawer({
                     color={subcategory.is_active ? 'primary' : 'default'}
                     sx={{ justifyContent: 'flex-start', cursor: 'pointer' }}
                     onClick={() => handleSubcategoryClick(subcategory)}
+                    onDelete={(e) => handleDeleteSubcategory(subcategory._id, e)}
+                    deleteIcon={
+                      <Iconify
+                        icon="mingcute:close-line"
+                        width={18}
+                        sx={{ opacity: isRemovingSubcategory ? 0.5 : 1 }}
+                      />
+                    }
                   />
                 );
               })}
