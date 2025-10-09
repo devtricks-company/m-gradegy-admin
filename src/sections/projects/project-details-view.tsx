@@ -42,11 +42,13 @@ export function ProjectDetailsView({ id }: Props) {
   const { data: categoriesData, isLoading: loadingCategories } = useCategoriesControllerFindByProject(id);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
 
-  const { mutate: removeCategory, isPending: isRemovingCategory } = useCategoriesControllerRemove();
+  const { mutate: removeCategory } = useCategoriesControllerRemove();
 
   const handleDeleteCategory = (categoryId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    setDeletingCategoryId(categoryId);
 
     removeCategory(
       { id: categoryId },
@@ -58,6 +60,10 @@ export function ProjectDetailsView({ id }: Props) {
           if (selectedCategoryId === categoryId) {
             setSelectedCategoryId(null);
           }
+          setDeletingCategoryId(null);
+        },
+        onError: () => {
+          setDeletingCategoryId(null);
         },
       }
     );
@@ -200,24 +206,33 @@ export function ProjectDetailsView({ id }: Props) {
               </Stack>
             ) : categoriesData?.data && categoriesData.data.length > 0 ? (
               <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-                {categoriesData.data.map((category: any) => (
-                  <Chip
-                    key={category._id || category.id}
-                    label={category.title}
-                    color="primary"
-                    variant="outlined"
-                    onClick={() => setSelectedCategoryId(category._id || category.id)}
-                    onDelete={(e) => handleDeleteCategory(category._id || category.id, e)}
-                    deleteIcon={
-                      <Iconify
-                        icon="mingcute:close-line"
-                        width={18}
-                        sx={{ opacity: isRemovingCategory ? 0.5 : 1 }}
-                      />
-                    }
-                    sx={{ cursor: 'pointer' }}
-                  />
-                ))}
+                {categoriesData.data.map((category: any) => {
+                  const categoryId = category._id || category.id;
+                  const isDeleting = deletingCategoryId === categoryId;
+
+                  return (
+                    <Chip
+                      key={categoryId}
+                      label={category.title}
+                      color="primary"
+                      variant="outlined"
+                      onClick={() => !isDeleting && setSelectedCategoryId(categoryId)}
+                      onDelete={(e) => !isDeleting && handleDeleteCategory(categoryId, e)}
+                      deleteIcon={
+                        isDeleting ? (
+                          <CircularProgress size={16} />
+                        ) : (
+                          <Iconify icon="mingcute:close-line" width={18} />
+                        )
+                      }
+                      sx={{
+                        cursor: isDeleting ? 'not-allowed' : 'pointer',
+                        opacity: isDeleting ? 0.6 : 1,
+                      }}
+                      disabled={isDeleting}
+                    />
+                  );
+                })}
               </Stack>
             ) : (
               <Typography variant="body2" color="text.secondary">
