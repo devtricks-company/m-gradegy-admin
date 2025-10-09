@@ -16,11 +16,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
-import { UserRole } from 'src/lib/orval/generated/model';
-import {
-  useUsersControllerCreate,
-  getUsersControllerFindAllAdministrativeQueryKey,
-} from 'src/lib/orval/generated/users/users';
+import { AdministrativeRole } from 'src/lib/orval/generated/model';
+import { getUsersControllerFindAllAdministrativeQueryKey } from 'src/lib/orval/generated/users/users';
+import { useAuthControllerRegisterAdmin } from 'src/lib/orval/generated/auth/auth';
 
 import { adminSchema } from './admin-schema';
 
@@ -57,7 +55,7 @@ export function AdminDialogForm({ open, onClose, onSuccess }: AdminDialogFormPro
     formState: { isSubmitting },
   } = methods;
 
-  const { mutate: createAdmin, isPending } = useUsersControllerCreate({
+  const { mutate: createAdmin, isPending } = useAuthControllerRegisterAdmin({
     mutation: {
       onSuccess: () => {
         toast.success('Administrator created successfully!');
@@ -82,9 +80,9 @@ export function AdminDialogForm({ open, onClose, onSuccess }: AdminDialogFormPro
         email: data.email,
         password: data.password,
         role: data.role,
-        avatarUrl: data.avatarUrl || undefined,
         phone: data.phone || undefined,
         jobs: data.jobs || undefined,
+        avatarUrl: data.avatarUrl,
       },
     });
   });
@@ -97,9 +95,9 @@ export function AdminDialogForm({ open, onClose, onSuccess }: AdminDialogFormPro
   };
 
   const roleOptions = [
-    { value: UserRole.ultra, label: 'Ultra' },
-    { value: UserRole.super, label: 'Super' },
-    { value: UserRole.admin, label: 'Admin' },
+    { value: AdministrativeRole.ultra, label: 'Ultra' },
+    { value: AdministrativeRole.super, label: 'Super' },
+    { value: AdministrativeRole.admin, label: 'Admin' },
   ];
 
   return (
