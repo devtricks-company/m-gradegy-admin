@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
@@ -19,7 +20,11 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { useProjectsControllerFindOne } from 'src/lib/orval/generated/projects/projects';
-import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
+import {
+  useCategoriesControllerFindByProject,
+  useCategoriesControllerRemove,
+  getCategoriesControllerFindByProjectQueryKey,
+} from 'src/lib/orval/generated/categories/categories';
 
 import { ProjectForm } from '../organizations/form/project-form';
 import { CategoryForm } from '../categories/category-form';
@@ -32,10 +37,31 @@ type Props = {
 };
 
 export function ProjectDetailsView({ id }: Props) {
+  const queryClient = useQueryClient();
   const { data: project, isLoading, error } = useProjectsControllerFindOne(id);
   const { data: categoriesData, isLoading: loadingCategories } = useCategoriesControllerFindByProject(id);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+
+  const { mutate: removeCategory, isPending: isRemovingCategory } = useCategoriesControllerRemove();
+
+  const handleDeleteCategory = (categoryId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    removeCategory(
+      { id: categoryId },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getCategoriesControllerFindByProjectQueryKey(id),
+          });
+          if (selectedCategoryId === categoryId) {
+            setSelectedCategoryId(null);
+          }
+        },
+      }
+    );
+  };
 
   return (
     <DashboardContent maxWidth="xl">
@@ -181,6 +207,14 @@ export function ProjectDetailsView({ id }: Props) {
                     color="primary"
                     variant="outlined"
                     onClick={() => setSelectedCategoryId(category._id || category.id)}
+                    onDelete={(e) => handleDeleteCategory(category._id || category.id, e)}
+                    deleteIcon={
+                      <Iconify
+                        icon="mingcute:close-line"
+                        width={18}
+                        sx={{ opacity: isRemovingCategory ? 0.5 : 1 }}
+                      />
+                    }
                     sx={{ cursor: 'pointer' }}
                   />
                 ))}
