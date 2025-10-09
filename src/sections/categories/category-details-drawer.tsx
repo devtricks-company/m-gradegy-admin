@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Drawer from '@mui/material/Drawer';
@@ -23,8 +24,18 @@ import {
   useCategoriesControllerUpdate,
   getCategoriesControllerFindByProjectQueryKey,
 } from 'src/lib/orval/generated/categories/categories';
+import {
+  useSubcategoriesControllerCreate,
+  useSubcategoriesControllerFindAllByCategory,
+  getSubcategoriesControllerFindAllByCategoryQueryKey,
+} from 'src/lib/orval/generated/subcategories/subcategories';
 
-import type { UpdateCategoryDto } from 'src/lib/orval/generated/model';
+import type {
+  UpdateCategoryDto,
+  CreateSubcategoryDto,
+  SubcategoriesControllerFindAllByCategory200,
+  Subcategory,
+} from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +53,8 @@ export function CategoryDetailsDrawer({
   projectId,
 }: CategoryDetailsDrawerProps) {
   const queryClient = useQueryClient();
+  const [isCreatingSubcategory, setIsCreatingSubcategory] = React.useState(false);
+  const [newSubcategoryTitle, setNewSubcategoryTitle] = React.useState('');
 
   const {
     data: category,
@@ -56,18 +69,37 @@ export function CategoryDetailsDrawer({
     },
   });
 
+  const {
+    data: subcategories,
+    isLoading: isLoadingSubcategories,
+    refetch: refetchSubcategories,
+  } = useSubcategoriesControllerFindAllByCategory(categoryId || '', undefined, {
+    query: {
+      enabled: !!categoryId,
+      refetchOnMount: 'always',
+      staleTime: 0,
+    },
+  });
+
   // Refetch data when drawer opens
   React.useEffect(() => {
     if (open && categoryId) {
       refetch();
+      refetchSubcategories();
     }
-  }, [open, categoryId, refetch]);
+  }, [open, categoryId, refetch, refetchSubcategories]);
 
   const {
     mutate: updateCategory,
     isPending: isUpdating,
     error: updateError,
   } = useCategoriesControllerUpdate();
+
+  const {
+    mutate: createSubcategory,
+    isPending: isCreatingSubcategoryPending,
+    error: createSubcategoryError,
+  } = useSubcategoriesControllerCreate();
 
   const {
     register,
@@ -126,7 +158,36 @@ export function CategoryDetailsDrawer({
 
   const handleClose = () => {
     reset();
+    setIsCreatingSubcategory(false);
+    setNewSubcategoryTitle('');
     onClose();
+  };
+
+  const handleCreateSubcategory = () => {
+    if (!categoryId || !newSubcategoryTitle.trim()) return;
+
+    const subcategoryData: CreateSubcategoryDto = {
+      title: newSubcategoryTitle.trim(),
+      category: categoryId,
+      localize_reward: false,
+      coins: false,
+      store: false,
+      is_active: true,
+    };
+
+    createSubcategory(
+      { data: subcategoryData },
+      {
+        onSuccess: () => {
+          // Invalidate subcategories list to refresh
+          queryClient.invalidateQueries({
+            queryKey: getSubcategoriesControllerFindAllByCategoryQueryKey(categoryId),
+          });
+          setNewSubcategoryTitle('');
+          setIsCreatingSubcategory(false);
+        },
+      }
+    );
   };
 
   return (
@@ -247,6 +308,89 @@ export function CategoryDetailsDrawer({
             </Stack>
           </form>
         ) : null}
+
+        <Divider sx={{ my: 3 }} />
+
+        <Stack spacing={2}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="h6">Subcategories</Typography>
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={() => setIsCreatingSubcategory(true)}
+              disabled={!categoryId || isCreatingSubcategory}
+            >
+              <Iconify icon="mingcute:add-line" />
+            </IconButton>
+          </Stack>
+
+          {isCreatingSubcategory && (
+            <Stack direction="row" spacing={1}>
+              <TextField
+                size="small"
+                placeholder="Enter subcategory title"
+                value={newSubcategoryTitle}
+                onChange={(e) => setNewSubcategoryTitle(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCreateSubcategory();
+                  }
+                }}
+                fullWidth
+                autoFocus
+                error={!!createSubcategoryError}
+              />
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={handleCreateSubcategory}
+                disabled={!newSubcategoryTitle.trim() || isCreatingSubcategoryPending}
+              >
+                <Iconify icon="mingcute:check-line" />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setIsCreatingSubcategory(false);
+                  setNewSubcategoryTitle('');
+                }}
+                disabled={isCreatingSubcategoryPending}
+              >
+                <Iconify icon="mingcute:close-line" />
+              </IconButton>
+            </Stack>
+          )}
+
+          {createSubcategoryError && <Alert severity="error">Failed to create subcategory</Alert>}
+
+          {isLoadingSubcategories ? (
+            <Stack alignItems="center" justifyContent="center" sx={{ py: 4 }}>
+              <CircularProgress size={24} />
+              <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
+                Loading subcategories...
+              </Typography>
+            </Stack>
+          ) : subcategories && subcategories?.data?.length! > 0 ? (
+            <Stack spacing={1}>
+              {subcategories.data!.map((subcategory: any) => {
+                console.log('subcategory', subcategory);
+                return (
+                  <Chip
+                    key={subcategory.id || subcategory.title}
+                    label={subcategory.title}
+                    variant="outlined"
+                    color={subcategory.is_active ? 'primary' : 'default'}
+                    sx={{ justifyContent: 'flex-start' }}
+                  />
+                );
+              })}
+            </Stack>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No subcategories found for this category.
+            </Typography>
+          )}
+        </Stack>
       </Box>
     </Drawer>
   );

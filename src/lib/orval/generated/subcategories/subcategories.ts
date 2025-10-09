@@ -24,6 +24,9 @@ import type {
 import type {
   CreateSubcategoryDto,
   SubcategoriesControllerFindAll200,
+  SubcategoriesControllerFindAllByCategory200,
+  SubcategoriesControllerFindAllByCategoryParams,
+  SubcategoriesControllerFindAllParams,
   Subcategory,
   UpdateSubcategoryDto,
 } from '.././model';
@@ -122,35 +125,41 @@ export const useSubcategoriesControllerCreate = <TError = unknown, TContext = un
  * @summary Retrieve a paginated list of subcategories
  */
 export const subcategoriesControllerFindAll = (
+  params?: SubcategoriesControllerFindAllParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<SubcategoriesControllerFindAll200>(
-    { url: `http://localhost:5400/subcategories`, method: 'GET', signal },
+    { url: `http://localhost:5400/subcategories`, method: 'GET', params, signal },
     options
   );
 };
 
-export const getSubcategoriesControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/subcategories`] as const;
+export const getSubcategoriesControllerFindAllQueryKey = (
+  params?: SubcategoriesControllerFindAllParams
+) => {
+  return [`http://localhost:5400/subcategories`, ...(params ? [params] : [])] as const;
 };
 
 export const getSubcategoriesControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof subcategoriesControllerFindAll>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof subcategoriesControllerFindAll>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}) => {
+>(
+  params?: SubcategoriesControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof subcategoriesControllerFindAll>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getSubcategoriesControllerFindAllQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getSubcategoriesControllerFindAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof subcategoriesControllerFindAll>>> = ({
     signal,
-  }) => subcategoriesControllerFindAll(requestOptions, signal);
+  }) => subcategoriesControllerFindAll(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof subcategoriesControllerFindAll>>,
@@ -168,6 +177,7 @@ export function useSubcategoriesControllerFindAll<
   TData = Awaited<ReturnType<typeof subcategoriesControllerFindAll>>,
   TError = unknown,
 >(
+  params: undefined | SubcategoriesControllerFindAllParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof subcategoriesControllerFindAll>>, TError, TData>
@@ -188,6 +198,7 @@ export function useSubcategoriesControllerFindAll<
   TData = Awaited<ReturnType<typeof subcategoriesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: SubcategoriesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof subcategoriesControllerFindAll>>, TError, TData>
@@ -208,6 +219,7 @@ export function useSubcategoriesControllerFindAll<
   TData = Awaited<ReturnType<typeof subcategoriesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: SubcategoriesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof subcategoriesControllerFindAll>>, TError, TData>
@@ -224,6 +236,7 @@ export function useSubcategoriesControllerFindAll<
   TData = Awaited<ReturnType<typeof subcategoriesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: SubcategoriesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof subcategoriesControllerFindAll>>, TError, TData>
@@ -232,7 +245,184 @@ export function useSubcategoriesControllerFindAll<
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getSubcategoriesControllerFindAllQueryOptions(options);
+  const queryOptions = getSubcategoriesControllerFindAllQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Retrieve a paginated list of subcategories for a category
+ */
+export const subcategoriesControllerFindAllByCategory = (
+  categoryId: string,
+  params?: SubcategoriesControllerFindAllByCategoryParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SubcategoriesControllerFindAllByCategory200>(
+    {
+      url: `http://localhost:5400/subcategories/category/${categoryId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
+};
+
+export const getSubcategoriesControllerFindAllByCategoryQueryKey = (
+  categoryId?: string,
+  params?: SubcategoriesControllerFindAllByCategoryParams
+) => {
+  return [
+    `http://localhost:5400/subcategories/category/${categoryId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getSubcategoriesControllerFindAllByCategoryQueryOptions = <
+  TData = Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+  TError = unknown,
+>(
+  categoryId: string,
+  params?: SubcategoriesControllerFindAllByCategoryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getSubcategoriesControllerFindAllByCategoryQueryKey(categoryId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>
+  > = ({ signal }) =>
+    subcategoriesControllerFindAllByCategory(categoryId, params, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!categoryId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type SubcategoriesControllerFindAllByCategoryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>
+>;
+export type SubcategoriesControllerFindAllByCategoryQueryError = unknown;
+
+export function useSubcategoriesControllerFindAllByCategory<
+  TData = Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+  TError = unknown,
+>(
+  categoryId: string,
+  params: undefined | SubcategoriesControllerFindAllByCategoryParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+          TError,
+          Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useSubcategoriesControllerFindAllByCategory<
+  TData = Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+  TError = unknown,
+>(
+  categoryId: string,
+  params?: SubcategoriesControllerFindAllByCategoryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+          TError,
+          Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useSubcategoriesControllerFindAllByCategory<
+  TData = Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+  TError = unknown,
+>(
+  categoryId: string,
+  params?: SubcategoriesControllerFindAllByCategoryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Retrieve a paginated list of subcategories for a category
+ */
+
+export function useSubcategoriesControllerFindAllByCategory<
+  TData = Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+  TError = unknown,
+>(
+  categoryId: string,
+  params?: SubcategoriesControllerFindAllByCategoryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof subcategoriesControllerFindAllByCategory>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getSubcategoriesControllerFindAllByCategoryQueryOptions(
+    categoryId,
+    params,
+    options
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
