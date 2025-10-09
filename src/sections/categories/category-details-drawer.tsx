@@ -26,6 +26,7 @@ import {
 } from 'src/lib/orval/generated/categories/categories';
 import {
   useSubcategoriesControllerCreate,
+  useSubcategoriesControllerUpdate,
   useSubcategoriesControllerFindAllByCategory,
   getSubcategoriesControllerFindAllByCategoryQueryKey,
 } from 'src/lib/orval/generated/subcategories/subcategories';
@@ -33,6 +34,7 @@ import {
 import type {
   UpdateCategoryDto,
   CreateSubcategoryDto,
+  UpdateSubcategoryDto,
   SubcategoriesControllerFindAllByCategory200,
   Subcategory,
 } from 'src/lib/orval/generated/model';
@@ -55,6 +57,8 @@ export function CategoryDetailsDrawer({
   const queryClient = useQueryClient();
   const [isCreatingSubcategory, setIsCreatingSubcategory] = React.useState(false);
   const [newSubcategoryTitle, setNewSubcategoryTitle] = React.useState('');
+  const [editingSubcategoryId, setEditingSubcategoryId] = React.useState<string | null>(null);
+  const [editSubcategoryData, setEditSubcategoryData] = React.useState<UpdateSubcategoryDto>({});
 
   const {
     data: category,
@@ -100,6 +104,12 @@ export function CategoryDetailsDrawer({
     isPending: isCreatingSubcategoryPending,
     error: createSubcategoryError,
   } = useSubcategoriesControllerCreate();
+
+  const {
+    mutate: updateSubcategory,
+    isPending: isUpdatingSubcategory,
+    error: updateSubcategoryError,
+  } = useSubcategoriesControllerUpdate();
 
   const {
     register,
@@ -160,6 +170,8 @@ export function CategoryDetailsDrawer({
     reset();
     setIsCreatingSubcategory(false);
     setNewSubcategoryTitle('');
+    setEditingSubcategoryId(null);
+    setEditSubcategoryData({});
     onClose();
   };
 
@@ -188,6 +200,46 @@ export function CategoryDetailsDrawer({
         },
       }
     );
+  };
+
+  const handleSubcategoryClick = (subcategory: any) => {
+    console.log(subcategory._id);
+    setEditingSubcategoryId(subcategory._id);
+    setEditSubcategoryData({
+      title: subcategory.title,
+      category: subcategory.category?._id || subcategory.category,
+      localize_reward: subcategory.localize_reward || false,
+      coins: subcategory.coins || false,
+      store: subcategory.store || false,
+      is_active: subcategory.is_active ?? true,
+    });
+    setIsCreatingSubcategory(false);
+  };
+
+  const handleUpdateSubcategory = () => {
+    if (!editingSubcategoryId || !categoryId) return;
+
+    updateSubcategory(
+      {
+        id: editingSubcategoryId,
+        data: editSubcategoryData,
+      },
+      {
+        onSuccess: () => {
+          // Invalidate subcategories list to refresh
+          queryClient.invalidateQueries({
+            queryKey: getSubcategoriesControllerFindAllByCategoryQueryKey(categoryId),
+          });
+          setEditingSubcategoryId(null);
+          setEditSubcategoryData({});
+        },
+      }
+    );
+  };
+
+  const handleCancelEdit = () => {
+    setEditingSubcategoryId(null);
+    setEditSubcategoryData({});
   };
 
   return (
@@ -379,7 +431,8 @@ export function CategoryDetailsDrawer({
                     label={subcategory.title}
                     variant="outlined"
                     color={subcategory.is_active ? 'primary' : 'default'}
-                    sx={{ justifyContent: 'flex-start' }}
+                    sx={{ justifyContent: 'flex-start', cursor: 'pointer' }}
+                    onClick={() => handleSubcategoryClick(subcategory)}
                   />
                 );
               })}
@@ -388,6 +441,112 @@ export function CategoryDetailsDrawer({
             <Typography variant="body2" color="text.secondary">
               No subcategories found for this category.
             </Typography>
+          )}
+
+          {editingSubcategoryId && (
+            <Box sx={{ mt: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                Edit Subcategory
+              </Typography>
+
+              <Stack spacing={2}>
+                <TextField
+                  size="small"
+                  label="Title"
+                  placeholder="Enter subcategory title"
+                  value={editSubcategoryData.title || ''}
+                  onChange={(e) =>
+                    setEditSubcategoryData({ ...editSubcategoryData, title: e.target.value })
+                  }
+                  fullWidth
+                />
+
+                <Stack spacing={1}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={editSubcategoryData.localize_reward || false}
+                        onChange={(e) =>
+                          setEditSubcategoryData({
+                            ...editSubcategoryData,
+                            localize_reward: e.target.checked,
+                          })
+                        }
+                      />
+                    }
+                    label="Localize Reward"
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={editSubcategoryData.coins || false}
+                        onChange={(e) =>
+                          setEditSubcategoryData({
+                            ...editSubcategoryData,
+                            coins: e.target.checked,
+                          })
+                        }
+                      />
+                    }
+                    label="Coins"
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={editSubcategoryData.store || false}
+                        onChange={(e) =>
+                          setEditSubcategoryData({
+                            ...editSubcategoryData,
+                            store: e.target.checked,
+                          })
+                        }
+                      />
+                    }
+                    label="Store"
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={editSubcategoryData.is_active ?? true}
+                        onChange={(e) =>
+                          setEditSubcategoryData({
+                            ...editSubcategoryData,
+                            is_active: e.target.checked,
+                          })
+                        }
+                      />
+                    }
+                    label="Active"
+                  />
+                </Stack>
+
+                {updateSubcategoryError ? (
+                  <Alert severity="error">Failed to update subcategory</Alert>
+                ) : null}
+
+                <Stack direction="row" spacing={2} justifyContent="flex-end">
+                  <LoadingButton
+                    variant="outlined"
+                    onClick={handleCancelEdit}
+                    disabled={isUpdatingSubcategory}
+                    size="small"
+                  >
+                    Cancel
+                  </LoadingButton>
+                  <LoadingButton
+                    variant="contained"
+                    onClick={handleUpdateSubcategory}
+                    loading={isUpdatingSubcategory}
+                    size="small"
+                  >
+                    Update
+                  </LoadingButton>
+                </Stack>
+              </Stack>
+            </Box>
           )}
         </Stack>
       </Box>
