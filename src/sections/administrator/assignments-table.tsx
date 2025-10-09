@@ -86,8 +86,10 @@ export function AssignmentsTable({ assignments, onDelete, onAdd, isLoading }: As
                   </TableCell>
                 </TableRow>
               ) : (
-                assignments.map((assignment, index) => (
-                  <TableRow key={index} hover>
+                assignments.map((assignment) => {
+                  const assignmentWithId = assignment as UserAssignment & { _id?: string };
+                  return (
+                  <TableRow key={assignmentWithId._id || JSON.stringify(assignment)} hover>
                     <TableCell>
                       <Typography variant="body2">
                         {(assignment.organization as unknown as Organization)?.title || '-'}
@@ -126,7 +128,8 @@ export function AssignmentsTable({ assignments, onDelete, onAdd, isLoading }: As
                       )}
                     </TableCell>
                   </TableRow>
-                ))
+                  );
+                })
               )}
             </TableBody>
           </Table>

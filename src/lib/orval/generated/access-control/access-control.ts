@@ -278,6 +278,85 @@ export function useAccessControlControllerListAssignments<
 }
 
 /**
+ * @summary Remove an assignment from a user.
+ */
+export const accessControlControllerRemoveAssignment = (
+  assignmentId: string,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<UserAssignment>(
+    { url: `http://localhost:5400/access/assignments/${assignmentId}`, method: 'DELETE' },
+    options
+  );
+};
+
+export const getAccessControlControllerRemoveAssignmentMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof accessControlControllerRemoveAssignment>>,
+    TError,
+    { assignmentId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof accessControlControllerRemoveAssignment>>,
+  TError,
+  { assignmentId: string },
+  TContext
+> => {
+  const mutationKey = ['accessControlControllerRemoveAssignment'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof accessControlControllerRemoveAssignment>>,
+    { assignmentId: string }
+  > = (props) => {
+    const { assignmentId } = props ?? {};
+
+    return accessControlControllerRemoveAssignment(assignmentId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AccessControlControllerRemoveAssignmentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof accessControlControllerRemoveAssignment>>
+>;
+
+export type AccessControlControllerRemoveAssignmentMutationError = unknown;
+
+/**
+ * @summary Remove an assignment from a user.
+ */
+export const useAccessControlControllerRemoveAssignment = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof accessControlControllerRemoveAssignment>>,
+      TError,
+      { assignmentId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof accessControlControllerRemoveAssignment>>,
+  TError,
+  { assignmentId: string },
+  TContext
+> => {
+  const mutationOptions = getAccessControlControllerRemoveAssignmentMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * @summary List projects the current user can access.
  */
 export const accessControlControllerListProjects = (
