@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import Box from '@mui/material/Box';
@@ -20,7 +21,10 @@ import { Iconify } from 'src/components/iconify';
 
 import { useUsersControllerFindOne } from 'src/lib/orval/generated/users/users';
 
-import type { User } from 'src/lib/orval/generated/model';
+import { AssignmentsTable } from '../assignments-table';
+import { AssignmentDialogForm } from '../forms/assignment-dialog-form';
+
+import type { User, UserAssignment } from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
 
@@ -43,13 +47,30 @@ type Props = {
 
 export function AdministratorDetailsView({ id }: Props) {
   const router = useRouter();
+  const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false);
 
   const { data, isLoading, error } = useUsersControllerFindOne(id);
 
   const admin = data as AdminUser | undefined;
 
+  // Mock assignments data - Replace with actual API call when available
+  const mockAssignments: UserAssignment[] = [];
+
   const handleBack = () => {
     router.push(paths.dashboard.administrator);
+  };
+
+  const handleOpenAssignmentDialog = () => {
+    setAssignmentDialogOpen(true);
+  };
+
+  const handleCloseAssignmentDialog = () => {
+    setAssignmentDialogOpen(false);
+  };
+
+  const handleDeleteAssignment = (assignment: UserAssignment) => {
+    // TODO: Implement delete assignment API call
+    console.log('Delete assignment:', assignment);
   };
 
   const getRoleColor = (role?: string) => {
@@ -193,6 +214,21 @@ export function AdministratorDetailsView({ id }: Props) {
           </Stack>
         </Stack>
       </Card>
+
+      {/* Access Control Assignments Section */}
+      <AssignmentsTable
+        assignments={mockAssignments}
+        onAdd={handleOpenAssignmentDialog}
+        onDelete={handleDeleteAssignment}
+      />
+
+      {/* Assignment Dialog */}
+      <AssignmentDialogForm
+        open={assignmentDialogOpen}
+        onClose={handleCloseAssignmentDialog}
+        userId={id}
+        onSuccess={handleCloseAssignmentDialog}
+      />
     </Stack>
   );
 }
