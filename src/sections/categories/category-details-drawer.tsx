@@ -373,7 +373,6 @@ export function CategoryDetailsDrawer({
           ) : subcategories && subcategories?.data?.length! > 0 ? (
             <Stack spacing={1}>
               {subcategories.data!.map((subcategory: any) => {
-                console.log('subcategory', subcategory);
                 return (
                   <Chip
                     key={subcategory.id || subcategory.title}
