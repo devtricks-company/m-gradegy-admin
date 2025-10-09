@@ -60,6 +60,7 @@ export function CategoryDetailsDrawer({
   const [newSubcategoryTitle, setNewSubcategoryTitle] = React.useState('');
   const [editingSubcategoryId, setEditingSubcategoryId] = React.useState<string | null>(null);
   const [editSubcategoryData, setEditSubcategoryData] = React.useState<UpdateSubcategoryDto>({});
+  const [deletingSubcategoryId, setDeletingSubcategoryId] = React.useState<string | null>(null);
 
   const {
     data: category,
@@ -112,10 +113,7 @@ export function CategoryDetailsDrawer({
     error: updateSubcategoryError,
   } = useSubcategoriesControllerUpdate();
 
-  const {
-    mutate: removeSubcategory,
-    isPending: isRemovingSubcategory,
-  } = useSubcategoriesControllerRemove();
+  const { mutate: removeSubcategory } = useSubcategoriesControllerRemove();
 
   const {
     register,
@@ -252,6 +250,8 @@ export function CategoryDetailsDrawer({
     e.stopPropagation();
     if (!categoryId) return;
 
+    setDeletingSubcategoryId(subcategoryId);
+
     removeSubcategory(
       { id: subcategoryId },
       {
@@ -263,6 +263,10 @@ export function CategoryDetailsDrawer({
             setEditingSubcategoryId(null);
             setEditSubcategoryData({});
           }
+          setDeletingSubcategoryId(null);
+        },
+        onError: () => {
+          setDeletingSubcategoryId(null);
         },
       }
     );
@@ -451,22 +455,30 @@ export function CategoryDetailsDrawer({
           ) : subcategories && subcategories?.data?.length! > 0 ? (
             <Stack spacing={1}>
               {subcategories.data!.map((subcategory: any) => {
+                const subcategoryId = subcategory._id || subcategory.id;
+                const isDeleting = deletingSubcategoryId === subcategoryId;
+
                 return (
                   <Chip
                     key={subcategory.id || subcategory.title}
                     label={subcategory.title}
                     variant="outlined"
                     color={subcategory.is_active ? 'primary' : 'default'}
-                    sx={{ justifyContent: 'flex-start', cursor: 'pointer' }}
-                    onClick={() => handleSubcategoryClick(subcategory)}
-                    onDelete={(e) => handleDeleteSubcategory(subcategory._id, e)}
+                    sx={{
+                      justifyContent: 'flex-start',
+                      cursor: isDeleting ? 'not-allowed' : 'pointer',
+                      opacity: isDeleting ? 0.6 : 1,
+                    }}
+                    onClick={() => !isDeleting && handleSubcategoryClick(subcategory)}
+                    onDelete={(e) => !isDeleting && handleDeleteSubcategory(subcategoryId, e)}
                     deleteIcon={
-                      <Iconify
-                        icon="mingcute:close-line"
-                        width={18}
-                        sx={{ opacity: isRemovingSubcategory ? 0.5 : 1 }}
-                      />
+                      isDeleting ? (
+                        <CircularProgress size={16} />
+                      ) : (
+                        <Iconify icon="mingcute:close-line" width={18} />
+                      )
                     }
+                    disabled={isDeleting}
                   />
                 );
               })}
