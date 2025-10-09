@@ -16,7 +16,13 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { Iconify } from 'src/components/iconify';
 
-import type { UserAssignment } from 'src/lib/orval/generated/model';
+import type {
+  Category,
+  Organization,
+  Project,
+  Subcategory,
+  UserAssignment,
+} from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
 
@@ -71,30 +77,38 @@ export function AssignmentsTable({ assignments, onDelete, onAdd }: AssignmentsTa
               assignments.map((assignment, index) => (
                 <TableRow key={index} hover>
                   <TableCell>
-                    <Typography variant="body2">{assignment.organization || '-'}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color={assignment.project ? 'text.primary' : 'text.disabled'}>
-                      {assignment.project || 'All Projects'}
+                    <Typography variant="body2">
+                      {(assignment.organization as unknown as Organization)?.title || '-'}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color={assignment.category ? 'text.primary' : 'text.disabled'}>
-                      {assignment.category || 'All Categories'}
+                    <Typography
+                      variant="body2"
+                      color={assignment.project ? 'text.primary' : 'text.disabled'}
+                    >
+                      {(assignment.project as unknown as Project)?.title || 'All Projects'}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color={assignment.subcategory ? 'text.primary' : 'text.disabled'}>
-                      {assignment.subcategory || 'All Subcategories'}
+                    <Typography
+                      variant="body2"
+                      color={assignment.category ? 'text.primary' : 'text.disabled'}
+                    >
+                      {(assignment.category as unknown as Category)?.title || 'All Categories'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      color={assignment.subcategory ? 'text.primary' : 'text.disabled'}
+                    >
+                      {(assignment.subcategory as unknown as Subcategory)?.title ||
+                        'All Subcategories'}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
                     {onDelete && (
-                      <IconButton
-                        color="error"
-                        onClick={() => onDelete(assignment)}
-                        size="small"
-                      >
+                      <IconButton color="error" onClick={() => onDelete(assignment)} size="small">
                         <Iconify icon="solar:trash-bin-trash-bold" />
                       </IconButton>
                     )}

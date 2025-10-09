@@ -20,6 +20,7 @@ import { paths } from 'src/routes/paths';
 import { Iconify } from 'src/components/iconify';
 
 import { useUsersControllerFindOne } from 'src/lib/orval/generated/users/users';
+import { useAccessControlControllerListAssignments } from 'src/lib/orval/generated/access-control/access-control';
 
 import { AssignmentsTable } from '../assignments-table';
 import { AssignmentDialogForm } from '../forms/assignment-dialog-form';
@@ -50,11 +51,9 @@ export function AdministratorDetailsView({ id }: Props) {
   const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false);
 
   const { data, isLoading, error } = useUsersControllerFindOne(id);
+  const { data: assignments = [] } = useAccessControlControllerListAssignments(id);
 
   const admin = data as AdminUser | undefined;
-
-  // Mock assignments data - Replace with actual API call when available
-  const mockAssignments: UserAssignment[] = [];
 
   const handleBack = () => {
     router.push(paths.dashboard.administrator);
@@ -217,7 +216,7 @@ export function AdministratorDetailsView({ id }: Props) {
 
       {/* Access Control Assignments Section */}
       <AssignmentsTable
-        assignments={mockAssignments}
+        assignments={assignments}
         onAdd={handleOpenAssignmentDialog}
         onDelete={handleDeleteAssignment}
       />

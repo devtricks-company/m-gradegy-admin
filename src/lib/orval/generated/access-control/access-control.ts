@@ -124,6 +124,160 @@ export const useAccessControlControllerCreateAssignment = <TError = unknown, TCo
   return useMutation(mutationOptions, queryClient);
 };
 /**
+ * @summary List assignments for a specific user.
+ */
+export const accessControlControllerListAssignments = (
+  userId: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<UserAssignment[]>(
+    { url: `http://localhost:5400/access/assignments/${userId}`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getAccessControlControllerListAssignmentsQueryKey = (userId?: string) => {
+  return [`http://localhost:5400/access/assignments/${userId}`] as const;
+};
+
+export const getAccessControlControllerListAssignmentsQueryOptions = <
+  TData = Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+  TError = unknown,
+>(
+  userId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getAccessControlControllerListAssignmentsQueryKey(userId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof accessControlControllerListAssignments>>
+  > = ({ signal }) => accessControlControllerListAssignments(userId, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!userId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccessControlControllerListAssignmentsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accessControlControllerListAssignments>>
+>;
+export type AccessControlControllerListAssignmentsQueryError = unknown;
+
+export function useAccessControlControllerListAssignments<
+  TData = Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+  TError = unknown,
+>(
+  userId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+          TError,
+          Awaited<ReturnType<typeof accessControlControllerListAssignments>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAccessControlControllerListAssignments<
+  TData = Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+  TError = unknown,
+>(
+  userId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+          TError,
+          Awaited<ReturnType<typeof accessControlControllerListAssignments>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAccessControlControllerListAssignments<
+  TData = Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+  TError = unknown,
+>(
+  userId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary List assignments for a specific user.
+ */
+
+export function useAccessControlControllerListAssignments<
+  TData = Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+  TError = unknown,
+>(
+  userId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListAssignments>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAccessControlControllerListAssignmentsQueryOptions(userId, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
  * @summary List projects the current user can access.
  */
 export const accessControlControllerListProjects = (
