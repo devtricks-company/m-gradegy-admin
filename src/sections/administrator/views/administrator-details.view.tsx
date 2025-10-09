@@ -51,7 +51,8 @@ export function AdministratorDetailsView({ id }: Props) {
   const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false);
 
   const { data, isLoading, error } = useUsersControllerFindOne(id);
-  const { data: assignments = [] } = useAccessControlControllerListAssignments(id);
+  const { data: assignments = [], isLoading: AssignmentLoading } =
+    useAccessControlControllerListAssignments(id);
 
   const admin = data as AdminUser | undefined;
 
@@ -219,6 +220,7 @@ export function AdministratorDetailsView({ id }: Props) {
         assignments={assignments}
         onAdd={handleOpenAssignmentDialog}
         onDelete={handleDeleteAssignment}
+        isLoading={AssignmentLoading}
       />
 
       {/* Assignment Dialog */}

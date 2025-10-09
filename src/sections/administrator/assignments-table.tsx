@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
@@ -13,6 +14,7 @@ import TableHead from '@mui/material/TableHead';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -30,9 +32,10 @@ type AssignmentsTableProps = {
   assignments: UserAssignment[];
   onDelete?: (assignment: UserAssignment) => void;
   onAdd?: () => void;
+  isLoading?: boolean;
 };
 
-export function AssignmentsTable({ assignments, onDelete, onAdd }: AssignmentsTableProps) {
+export function AssignmentsTable({ assignments, onDelete, onAdd, isLoading }: AssignmentsTableProps) {
   return (
     <Card>
       <Box sx={{ p: 3, pb: 2 }}>
@@ -43,6 +46,7 @@ export function AssignmentsTable({ assignments, onDelete, onAdd }: AssignmentsTa
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
               onClick={onAdd}
+              disabled={isLoading}
             >
               Add Assignment
             </Button>
@@ -53,72 +57,81 @@ export function AssignmentsTable({ assignments, onDelete, onAdd }: AssignmentsTa
         </Typography>
       </Box>
 
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Organization</TableCell>
-              <TableCell>Project</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Subcategory</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {assignments.length === 0 ? (
+      {isLoading ? (
+        <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
+          <CircularProgress />
+          <Typography variant="body2" sx={{ mt: 2 }} color="text.secondary">
+            Loading assignments...
+          </Typography>
+        </Stack>
+      ) : (
+        <TableContainer>
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No assignments yet. Click "Add Assignment" to create one.
-                  </Typography>
-                </TableCell>
+                <TableCell>Organization</TableCell>
+                <TableCell>Project</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell>Subcategory</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
-            ) : (
-              assignments.map((assignment, index) => (
-                <TableRow key={index} hover>
-                  <TableCell>
-                    <Typography variant="body2">
-                      {(assignment.organization as unknown as Organization)?.title || '-'}
+            </TableHead>
+            <TableBody>
+              {assignments.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No assignments yet. Click "Add Assignment" to create one.
                     </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      color={assignment.project ? 'text.primary' : 'text.disabled'}
-                    >
-                      {(assignment.project as unknown as Project)?.title || 'All Projects'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      color={assignment.category ? 'text.primary' : 'text.disabled'}
-                    >
-                      {(assignment.category as unknown as Category)?.title || 'All Categories'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      color={assignment.subcategory ? 'text.primary' : 'text.disabled'}
-                    >
-                      {(assignment.subcategory as unknown as Subcategory)?.title ||
-                        'All Subcategories'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    {onDelete && (
-                      <IconButton color="error" onClick={() => onDelete(assignment)} size="small">
-                        <Iconify icon="solar:trash-bin-trash-bold" />
-                      </IconButton>
-                    )}
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                assignments.map((assignment, index) => (
+                  <TableRow key={index} hover>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {(assignment.organization as unknown as Organization)?.title || '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body2"
+                        color={assignment.project ? 'text.primary' : 'text.disabled'}
+                      >
+                        {(assignment.project as unknown as Project)?.title || 'All Projects'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body2"
+                        color={assignment.category ? 'text.primary' : 'text.disabled'}
+                      >
+                        {(assignment.category as unknown as Category)?.title || 'All Categories'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body2"
+                        color={assignment.subcategory ? 'text.primary' : 'text.disabled'}
+                      >
+                        {(assignment.subcategory as unknown as Subcategory)?.title ||
+                          'All Subcategories'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      {onDelete && (
+                        <IconButton color="error" onClick={() => onDelete(assignment)} size="small">
+                          <Iconify icon="solar:trash-bin-trash-bold" />
+                        </IconButton>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Card>
   );
 }
