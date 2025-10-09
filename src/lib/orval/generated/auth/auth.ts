@@ -21,7 +21,7 @@ import type {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import type { LoginDto, RefreshTokenDto, RegisterLocalDto } from '.././model';
+import type { LoginDto, RefreshTokenDto, RegisterAdminDto, RegisterLocalDto } from '.././model';
 
 import { customInstance } from '../../custom-instance';
 
@@ -110,6 +110,92 @@ export const useAuthControllerRegister = <TError = unknown, TContext = unknown>(
   TContext
 > => {
   const mutationOptions = getAuthControllerRegisterMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Register a new administrative user.
+ */
+export const authControllerRegisterAdmin = (
+  registerAdminDto: RegisterAdminDto,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<void>(
+    {
+      url: `http://localhost:5400/auth/register/admin`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: registerAdminDto,
+      signal,
+    },
+    options
+  );
+};
+
+export const getAuthControllerRegisterAdminMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof authControllerRegisterAdmin>>,
+    TError,
+    { data: RegisterAdminDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authControllerRegisterAdmin>>,
+  TError,
+  { data: RegisterAdminDto },
+  TContext
+> => {
+  const mutationKey = ['authControllerRegisterAdmin'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authControllerRegisterAdmin>>,
+    { data: RegisterAdminDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authControllerRegisterAdmin(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AuthControllerRegisterAdminMutationResult = NonNullable<
+  Awaited<ReturnType<typeof authControllerRegisterAdmin>>
+>;
+export type AuthControllerRegisterAdminMutationBody = RegisterAdminDto;
+export type AuthControllerRegisterAdminMutationError = unknown;
+
+/**
+ * @summary Register a new administrative user.
+ */
+export const useAuthControllerRegisterAdmin = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authControllerRegisterAdmin>>,
+      TError,
+      { data: RegisterAdminDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof authControllerRegisterAdmin>>,
+  TError,
+  { data: RegisterAdminDto },
+  TContext
+> => {
+  const mutationOptions = getAuthControllerRegisterAdminMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

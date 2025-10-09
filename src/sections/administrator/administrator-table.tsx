@@ -2,6 +2,8 @@
 
 import { useMemo, useState, useCallback } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
@@ -12,6 +14,8 @@ import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+
+import { paths } from 'src/routes/paths';
 
 import { useDebounce } from 'src/hooks/use-debounce';
 
@@ -33,6 +37,7 @@ type AdminUser = User & {
 };
 
 export function AdministratorTable() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -51,6 +56,13 @@ export function AdministratorTable() {
     setSearchQuery(event.target.value);
     setPaginationModel((prev) => ({ ...prev, page: 0 }));
   }, []);
+
+  const handleRowClick = useCallback(
+    (id: string) => {
+      router.push(paths.dashboard.administratorDetails(id));
+    },
+    [router]
+  );
 
   const getRoleColor = (role?: string) => {
     switch (role?.toLowerCase()) {
@@ -152,12 +164,15 @@ export function AdministratorTable() {
               paginationModel={paginationModel}
               paginationMode="server"
               onPaginationModelChange={setPaginationModel}
+              onRowClick={(params) => handleRowClick(params.row._id)}
               getRowId={(row) => row._id}
-              disableRowSelectionOnClick
               sx={{
                 border: 0,
                 '& .MuiDataGrid-cell:focus': {
                   outline: 'none',
+                },
+                '& .MuiDataGrid-row': {
+                  cursor: 'pointer',
                 },
               }}
             />

@@ -1,12 +1,12 @@
 import { z as zod } from 'zod';
 
-import { UserRole } from 'src/lib/orval/generated/model';
+import { AdministrativeRole } from 'src/lib/orval/generated/model';
 
 export const adminSchema = zod.object({
   avatarUrl: zod.string().optional(),
   firstName: zod.string().min(1, 'First name is required'),
   lastName: zod.string().min(1, 'Last name is required'),
-  role: zod.nativeEnum(UserRole, {
+  role: zod.nativeEnum(AdministrativeRole, {
     required_error: 'Role is required',
   }),
   email: zod.string().min(1, 'Email is required').email('Email must be a valid email address'),
