@@ -25,6 +25,7 @@ import type { User } from 'src/lib/orval/generated/model';
 
 type AdminUser = User & {
   _id: string;
+  avatarUrl: string;
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -72,7 +73,7 @@ export function AdministratorTable() {
         width: 60,
         sortable: false,
         renderCell: (params) => (
-          <Avatar sx={{ width: 40, height: 40 }}>
+          <Avatar src={params.row.avatarUrl} sx={{ width: 40, height: 40 }}>
             {params.row.firstName?.charAt(0) || params.row.email?.charAt(0) || 'A'}
           </Avatar>
         ),
