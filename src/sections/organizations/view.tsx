@@ -77,12 +77,8 @@ export function OrganizationsView() {
         width: 80,
         sortable: false,
         renderCell: (params) => (
-          <Avatar
-            src={params.value}
-            alt={params.row.title}
-            sx={{ width: 40, height: 40 }}
-          >
-            {params.row.title?.charAt(0)}
+          <Avatar src={params.row.image} alt={params.row.title} sx={{ width: 40, height: 40 }}>
+            {params.row.image || params.row.title?.charAt(0)}
           </Avatar>
         ),
       },

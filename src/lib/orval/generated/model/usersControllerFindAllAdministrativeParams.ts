@@ -12,15 +12,15 @@ export type UsersControllerFindAllAdministrativeParams = {
    */
   filter?: string;
   /**
-   * Filter definitions using deep object syntax, e.g. filters[role]=admin & filters[createdAt][gte]=2024-01-01. Supported fields: firstName, lastName, email, role, isActive, lastLoginAt, createdAt, updatedAt. Operators vary per field: eq, in, gte, lte.
+   * Filter definitions using deep object syntax, e.g. filters[role]=admin & filters[createdAt][gte]=2024-01-01. Supported fields: firstName, lastName, email, phone, jobs, role, isActive, lastLoginAt, createdAt, updatedAt. Operators vary per field: eq, in, gte, lte.
    */
   filters?: { [key: string]: unknown };
   /**
-   * Comma separated sort definition. Prefix with - for descending. Allowed fields: firstName, lastName, email, role, lastLoginAt, createdAt, updatedAt.
+   * Comma separated sort definition. Prefix with - for descending. Allowed fields: firstName, lastName, email, phone, jobs, role, lastLoginAt, createdAt, updatedAt.
    */
   sort?: string;
   /**
-   * Free-text search applied to firstName, lastName, and email. Alias: q.
+   * Free-text search applied to firstName, lastName, email, phone, and jobs. Alias: q.
    */
   search?: string;
   /**

@@ -21,6 +21,10 @@ export interface CreateUserDto {
   password?: string;
   /** Avatar image URL. */
   avatarUrl?: string;
+  /** Contact phone number. */
+  phone?: string;
+  /** Jobs or roles associated with the user. */
+  jobs?: string;
   /** Role assigned to the user. */
   role?: UserRole;
   /** Whether the user account is active. */
