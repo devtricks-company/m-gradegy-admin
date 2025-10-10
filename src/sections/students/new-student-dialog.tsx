@@ -27,6 +27,7 @@ import { useAccessControlControllerRegisterStudentWithAccess } from 'src/lib/orv
 import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
 import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
 import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
+import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
 
 // ----------------------------------------------------------------------
 
@@ -49,14 +50,16 @@ export const NewStudentSchema = zod.object({
   avatarUrl: zod.string().url().optional().or(zod.literal('')),
   isActive: zod.boolean().default(true),
   // Assignment fields (array of assignments)
-  assignments: zod.array(
-    zod.object({
-      organization: zod.string().min(1, { message: 'Organization is required' }),
-      project: zod.string().optional(),
-      category: zod.string().optional(),
-      subcategory: zod.string().optional(),
-    })
-  ).min(1, { message: 'At least one assignment is required' }),
+  assignments: zod
+    .array(
+      zod.object({
+        organization: zod.string().min(1, { message: 'Organization is required' }),
+        project: zod.string().optional(),
+        category: zod.string().optional(),
+        subcategory: zod.string().optional(),
+      })
+    )
+    .min(1, { message: 'At least one assignment is required' }),
 });
 
 export type NewStudentSchemaType = zod.infer<typeof NewStudentSchema>;
@@ -67,6 +70,7 @@ type AssignmentFieldsProps = {
   index: number;
   organizationId: string;
   projectId: string;
+  categoryId: string;
   organizations: any[];
   isLoadingOrgs: boolean;
 };
@@ -75,6 +79,7 @@ function AssignmentFields({
   index,
   organizationId,
   projectId,
+  categoryId,
   organizations,
   isLoadingOrgs,
 }: AssignmentFieldsProps) {
@@ -97,6 +102,16 @@ function AssignmentFields({
     });
 
   const categories = categoriesData?.data || [];
+
+  // Fetch subcategories for the selected category
+  const { data: subcategoriesData, isLoading: isLoadingSubcategories } =
+    useSubcategoriesControllerFindAllByCategory(categoryId || '', undefined, {
+      query: {
+        enabled: !!categoryId, // Only fetch when category is selected
+      },
+    });
+
+  const subcategories = subcategoriesData?.data || [];
 
   return (
     <Grid container spacing={2}>
@@ -143,7 +158,17 @@ function AssignmentFields({
       </Grid>
 
       <Grid item xs={12} sm={6}>
-        <Field.Text name={`assignments.${index}.subcategory`} label="Subcategory (optional)" />
+        <Field.Select
+          name={`assignments.${index}.subcategory`}
+          label="Subcategory (optional)"
+          options={
+            subcategories?.map((subcat: any) => ({
+              label: subcat.title,
+              value: subcat._id,
+            })) || []
+          }
+          disabled={isLoadingSubcategories || !categoryId}
+        />
       </Grid>
     </Grid>
   );
@@ -276,15 +301,9 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
                       {fields.map((field, index) => (
                         <Box key={field.id}>
                           <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                            <Typography variant="subtitle2">
-                              Assignment {index + 1}
-                            </Typography>
+                            <Typography variant="subtitle2">Assignment {index + 1}</Typography>
                             {fields.length > 1 && (
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => remove(index)}
-                              >
+                              <IconButton size="small" color="error" onClick={() => remove(index)}>
                                 <Iconify icon="mingcute:delete-2-line" />
                               </IconButton>
                             )}
@@ -294,6 +313,7 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
                             index={index}
                             organizationId={assignments[index]?.organization || ''}
                             projectId={assignments[index]?.project || ''}
+                            categoryId={assignments[index]?.category || ''}
                             organizations={organizations || []}
                             isLoadingOrgs={isLoadingOrgs}
                           />
