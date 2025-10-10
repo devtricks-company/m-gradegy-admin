@@ -24,63 +24,11 @@ type Props = {
 };
 
 export function BlankView({ title = 'Blank' }: Props) {
-  const [selectedOrganization, setSelectedOrganization] = useState<string>('');
-
-  // Fetch organizations list accessible to the current user
-  const { data: organizations = [], isLoading, error } = useAccessControlControllerListOrganizations();
-
-  const handleOrganizationChange = (event: SelectChangeEvent) => {
-    setSelectedOrganization(event.target.value);
-  };
-
   return (
     <DashboardContent maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 3 }}>
         {title}
       </Typography>
-
-      <Card sx={{ p: 3, mb: 3 }}>
-        <FormControl fullWidth>
-          <InputLabel id="organization-select-label">Select Organization</InputLabel>
-          <Select
-            labelId="organization-select-label"
-            id="organization-select"
-            value={selectedOrganization}
-            label="Select Organization"
-            onChange={handleOrganizationChange}
-            disabled={isLoading}
-          >
-            {isLoading && (
-              <MenuItem disabled>
-                <CircularProgress size={20} sx={{ mr: 1 }} />
-                Loading organizations...
-              </MenuItem>
-            )}
-            {!isLoading && organizations.length === 0 && (
-              <MenuItem disabled>No organizations available</MenuItem>
-            )}
-            {organizations.map((org) => (
-              <MenuItem key={org.title} value={org.title}>
-                {org.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            Failed to load organizations. Please try again.
-          </Alert>
-        )}
-
-        {selectedOrganization && (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              Selected: <strong>{selectedOrganization}</strong>
-            </Typography>
-          </Box>
-        )}
-      </Card>
 
       <Box
         sx={{
