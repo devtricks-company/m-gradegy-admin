@@ -25,7 +25,7 @@ import { Form, Field } from 'src/components/hook-form';
 
 import { useAccessControlControllerRegisterStudentWithAccess } from 'src/lib/orval/generated/access-control/access-control';
 import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
-import { useAccessControlControllerListProjects } from 'src/lib/orval/generated/access-control/access-control';
+import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
 
 // ----------------------------------------------------------------------
 
@@ -62,6 +62,72 @@ export type NewStudentSchemaType = zod.infer<typeof NewStudentSchema>;
 
 // ----------------------------------------------------------------------
 
+type AssignmentFieldsProps = {
+  index: number;
+  organizationId: string;
+  organizations: any[];
+  isLoadingOrgs: boolean;
+};
+
+function AssignmentFields({
+  index,
+  organizationId,
+  organizations,
+  isLoadingOrgs,
+}: AssignmentFieldsProps) {
+  // Fetch projects for the selected organization
+  const { data: projectsData, isLoading: isLoadingProjects } =
+    useProjectsControllerFindByOrganization(organizationId || '', undefined, {
+      query: {
+        enabled: !!organizationId, // Only fetch when organization is selected
+      },
+    });
+
+  const projects = projectsData?.data || [];
+
+  return (
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <Field.Select
+          name={`assignments.${index}.organization`}
+          label="Organization"
+          options={
+            organizations?.map((org: any) => ({
+              label: org.title,
+              value: org._id,
+            })) || []
+          }
+          disabled={isLoadingOrgs}
+        />
+      </Grid>
+
+      <Grid item xs={12} sm={6}>
+        <Field.Select
+          name={`assignments.${index}.project`}
+          label="Project (optional)"
+          options={
+            projects?.map((proj: any) => ({
+              label: proj.title,
+              value: proj._id,
+            })) || []
+          }
+          disabled={isLoadingProjects || !organizationId}
+        />
+      </Grid>
+
+      <Grid item xs={12} sm={6}>
+        <Field.Text name={`assignments.${index}.category`} label="Category (optional)" />
+      </Grid>
+
+      <Grid item xs={12} sm={6}>
+        <Field.Text name={`assignments.${index}.subcategory`} label="Subcategory (optional)" />
+      </Grid>
+    </Grid>
+  );
+}
+
+// ----------------------------------------------------------------------
+
 export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
   const methods = useForm<NewStudentSchemaType>({
     resolver: zodResolver(NewStudentSchema),
@@ -88,6 +154,7 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
     reset,
     handleSubmit,
     control,
+    watch,
     formState: { isSubmitting },
   } = methods;
 
@@ -97,12 +164,12 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
     name: 'assignments',
   });
 
+  // Watch all assignment organization values
+  const assignments = watch('assignments');
+
   // Fetch organizations
   const { data: organizations, isLoading: isLoadingOrgs } =
     useAccessControlControllerListOrganizations();
-
-  // Fetch projects
-  const { data: projects, isLoading: isLoadingProjects } = useAccessControlControllerListProjects();
 
   // Mutation hook for creating student
   const { mutateAsync: createStudent } = useAccessControlControllerRegisterStudentWithAccess();
@@ -200,49 +267,12 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
                             )}
                           </Stack>
 
-                          <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                              <Field.Select
-                                name={`assignments.${index}.organization`}
-                                label="Organization"
-                                options={
-                                  organizations?.map((org: any) => ({
-                                    label: org.title,
-                                    value: org._id,
-                                  })) || []
-                                }
-                                disabled={isLoadingOrgs}
-                              />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                              <Field.Select
-                                name={`assignments.${index}.project`}
-                                label="Project (optional)"
-                                options={
-                                  projects?.map((proj: any) => ({
-                                    label: proj.title,
-                                    value: proj._id,
-                                  })) || []
-                                }
-                                disabled={isLoadingProjects}
-                              />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                              <Field.Text
-                                name={`assignments.${index}.category`}
-                                label="Category (optional)"
-                              />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                              <Field.Text
-                                name={`assignments.${index}.subcategory`}
-                                label="Subcategory (optional)"
-                              />
-                            </Grid>
-                          </Grid>
+                          <AssignmentFields
+                            index={index}
+                            organizationId={assignments[index]?.organization}
+                            organizations={organizations || []}
+                            isLoadingOrgs={isLoadingOrgs}
+                          />
                         </Box>
                       ))}
 
