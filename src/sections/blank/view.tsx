@@ -14,7 +14,10 @@ import CardMedia from '@mui/material/CardMedia';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useWorkspace } from 'src/contexts/workspace-context';
 
-import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
+import {
+  useProjectsControllerFindByOrganization,
+  useProjectsControllerFindAll,
+} from 'src/lib/orval/generated/projects/projects';
 import type { Project } from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
@@ -57,55 +60,85 @@ const getProjectTypeColor = (type: string) => {
 
 export function BlankView({ title = 'All Projects' }: Props) {
   const { selectedOrganization } = useWorkspace();
+  console.log('select', selectedOrganization);
 
+  // Fetch all projects when no organization is selected
   const {
-    data: projectsData,
-    isLoading,
-    error,
+    data: allProjectsData,
+    isLoading: isLoadingAll,
+    error: errorAll,
+  } = useProjectsControllerFindAll({
+    query: {
+      enabled: selectedOrganization?.id === 'team-1',
+    },
+  });
+
+  // Fetch projects by organization when one is selected
+  const {
+    data: orgProjectsData,
+    isLoading: isLoadingOrg,
+    error: errorOrg,
   } = useProjectsControllerFindByOrganization(
-    selectedOrganization?.id || '',
+    selectedOrganization?.id && selectedOrganization?.id !== 'team-1'
+      ? selectedOrganization?.id
+      : '',
     {
       page: 1,
       limit: 100,
     },
     {
       query: {
-        enabled: !!selectedOrganization?.id,
+        enabled: !!selectedOrganization?.id && selectedOrganization?.id !== 'team-1',
       },
     }
   );
 
-  const projects = projectsData?.data || [];
+  // Use the appropriate data based on whether an organization is selected
+  const projects =
+    selectedOrganization?.id && selectedOrganization?.id !== 'team-1'
+      ? orgProjectsData?.data || []
+      : allProjectsData?.data || [];
+
+  console.log('projects', projects);
+
+  const isLoading =
+    selectedOrganization?.id && selectedOrganization?.id !== 'team-1' ? isLoadingOrg : isLoadingAll;
+  const error = selectedOrganization?.id ? errorOrg : errorAll;
 
   return (
     <DashboardContent maxWidth="xl">
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        {title}
-      </Typography>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
+        <Typography variant="h4">{title}</Typography>
+        {selectedOrganization && (
+          <Chip
+            label={`Organization: ${selectedOrganization.name}`}
+            color="primary"
+            variant="outlined"
+          />
+        )}
+      </Stack>
 
-      {!selectedOrganization && (
-        <Alert severity="info" sx={{ mb: 3 }}>
-          Please select an organization from the workspace dropdown to view projects.
-        </Alert>
-      )}
-
-      {selectedOrganization && isLoading && (
+      {isLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
           <CircularProgress />
         </Box>
       )}
 
-      {selectedOrganization && !!error && (
+      {!!error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {'Failed to load projects. Please try again later.'}
         </Alert>
       )}
 
-      {selectedOrganization && !isLoading && projects && projects.length === 0 && (
-        <Alert severity="info">No projects available for this organization.</Alert>
+      {!isLoading && projects && projects.length === 0 && (
+        <Alert severity="info">
+          {selectedOrganization
+            ? 'No projects available for this organization.'
+            : 'No projects available.'}
+        </Alert>
       )}
 
-      {selectedOrganization && projects && projects.length > 0 && (
+      {projects && projects.length > 0 && (
         <Grid container spacing={3}>
           {projects.map((project: Project, index: number) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
