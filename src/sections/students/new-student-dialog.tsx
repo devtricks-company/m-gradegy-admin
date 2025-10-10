@@ -3,17 +3,22 @@
 import type { RegisterStudentWithAccessDto } from 'src/lib/orval/generated/model';
 
 import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+
+import { Iconify } from 'src/components/iconify';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -42,11 +47,15 @@ export const NewStudentSchema = zod.object({
   phone: zod.string().optional(),
   avatarUrl: zod.string().url().optional().or(zod.literal('')),
   isActive: zod.boolean().default(true),
-  // Assignment fields
-  organization: zod.string().min(1, { message: 'Organization is required' }),
-  project: zod.string().optional(),
-  category: zod.string().optional(),
-  subcategory: zod.string().optional(),
+  // Assignment fields (array of assignments)
+  assignments: zod.array(
+    zod.object({
+      organization: zod.string().min(1, { message: 'Organization is required' }),
+      project: zod.string().optional(),
+      category: zod.string().optional(),
+      subcategory: zod.string().optional(),
+    })
+  ).min(1, { message: 'At least one assignment is required' }),
 });
 
 export type NewStudentSchemaType = zod.infer<typeof NewStudentSchema>;
@@ -64,33 +73,36 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
       phone: '',
       avatarUrl: '',
       isActive: true,
-      organization: '',
-      project: '',
-      category: '',
-      subcategory: '',
+      assignments: [
+        {
+          organization: '',
+          project: '',
+          category: '',
+          subcategory: '',
+        },
+      ],
     },
   });
 
   const {
     reset,
     handleSubmit,
-    watch,
+    control,
     formState: { isSubmitting },
   } = methods;
 
-  // Watch organization to conditionally fetch projects
-  const selectedOrganization = watch('organization');
+  // useFieldArray for dynamic assignment rows
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'assignments',
+  });
 
   // Fetch organizations
   const { data: organizations, isLoading: isLoadingOrgs } =
     useAccessControlControllerListOrganizations();
 
-  // Fetch projects (only when organization is selected)
-  const { data: projects, isLoading: isLoadingProjects } = useAccessControlControllerListProjects({
-    query: {
-      enabled: !!selectedOrganization,
-    },
-  });
+  // Fetch projects
+  const { data: projects, isLoading: isLoadingProjects } = useAccessControlControllerListProjects();
 
   // Mutation hook for creating student
   const { mutateAsync: createStudent } = useAccessControlControllerRegisterStudentWithAccess();
@@ -107,14 +119,12 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
           avatarUrl: data.avatarUrl || undefined,
           isActive: data.isActive,
         },
-        assignments: [
-          {
-            organization: data.organization,
-            project: data.project || undefined,
-            category: data.category || undefined,
-            subcategory: data.subcategory || undefined,
-          },
-        ],
+        assignments: data.assignments.map((assignment) => ({
+          organization: assignment.organization,
+          project: assignment.project || undefined,
+          category: assignment.category || undefined,
+          subcategory: assignment.subcategory || undefined,
+        })),
       };
 
       await createStudent({ data: payload });
@@ -141,66 +151,121 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
         <Form methods={methods} onSubmit={onSubmit}>
           <Box sx={{ pt: 2 }}>
             <Grid container spacing={3}>
-              {/* Student Profile Section */}
-              <Grid item xs={12} sm={4}>
-                <Field.Text name="firstName" label="First Name" />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <Field.Text name="lastName" label="Last Name" />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <Field.Text name="email" label="Email" type="email" />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <Field.Text name="password" label="Password" type="password" />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <Field.Text name="phone" label="Phone (optional)" />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
+              {/* Left Side - File Upload */}
+              <Grid item xs={12} md={3}>
                 <Field.Upload name="avatarUrl" />
               </Grid>
 
-              {/* Access Control Section */}
-              <Grid item xs={12} sm={4}>
-                <Field.Select
-                  name="organization"
-                  label="Organization"
-                  options={
-                    organizations?.map((org: any) => ({
-                      label: org.title,
-                      value: org._id,
-                    })) || []
-                  }
-                  disabled={isLoadingOrgs}
-                />
-              </Grid>
+              {/* Right Side - Form Fields in 2 Columns */}
+              <Grid item xs={12} md={9}>
+                <Grid container spacing={3}>
+                  {/* Student Profile Section */}
+                  <Grid item xs={12} sm={6}>
+                    <Field.Text name="firstName" label="First Name" />
+                  </Grid>
 
-              <Grid item xs={12} sm={4}>
-                <Field.Select
-                  name="project"
-                  label="Project (optional)"
-                  options={
-                    projects?.map((proj: any) => ({
-                      label: proj.title,
-                      value: proj._id,
-                    })) || []
-                  }
-                  disabled={!selectedOrganization || isLoadingProjects}
-                />
-              </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Field.Text name="lastName" label="Last Name" />
+                  </Grid>
 
-              <Grid item xs={12} sm={4}>
-                <Field.Text name="category" label="Category (optional)" />
-              </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Field.Text name="email" label="Email" type="email" />
+                  </Grid>
 
-              <Grid item xs={12} sm={4}>
-                <Field.Text name="subcategory" label="Subcategory (optional)" />
+                  <Grid item xs={12} sm={6}>
+                    <Field.Text name="password" label="Password" type="password" />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Field.Text name="phone" label="Phone (optional)" />
+                  </Grid>
+
+                  {/* Access Control Section - Dynamic Assignments */}
+                  <Grid item xs={12}>
+                    <Stack spacing={2}>
+                      {fields.map((field, index) => (
+                        <Box key={field.id}>
+                          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                            <Typography variant="subtitle2">
+                              Assignment {index + 1}
+                            </Typography>
+                            {fields.length > 1 && (
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => remove(index)}
+                              >
+                                <Iconify icon="mingcute:delete-2-line" />
+                              </IconButton>
+                            )}
+                          </Stack>
+
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                              <Field.Select
+                                name={`assignments.${index}.organization`}
+                                label="Organization"
+                                options={
+                                  organizations?.map((org: any) => ({
+                                    label: org.title,
+                                    value: org._id,
+                                  })) || []
+                                }
+                                disabled={isLoadingOrgs}
+                              />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                              <Field.Select
+                                name={`assignments.${index}.project`}
+                                label="Project (optional)"
+                                options={
+                                  projects?.map((proj: any) => ({
+                                    label: proj.title,
+                                    value: proj._id,
+                                  })) || []
+                                }
+                                disabled={isLoadingProjects}
+                              />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                              <Field.Text
+                                name={`assignments.${index}.category`}
+                                label="Category (optional)"
+                              />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                              <Field.Text
+                                name={`assignments.${index}.subcategory`}
+                                label="Subcategory (optional)"
+                              />
+                            </Grid>
+                          </Grid>
+                        </Box>
+                      ))}
+
+                      <Box>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<Iconify icon="mingcute:add-line" />}
+                          onClick={() =>
+                            append({
+                              organization: '',
+                              project: '',
+                              category: '',
+                              subcategory: '',
+                            })
+                          }
+                        >
+                          Add Assignment
+                        </Button>
+                      </Box>
+                    </Stack>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </Box>
