@@ -3,6 +3,7 @@
 import type { RegisterStudentWithAccessDto } from 'src/lib/orval/generated/model';
 
 import { z as zod } from 'zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -23,8 +24,11 @@ import { Iconify } from 'src/components/iconify';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
-import { useAccessControlControllerRegisterStudentWithAccess } from 'src/lib/orval/generated/access-control/access-control';
-import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
+import {
+  useAccessControlControllerRegisterStudentWithAccess,
+  useAccessControlControllerListOrganizations,
+  getAccessControlControllerListStudentsQueryKey,
+} from 'src/lib/orval/generated/access-control/access-control';
 import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
 import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
@@ -177,6 +181,8 @@ function AssignmentFields({
 // ----------------------------------------------------------------------
 
 export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
+  const queryClient = useQueryClient();
+
   const methods = useForm<NewStudentSchemaType>({
     resolver: zodResolver(NewStudentSchema),
     defaultValues: {
@@ -243,6 +249,11 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
       };
 
       await createStudent({ data: payload });
+
+      // Invalidate all student list queries to refresh the table
+      await queryClient.invalidateQueries({
+        queryKey: getAccessControlControllerListStudentsQueryKey(),
+      });
 
       toast.success('Student created successfully!');
       reset();
