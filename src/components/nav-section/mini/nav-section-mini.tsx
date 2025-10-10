@@ -36,6 +36,7 @@ export function NavSectionMini({
             items={group.items}
             slotProps={slotProps}
             enabledRootRedirect={enabledRootRedirect}
+            disabled={group.disabled}
           />
         ))}
       </NavUl>
@@ -45,7 +46,7 @@ export function NavSectionMini({
 
 // ----------------------------------------------------------------------
 
-function Group({ items, render, slotProps, enabledRootRedirect, cssVars }: NavGroupProps) {
+function Group({ items, render, slotProps, enabledRootRedirect, cssVars, disabled }: NavGroupProps) {
   return (
     <NavLi>
       <NavUl sx={{ gap: 'var(--nav-item-gap)' }}>
@@ -53,7 +54,7 @@ function Group({ items, render, slotProps, enabledRootRedirect, cssVars }: NavGr
           <NavList
             key={list.title}
             depth={1}
-            data={list}
+            data={{ ...list, disabled: disabled || list.disabled }}
             render={render}
             cssVars={cssVars}
             slotProps={slotProps}

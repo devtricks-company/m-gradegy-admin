@@ -66,6 +66,7 @@ export type NavSubListProps = Omit<NavListProps, 'data'> & {
 export type NavGroupProps = Omit<NavListProps, 'data' | 'depth'> & {
   subheader?: string;
   items: NavItemBaseProps[];
+  disabled?: boolean;
 };
 
 export type NavSectionProps = Omit<NavListProps, 'data' | 'depth'> & {
@@ -73,5 +74,6 @@ export type NavSectionProps = Omit<NavListProps, 'data' | 'depth'> & {
   data: {
     subheader?: string;
     items: NavItemBaseProps[];
+    disabled?: boolean;
   }[];
 };

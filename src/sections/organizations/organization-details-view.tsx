@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -18,6 +18,7 @@ import { paths } from 'src/routes/paths';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useWorkspace } from 'src/contexts/workspace-context';
 
 import { useOrganizationsControllerFindOne } from 'src/lib/orval/generated/organizations/organizations';
 import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
@@ -36,7 +37,22 @@ type ProjectRow = Project & { _id: string };
 
 export function OrganizationDetailsView({ id }: Props) {
   const router = useRouter();
-  const { data: organization, isLoading, error } = useOrganizationsControllerFindOne(id);
+  const { selectedOrganization } = useWorkspace();
+
+  // Use selected organization ID from context if available, otherwise use the prop id
+  const organizationId = selectedOrganization?.id || id;
+
+  console.log('OrganizationDetailsView rerender - selectedOrg:', selectedOrganization?.id, 'organizationId:', organizationId);
+
+  const {
+    data: organization,
+    isLoading,
+    error,
+  } = useOrganizationsControllerFindOne(organizationId, {
+    query: {
+      enabled: !!organizationId,
+    },
+  });
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openProjectDialog, setOpenProjectDialog] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
@@ -48,10 +64,26 @@ export function OrganizationDetailsView({ id }: Props) {
     data: projectsData,
     isLoading: projectsLoading,
     error: projectsError,
-  } = useProjectsControllerFindByOrganization(id, {
-    page: paginationModel.page + 1,
-    limit: paginationModel.pageSize,
-  });
+  } = useProjectsControllerFindByOrganization(
+    organizationId,
+    {
+      page: paginationModel.page + 1,
+      limit: paginationModel.pageSize,
+    },
+    {
+      query: {
+        enabled: !!organizationId,
+      },
+    }
+  );
+
+  // Reset pagination when organization changes
+  useEffect(() => {
+    setPaginationModel({
+      page: 0,
+      pageSize: 10,
+    });
+  }, [organizationId]);
 
   const projectColumns: GridColDef<ProjectRow>[] = useMemo(
     () => [
@@ -316,7 +348,7 @@ export function OrganizationDetailsView({ id }: Props) {
           <ProjectForm
             open={openProjectDialog}
             onClose={() => setOpenProjectDialog(false)}
-            organizationId={id}
+            organizationId={organizationId}
           />
         </>
       )}
