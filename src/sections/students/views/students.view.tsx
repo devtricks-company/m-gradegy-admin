@@ -38,8 +38,6 @@ export function StudentsView() {
         }
         sx={{ mb: 3 }}
       />
-
-      <StudentsTable />
     </DashboardContent>
   );
 }
