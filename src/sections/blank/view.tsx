@@ -15,7 +15,7 @@ import Alert from '@mui/material/Alert';
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { useOrganizationsControllerFindAll } from 'src/lib/orval/generated/organizations/organizations';
+import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
 
 // ----------------------------------------------------------------------
 
@@ -26,10 +26,8 @@ type Props = {
 export function BlankView({ title = 'Blank' }: Props) {
   const [selectedOrganization, setSelectedOrganization] = useState<string>('');
 
-  // Fetch organizations list
-  const { data, isLoading, error } = useOrganizationsControllerFindAll({});
-
-  const organizations = data?.data || [];
+  // Fetch organizations list accessible to the current user
+  const { data: organizations = [], isLoading, error } = useAccessControlControllerListOrganizations();
 
   const handleOrganizationChange = (event: SelectChangeEvent) => {
     setSelectedOrganization(event.target.value);

@@ -27,6 +27,7 @@ import type {
   Category,
   CreateSubcategoryDto,
   CreateUserAssignmentDto,
+  Organization,
   Project,
   Subcategory,
   UpdateSubcategoryDto,
@@ -356,6 +357,151 @@ export const useAccessControlControllerRemoveAssignment = <TError = unknown, TCo
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary List organizations accessible to the current user.
+ */
+export const accessControlControllerListOrganizations = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<Organization[]>(
+    { url: `http://localhost:5400/access/organizations`, method: 'GET', signal },
+    options
+  );
+};
+
+export const getAccessControlControllerListOrganizationsQueryKey = () => {
+  return [`http://localhost:5400/access/organizations`] as const;
+};
+
+export const getAccessControlControllerListOrganizationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAccessControlControllerListOrganizationsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof accessControlControllerListOrganizations>>
+  > = ({ signal }) => accessControlControllerListOrganizations(requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccessControlControllerListOrganizationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accessControlControllerListOrganizations>>
+>;
+export type AccessControlControllerListOrganizationsQueryError = unknown;
+
+export function useAccessControlControllerListOrganizations<
+  TData = Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+          TError,
+          Awaited<ReturnType<typeof accessControlControllerListOrganizations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAccessControlControllerListOrganizations<
+  TData = Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+          TError,
+          Awaited<ReturnType<typeof accessControlControllerListOrganizations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAccessControlControllerListOrganizations<
+  TData = Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary List organizations accessible to the current user.
+ */
+
+export function useAccessControlControllerListOrganizations<
+  TData = Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListOrganizations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAccessControlControllerListOrganizationsQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * @summary List projects the current user can access.
  */
