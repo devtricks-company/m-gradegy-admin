@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import Box from '@mui/material/Box';
@@ -16,11 +17,22 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
 
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 
-import { useUsersControllerFindOne } from 'src/lib/orval/generated/users/users';
+import { useQueryClient } from '@tanstack/react-query';
 
-import type { User } from 'src/lib/orval/generated/model';
+import { useUsersControllerFindOne } from 'src/lib/orval/generated/users/users';
+import {
+  useAccessControlControllerListAssignments,
+  useAccessControlControllerRemoveAssignment,
+  getAccessControlControllerListAssignmentsQueryKey,
+} from 'src/lib/orval/generated/access-control/access-control';
+
+import { AssignmentsTable } from '../assignments-table';
+import { AssignmentDialogForm } from '../forms/assignment-dialog-form';
+
+import type { User, UserAssignment } from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
 
@@ -43,13 +55,47 @@ type Props = {
 
 export function AdministratorDetailsView({ id }: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false);
 
   const { data, isLoading, error } = useUsersControllerFindOne(id);
+  const { data: assignments = [], isLoading: AssignmentLoading } =
+    useAccessControlControllerListAssignments(id);
+
+  const { mutate: deleteAssignment } = useAccessControlControllerRemoveAssignment({
+    mutation: {
+      onSuccess: () => {
+        toast.success('Assignment deleted successfully');
+        // Invalidate and refetch assignments list
+        queryClient.invalidateQueries({
+          queryKey: getAccessControlControllerListAssignmentsQueryKey(id),
+        });
+      },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || 'Failed to delete assignment');
+      },
+    },
+  });
 
   const admin = data as AdminUser | undefined;
 
   const handleBack = () => {
     router.push(paths.dashboard.administrator);
+  };
+
+  const handleOpenAssignmentDialog = () => {
+    setAssignmentDialogOpen(true);
+  };
+
+  const handleCloseAssignmentDialog = () => {
+    setAssignmentDialogOpen(false);
+  };
+
+  const handleDeleteAssignment = (assignment: UserAssignment) => {
+    const assignmentWithId = assignment as UserAssignment & { _id?: string };
+    if (assignmentWithId._id) {
+      deleteAssignment({ assignmentId: assignmentWithId._id });
+    }
   };
 
   const getRoleColor = (role?: string) => {
@@ -193,6 +239,22 @@ export function AdministratorDetailsView({ id }: Props) {
           </Stack>
         </Stack>
       </Card>
+
+      {/* Access Control Assignments Section */}
+      <AssignmentsTable
+        assignments={assignments}
+        onAdd={handleOpenAssignmentDialog}
+        onDelete={handleDeleteAssignment}
+        isLoading={AssignmentLoading}
+      />
+
+      {/* Assignment Dialog */}
+      <AssignmentDialogForm
+        open={assignmentDialogOpen}
+        onClose={handleCloseAssignmentDialog}
+        userId={id}
+        onSuccess={handleCloseAssignmentDialog}
+      />
     </Stack>
   );
 }
