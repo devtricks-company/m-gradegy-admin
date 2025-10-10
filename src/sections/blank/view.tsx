@@ -11,6 +11,9 @@ import Chip from '@mui/material/Chip';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useWorkspace } from 'src/contexts/workspace-context';
 
@@ -59,8 +62,13 @@ const getProjectTypeColor = (type: string) => {
 };
 
 export function BlankView({ title = 'All Projects' }: Props) {
-  const { selectedOrganization } = useWorkspace();
-  console.log('select', selectedOrganization);
+  const router = useRouter();
+  const { selectedOrganization, setSelectedProject } = useWorkspace();
+
+  const handleProjectClick = (project: Project) => {
+    setSelectedProject(project);
+    router.push(paths.dashboard.students);
+  };
 
   // Fetch all projects when no organization is selected
   const {
@@ -143,6 +151,7 @@ export function BlankView({ title = 'All Projects' }: Props) {
           {projects.map((project: Project, index: number) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card
+                onClick={() => handleProjectClick(project)}
                 sx={{
                   height: '100%',
                   display: 'flex',

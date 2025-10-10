@@ -39,6 +39,7 @@ export function NavSectionVertical({
             render={render}
             slotProps={slotProps}
             enabledRootRedirect={enabledRootRedirect}
+            disabled={group.disabled}
           />
         ))}
       </NavUl>
@@ -48,7 +49,7 @@ export function NavSectionVertical({
 
 // ----------------------------------------------------------------------
 
-function Group({ items, render, subheader, slotProps, enabledRootRedirect }: NavGroupProps) {
+function Group({ items, render, subheader, slotProps, enabledRootRedirect, disabled }: NavGroupProps) {
   const [open, setOpen] = useState(true);
 
   const handleToggle = useCallback(() => {
@@ -60,7 +61,7 @@ function Group({ items, render, subheader, slotProps, enabledRootRedirect }: Nav
       {items.map((list) => (
         <NavList
           key={list.title}
-          data={list}
+          data={{ ...list, disabled: disabled || list.disabled }}
           render={render}
           depth={1}
           slotProps={slotProps}
@@ -78,7 +79,14 @@ function Group({ items, render, subheader, slotProps, enabledRootRedirect }: Nav
             data-title={subheader}
             open={open}
             onClick={handleToggle}
-            sx={slotProps?.subheader}
+            sx={{
+              ...slotProps?.subheader,
+              ...(disabled && {
+                opacity: 0.48,
+                cursor: 'default',
+                pointerEvents: 'none',
+              }),
+            }}
           >
             {subheader}
           </Subheader>

@@ -15,7 +15,7 @@ import { useAccessControlControllerListOrganizations } from 'src/lib/orval/gener
 
 import { Logo } from 'src/components/logo';
 import { useSettingsContext } from 'src/components/settings';
-import { WorkspaceProvider } from 'src/contexts/workspace-context';
+import { WorkspaceProvider, useWorkspace } from 'src/contexts/workspace-context';
 
 import { Main } from './main';
 import { NavMobile } from './nav-mobile';
@@ -50,7 +50,7 @@ export type DashboardLayoutProps = {
   };
 };
 
-export function DashboardLayout({ sx, children, header, data }: DashboardLayoutProps) {
+function DashboardLayoutContent({ sx, children, header, data }: DashboardLayoutProps) {
   const theme = useTheme();
 
   const mobileNavOpen = useBoolean();
@@ -61,7 +61,18 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
 
   const layoutQuery: Breakpoint = 'lg';
 
-  const navData = data?.nav ?? dashboardNavData;
+  const { selectedProject } = useWorkspace();
+
+  // Enable Students Management section when a project is selected
+  const navData = data?.nav ?? dashboardNavData.map((section) => {
+    if (section.subheader === 'Students Management') {
+      return {
+        ...section,
+        disabled: !selectedProject,
+      };
+    }
+    return section;
+  });
 
   const isNavMini = settings.navLayout === 'mini';
   const isNavHorizontal = settings.navLayout === 'horizontal';
@@ -79,8 +90,7 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
     })) || _workspaces; // Fallback to mock data if no organizations
 
   return (
-    <WorkspaceProvider>
-      <LayoutSection
+    <LayoutSection
         /** **************************************
          * Header
          *************************************** */
@@ -242,6 +252,13 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
       >
         <Main isNavHorizontal={isNavHorizontal}>{children}</Main>
       </LayoutSection>
+  );
+}
+
+export function DashboardLayout(props: DashboardLayoutProps) {
+  return (
+    <WorkspaceProvider>
+      <DashboardLayoutContent {...props} />
     </WorkspaceProvider>
   );
 }

@@ -48,6 +48,7 @@ export const navData = [
   {
     subheader: 'Students Management',
     items: [{ title: 'Students', path: paths.dashboard.students, icon: ICONS.user }],
+    disabled: true,
   },
   /**
    * Administrator Management
