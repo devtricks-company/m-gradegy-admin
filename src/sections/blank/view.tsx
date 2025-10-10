@@ -68,9 +68,9 @@ export function BlankView({ title = 'All Projects' }: Props) {
         </Box>
       )}
 
-      {error && (
+      {!!error && (
         <Alert severity="error" sx={{ mb: 3 }}>
-          {error instanceof Error ? error.message : 'Failed to load projects. Please try again later.'}
+          {'Failed to load projects. Please try again later.'}
         </Alert>
       )}
 
@@ -135,7 +135,8 @@ export function BlankView({ title = 'All Projects' }: Props) {
 
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography variant="body2" color="text.secondary">
-                        {project.organizations?.length || 0} Student{project.organizations?.length !== 1 ? 's' : ''}
+                        {project.organizations?.length || 0} Student
+                        {project.organizations?.length !== 1 ? 's' : ''}
                       </Typography>
                     </Stack>
                   </Stack>
