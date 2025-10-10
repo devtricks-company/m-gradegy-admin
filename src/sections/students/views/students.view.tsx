@@ -40,6 +40,8 @@ export function StudentsView() {
         sx={{ mb: 3 }}
       />
 
+      <StudentsTable />
+
       <NewStudentDialog open={openDialog} onClose={handleCloseDialog} />
     </DashboardContent>
   );
