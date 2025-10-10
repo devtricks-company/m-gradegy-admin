@@ -26,6 +26,7 @@ import { Form, Field } from 'src/components/hook-form';
 import { useAccessControlControllerRegisterStudentWithAccess } from 'src/lib/orval/generated/access-control/access-control';
 import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
 import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
+import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 
 // ----------------------------------------------------------------------
 
@@ -65,6 +66,7 @@ export type NewStudentSchemaType = zod.infer<typeof NewStudentSchema>;
 type AssignmentFieldsProps = {
   index: number;
   organizationId: string;
+  projectId: string;
   organizations: any[];
   isLoadingOrgs: boolean;
 };
@@ -72,6 +74,7 @@ type AssignmentFieldsProps = {
 function AssignmentFields({
   index,
   organizationId,
+  projectId,
   organizations,
   isLoadingOrgs,
 }: AssignmentFieldsProps) {
@@ -84,6 +87,16 @@ function AssignmentFields({
     });
 
   const projects = projectsData?.data || [];
+
+  // Fetch categories for the selected project
+  const { data: categoriesData, isLoading: isLoadingCategories } =
+    useCategoriesControllerFindByProject(projectId || '', undefined, {
+      query: {
+        enabled: !!projectId, // Only fetch when project is selected
+      },
+    });
+
+  const categories = categoriesData?.data || [];
 
   return (
     <Grid container spacing={2}>
@@ -116,7 +129,17 @@ function AssignmentFields({
       </Grid>
 
       <Grid item xs={12} sm={6}>
-        <Field.Text name={`assignments.${index}.category`} label="Category (optional)" />
+        <Field.Select
+          name={`assignments.${index}.category`}
+          label="Category (optional)"
+          options={
+            categories?.map((cat: any) => ({
+              label: cat.title,
+              value: cat._id,
+            })) || []
+          }
+          disabled={isLoadingCategories || !projectId}
+        />
       </Grid>
 
       <Grid item xs={12} sm={6}>
@@ -269,7 +292,8 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
 
                           <AssignmentFields
                             index={index}
-                            organizationId={assignments[index]?.organization}
+                            organizationId={assignments[index]?.organization || ''}
+                            projectId={assignments[index]?.project || ''}
                             organizations={organizations || []}
                             isLoadingOrgs={isLoadingOrgs}
                           />
