@@ -16,7 +16,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import { toast } from 'src/components/snackbar';
-import { Form, RHFTextField, RHFSelect } from 'src/components/hook-form';
+import { Form, Field } from 'src/components/hook-form';
 
 import { useAccessControlControllerRegisterStudentWithAccess } from 'src/lib/orval/generated/access-control/access-control';
 import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
@@ -138,32 +138,32 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
           <Stack spacing={3} sx={{ pt: 2 }}>
             {/* Student Profile Section */}
             <Box>
-              <RHFTextField name="firstName" label="First Name" />
+              <Field.Text name="firstName" label="First Name" />
             </Box>
 
             <Box>
-              <RHFTextField name="lastName" label="Last Name" />
+              <Field.Text name="lastName" label="Last Name" />
             </Box>
 
             <Box>
-              <RHFTextField name="email" label="Email" type="email" />
+              <Field.Text name="email" label="Email" type="email" />
             </Box>
 
             <Box>
-              <RHFTextField name="password" label="Password" type="password" />
+              <Field.Text name="password" label="Password" type="password" />
             </Box>
 
             <Box>
-              <RHFTextField name="phone" label="Phone (optional)" />
+              <Field.Text name="phone" label="Phone (optional)" />
             </Box>
 
             <Box>
-              <RHFTextField name="avatarUrl" label="Avatar URL (optional)" />
+              <Field.Upload name="avatarUrl" />
             </Box>
 
             {/* Access Control Section */}
             <Box>
-              <RHFSelect
+              <Field.Select
                 name="organization"
                 label="Organization"
                 options={
@@ -177,7 +177,7 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
             </Box>
 
             <Box>
-              <RHFSelect
+              <Field.Select
                 name="project"
                 label="Project (optional)"
                 options={
@@ -191,11 +191,11 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
             </Box>
 
             <Box>
-              <RHFTextField name="category" label="Category (optional)" />
+              <Field.Text name="category" label="Category (optional)" />
             </Box>
 
             <Box>
-              <RHFTextField name="subcategory" label="Subcategory (optional)" />
+              <Field.Text name="subcategory" label="Subcategory (optional)" />
             </Box>
           </Stack>
         </Form>
