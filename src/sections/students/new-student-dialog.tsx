@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -139,69 +139,71 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
 
       <DialogContent>
         <Form methods={methods} onSubmit={onSubmit}>
-          <Stack spacing={3} sx={{ pt: 2 }}>
-            {/* Student Profile Section */}
-            <Box>
-              <Field.Text name="firstName" label="First Name" />
-            </Box>
+          <Box sx={{ pt: 2 }}>
+            <Grid container spacing={3}>
+              {/* Student Profile Section */}
+              <Grid item xs={12} sm={4}>
+                <Field.Text name="firstName" label="First Name" />
+              </Grid>
 
-            <Box>
-              <Field.Text name="lastName" label="Last Name" />
-            </Box>
+              <Grid item xs={12} sm={4}>
+                <Field.Text name="lastName" label="Last Name" />
+              </Grid>
 
-            <Box>
-              <Field.Text name="email" label="Email" type="email" />
-            </Box>
+              <Grid item xs={12} sm={4}>
+                <Field.Text name="email" label="Email" type="email" />
+              </Grid>
 
-            <Box>
-              <Field.Text name="password" label="Password" type="password" />
-            </Box>
+              <Grid item xs={12} sm={4}>
+                <Field.Text name="password" label="Password" type="password" />
+              </Grid>
 
-            <Box>
-              <Field.Text name="phone" label="Phone (optional)" />
-            </Box>
+              <Grid item xs={12} sm={4}>
+                <Field.Text name="phone" label="Phone (optional)" />
+              </Grid>
 
-            <Box>
-              <Field.Upload name="avatarUrl" />
-            </Box>
+              <Grid item xs={12} sm={4}>
+                <Field.Upload name="avatarUrl" />
+              </Grid>
 
-            {/* Access Control Section */}
-            <Box>
-              <Field.Select
-                name="organization"
-                label="Organization"
-                options={
-                  organizations?.map((org: any) => ({
-                    label: org.title,
-                    value: org._id,
-                  })) || []
-                }
-                disabled={isLoadingOrgs}
-              />
-            </Box>
+              {/* Access Control Section */}
+              <Grid item xs={12} sm={4}>
+                <Field.Select
+                  name="organization"
+                  label="Organization"
+                  options={
+                    organizations?.map((org: any) => ({
+                      label: org.title,
+                      value: org._id,
+                    })) || []
+                  }
+                  disabled={isLoadingOrgs}
+                />
+              </Grid>
 
-            <Box>
-              <Field.Select
-                name="project"
-                label="Project (optional)"
-                options={
-                  projects?.map((proj: any) => ({
-                    label: proj.title,
-                    value: proj._id,
-                  })) || []
-                }
-                disabled={!selectedOrganization || isLoadingProjects}
-              />
-            </Box>
+              <Grid item xs={12} sm={4}>
+                <Field.Select
+                  name="project"
+                  label="Project (optional)"
+                  options={
+                    projects?.map((proj: any) => ({
+                      label: proj.title,
+                      value: proj._id,
+                    })) || []
+                  }
+                  disabled={!selectedOrganization || isLoadingProjects}
+                />
+              </Grid>
 
-            <Box>
-              <Field.Text name="category" label="Category (optional)" />
-            </Box>
+              <Grid item xs={12} sm={4}>
+                <Field.Text name="category" label="Category (optional)" />
+              </Grid>
 
-            <Box>
-              <Field.Text name="subcategory" label="Subcategory (optional)" />
-            </Box>
-          </Stack>
+              <Grid item xs={12} sm={4}>
+                <Field.Text name="subcategory" label="Subcategory (optional)" />
+              </Grid>
+            </Grid>
+          </Box>
         </Form>
       </DialogContent>
 
