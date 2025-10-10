@@ -21,11 +21,17 @@ import { useAccessControlControllerListStudents } from 'src/lib/orval/generated/
 
 import type { AccessControlControllerListStudents200DataItemUser } from 'src/lib/orval/generated/model';
 
+import type { StudentsFilters } from './students-filter-popover';
+
 // ----------------------------------------------------------------------
 
 type StudentRow = AccessControlControllerListStudents200DataItemUser;
 
-export function StudentsTable() {
+type StudentsTableProps = {
+  filters?: StudentsFilters;
+};
+
+export function StudentsTable({ filters = {} }: StudentsTableProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -43,12 +49,16 @@ export function StudentsTable() {
       .join(',');
   }, [sortModel]);
 
-  // Fetch students with server-side pagination, sorting, and search
+  // Fetch students with server-side pagination, sorting, search, and filters
   const { data, isLoading, error } = useAccessControlControllerListStudents({
     page: paginationModel.page + 1, // API uses 1-based pagination
     limit: paginationModel.pageSize,
     sort: sortString,
     search: debouncedSearch || undefined,
+    organizationId: filters.organizationId,
+    projectId: filters.projectId,
+    categoryId: filters.categoryId,
+    subcategoryId: filters.subcategoryId,
   });
 
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {

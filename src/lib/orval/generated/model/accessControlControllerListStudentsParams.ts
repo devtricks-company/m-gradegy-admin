@@ -19,6 +19,22 @@ export type AccessControlControllerListStudentsParams = {
    */
   page?: number;
   /**
+   * Filter students by subcategory scope. Accepts a single id or comma-separated list.
+   */
+  subcategoryId?: string;
+  /**
+   * Filter students by category scope. Accepts a single id or comma-separated list.
+   */
+  categoryId?: string;
+  /**
+   * Filter students by project scope. Accepts a single id or comma-separated list.
+   */
+  projectId?: string;
+  /**
+   * Filter students by organization scope. Accepts a single id or comma-separated list.
+   */
+  organizationId?: string;
+  /**
    * Comma separated list of sort fields, prefix with "-" for descending. Allowed: firstName, lastName, email, phone, createdAt, updatedAt.
    */
   sort?: string;
