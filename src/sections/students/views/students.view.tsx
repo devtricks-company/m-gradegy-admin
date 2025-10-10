@@ -10,6 +10,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { StudentsTable } from '../students-table';
+import { NewStudentDialog } from '../new-student-dialog';
 
 export function StudentsView() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -38,6 +39,8 @@ export function StudentsView() {
         }
         sx={{ mb: 3 }}
       />
+
+      <NewStudentDialog open={openDialog} onClose={handleCloseDialog} />
     </DashboardContent>
   );
 }
