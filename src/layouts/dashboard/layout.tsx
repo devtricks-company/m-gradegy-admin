@@ -15,6 +15,7 @@ import { useAccessControlControllerListOrganizations } from 'src/lib/orval/gener
 
 import { Logo } from 'src/components/logo';
 import { useSettingsContext } from 'src/components/settings';
+import { WorkspaceProvider } from 'src/contexts/workspace-context';
 
 import { Main } from './main';
 import { NavMobile } from './nav-mobile';
@@ -78,7 +79,8 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
     })) || _workspaces; // Fallback to mock data if no organizations
 
   return (
-    <LayoutSection
+    <WorkspaceProvider>
+      <LayoutSection
       /** **************************************
        * Header
        *************************************** */
@@ -240,5 +242,6 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
     >
       <Main isNavHorizontal={isNavHorizontal}>{children}</Main>
     </LayoutSection>
+    </WorkspaceProvider>
   );
 }

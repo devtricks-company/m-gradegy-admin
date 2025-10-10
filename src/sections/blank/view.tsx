@@ -12,8 +12,10 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useWorkspace } from 'src/contexts/workspace-context';
 
-import { useAccessControlControllerListProjects } from 'src/lib/orval/generated/access-control/access-control';
+import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
+import type { Project } from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
 
@@ -54,7 +56,26 @@ const getProjectTypeColor = (type: string) => {
 };
 
 export function BlankView({ title = 'All Projects' }: Props) {
-  const { data: projects, isLoading, error } = useAccessControlControllerListProjects();
+  const { selectedOrganization } = useWorkspace();
+
+  const {
+    data: projectsData,
+    isLoading,
+    error,
+  } = useProjectsControllerFindByOrganization(
+    selectedOrganization?.id || '',
+    {
+      page: 1,
+      limit: 100,
+    },
+    {
+      query: {
+        enabled: !!selectedOrganization?.id,
+      },
+    }
+  );
+
+  const projects = projectsData?.data || [];
 
   return (
     <DashboardContent maxWidth="xl">
@@ -62,25 +83,31 @@ export function BlankView({ title = 'All Projects' }: Props) {
         {title}
       </Typography>
 
-      {isLoading && (
+      {!selectedOrganization && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Please select an organization from the workspace dropdown to view projects.
+        </Alert>
+      )}
+
+      {selectedOrganization && isLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
           <CircularProgress />
         </Box>
       )}
 
-      {!!error && (
+      {selectedOrganization && !!error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {'Failed to load projects. Please try again later.'}
         </Alert>
       )}
 
-      {!isLoading && projects && projects.length === 0 && (
-        <Alert severity="info">No projects available.</Alert>
+      {selectedOrganization && !isLoading && projects && projects.length === 0 && (
+        <Alert severity="info">No projects available for this organization.</Alert>
       )}
 
-      {projects && projects.length > 0 && (
+      {selectedOrganization && projects && projects.length > 0 && (
         <Grid container spacing={3}>
-          {projects.map((project, index) => (
+          {projects.map((project: Project, index: number) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card
                 sx={{

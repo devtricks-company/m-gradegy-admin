@@ -2,7 +2,7 @@
 
 import type { ButtonBaseProps } from '@mui/material/ButtonBase';
 
-import { useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -13,6 +13,7 @@ import ButtonBase from '@mui/material/ButtonBase';
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
+import { useWorkspace } from 'src/contexts/workspace-context';
 
 // ----------------------------------------------------------------------
 
@@ -25,19 +26,25 @@ export type WorkspacesPopoverProps = ButtonBaseProps & {
 };
 
 export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopoverProps) {
-  console.log('workspace', data);
   const popover = usePopover();
+  const { selectedOrganization, setSelectedOrganization } = useWorkspace();
 
   const mediaQuery = 'sm';
 
-  const [workspace, setWorkspace] = useState(data[0]);
+  // Initialize selected organization when data is available
+  useEffect(() => {
+    if (data.length > 0 && !selectedOrganization) {
+      setSelectedOrganization(data[0]);
+    }
+  }, [data, selectedOrganization, setSelectedOrganization]);
 
   const handleChangeWorkspace = useCallback(
     (newValue: (typeof data)[0]) => {
-      setWorkspace(newValue);
+      console.log('WorkspacesPopover - changing organization to:', newValue);
+      setSelectedOrganization(newValue);
       popover.onClose();
     },
-    [popover]
+    [popover, setSelectedOrganization]
   );
 
   return (
@@ -54,8 +61,8 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
       >
         <Box
           component="img"
-          alt={workspace?.name}
-          src={workspace?.logo}
+          alt={selectedOrganization?.name}
+          src={selectedOrganization?.logo}
           sx={{ width: 24, height: 24, borderRadius: '50%' }}
         />
 
@@ -66,7 +73,7 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
             display: { xs: 'none', [mediaQuery]: 'inline-flex' },
           }}
         >
-          {workspace?.name}
+          {selectedOrganization?.name}
         </Box>
 
         <Iconify width={16} icon="carbon:chevron-sort" sx={{ color: 'text.disabled' }} />
@@ -82,7 +89,7 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
           {data.map((option) => (
             <MenuItem
               key={option.id}
-              selected={option.id === workspace?.id}
+              selected={option.id === selectedOrganization?.id}
               onClick={() => handleChangeWorkspace(option)}
               sx={{ height: 48 }}
             >
