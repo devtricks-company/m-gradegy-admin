@@ -8,6 +8,7 @@
 
 export * from './accessControlControllerListCategoriesParams';
 export * from './accessControlControllerListSubcategoriesParams';
+export * from './accessControlControllerRegisterStudentWithAccess201';
 export * from './administrativeRole';
 export * from './approveExperienceProgressDto';
 export * from './azurestorageControllerUploadImageParams';
@@ -76,6 +77,9 @@ export * from './projectsControllerFindOne200AllOfUniversity';
 export * from './refreshTokenDto';
 export * from './registerAdminDto';
 export * from './registerLocalDto';
+export * from './registerStudentAssignmentDto';
+export * from './registerStudentProfileDto';
+export * from './registerStudentWithAccessDto';
 export * from './rejectExperienceProgressDto';
 export * from './schoolDistrict';
 export * from './schoolDistrictsControllerFindAll200';

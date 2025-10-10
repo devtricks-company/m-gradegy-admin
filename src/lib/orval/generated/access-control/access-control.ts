@@ -24,11 +24,13 @@ import type {
 import type {
   AccessControlControllerListCategoriesParams,
   AccessControlControllerListSubcategoriesParams,
+  AccessControlControllerRegisterStudentWithAccess201,
   Category,
   CreateSubcategoryDto,
   CreateUserAssignmentDto,
   Organization,
   Project,
+  RegisterStudentWithAccessDto,
   Subcategory,
   UpdateSubcategoryDto,
   UserAssignment,
@@ -121,6 +123,97 @@ export const useAccessControlControllerCreateAssignment = <TError = unknown, TCo
   TContext
 > => {
   const mutationOptions = getAccessControlControllerCreateAssignmentMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Register a student and assign scoped access in a single request.
+ */
+export const accessControlControllerRegisterStudentWithAccess = (
+  registerStudentWithAccessDto: RegisterStudentWithAccessDto,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccessControlControllerRegisterStudentWithAccess201>(
+    {
+      url: `http://localhost:5400/access/students`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: registerStudentWithAccessDto,
+      signal,
+    },
+    options
+  );
+};
+
+export const getAccessControlControllerRegisterStudentWithAccessMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof accessControlControllerRegisterStudentWithAccess>>,
+    TError,
+    { data: RegisterStudentWithAccessDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof accessControlControllerRegisterStudentWithAccess>>,
+  TError,
+  { data: RegisterStudentWithAccessDto },
+  TContext
+> => {
+  const mutationKey = ['accessControlControllerRegisterStudentWithAccess'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof accessControlControllerRegisterStudentWithAccess>>,
+    { data: RegisterStudentWithAccessDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return accessControlControllerRegisterStudentWithAccess(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AccessControlControllerRegisterStudentWithAccessMutationResult = NonNullable<
+  Awaited<ReturnType<typeof accessControlControllerRegisterStudentWithAccess>>
+>;
+export type AccessControlControllerRegisterStudentWithAccessMutationBody =
+  RegisterStudentWithAccessDto;
+export type AccessControlControllerRegisterStudentWithAccessMutationError = unknown;
+
+/**
+ * @summary Register a student and assign scoped access in a single request.
+ */
+export const useAccessControlControllerRegisterStudentWithAccess = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof accessControlControllerRegisterStudentWithAccess>>,
+      TError,
+      { data: RegisterStudentWithAccessDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof accessControlControllerRegisterStudentWithAccess>>,
+  TError,
+  { data: RegisterStudentWithAccessDto },
+  TContext
+> => {
+  const mutationOptions =
+    getAccessControlControllerRegisterStudentWithAccessMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
