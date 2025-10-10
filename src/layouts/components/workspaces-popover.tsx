@@ -21,11 +21,11 @@ export type WorkspacesPopoverProps = ButtonBaseProps & {
     id: string;
     name: string;
     logo: string;
-    plan: string;
   }[];
 };
 
 export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopoverProps) {
+  console.log('workspace', data);
   const popover = usePopover();
 
   const mediaQuery = 'sm';
@@ -69,16 +69,6 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
           {workspace?.name}
         </Box>
 
-        <Label
-          color={workspace?.plan === 'Free' ? 'default' : 'info'}
-          sx={{
-            height: 22,
-            display: { xs: 'none', [mediaQuery]: 'inline-flex' },
-          }}
-        >
-          {workspace?.plan}
-        </Label>
-
         <Iconify width={16} icon="carbon:chevron-sort" sx={{ color: 'text.disabled' }} />
       </ButtonBase>
 
@@ -101,8 +91,6 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
               <Box component="span" sx={{ flexGrow: 1 }}>
                 {option.name}
               </Box>
-
-              <Label color={option.plan === 'Free' ? 'default' : 'info'}>{option.plan}</Label>
             </MenuItem>
           ))}
         </MenuList>

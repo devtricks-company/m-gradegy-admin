@@ -11,6 +11,7 @@ import { iconButtonClasses } from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { _contacts, _notifications } from 'src/_mock';
+import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
 
 import { Logo } from 'src/components/logo';
 import { useSettingsContext } from 'src/components/settings';
@@ -64,6 +65,17 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
   const isNavMini = settings.navLayout === 'mini';
   const isNavHorizontal = settings.navLayout === 'horizontal';
   const isNavVertical = isNavMini || settings.navLayout === 'vertical';
+
+  // Fetch organizations from access control
+  const { data: organizationsData, isSuccess } = useAccessControlControllerListOrganizations();
+
+  // Transform organizations to match WorkspacesPopover format
+  const workspaces =
+    organizationsData?.map((org) => ({
+      id: org._id, // Using lead_contact as unique identifier
+      name: org.title,
+      logo: org.image || '', // Default to empty string if no
+    })) || _workspaces; // Fallback to mock data if no organizations
 
   return (
     <LayoutSection
@@ -142,8 +154,9 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
                   />
                 )}
                 {/* -- Workspace popover -- */}
+
                 <WorkspacesPopover
-                  data={_workspaces}
+                  data={workspaces}
                   sx={{ color: 'var(--layout-nav-text-primary-color)' }}
                 />
               </>
