@@ -34,7 +34,10 @@ export const NewStudentSchema = zod.object({
   // Student profile fields
   firstName: zod.string().min(1, { message: 'First name is required' }),
   lastName: zod.string().min(1, { message: 'Last name is required' }),
-  email: zod.string().min(1, { message: 'Email is required' }).email({ message: 'Email must be a valid email address' }),
+  email: zod
+    .string()
+    .min(1, { message: 'Email is required' })
+    .email({ message: 'Email must be a valid email address' }),
   password: zod.string().min(8, { message: 'Password must be at least 8 characters' }),
   phone: zod.string().optional(),
   avatarUrl: zod.string().url().optional().or(zod.literal('')),
@@ -79,7 +82,8 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
   const selectedOrganization = watch('organization');
 
   // Fetch organizations
-  const { data: organizations, isLoading: isLoadingOrgs } = useAccessControlControllerListOrganizations();
+  const { data: organizations, isLoading: isLoadingOrgs } =
+    useAccessControlControllerListOrganizations();
 
   // Fetch projects (only when organization is selected)
   const { data: projects, isLoading: isLoadingProjects } = useAccessControlControllerListProjects({
@@ -130,7 +134,7 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
       <DialogTitle>New Student</DialogTitle>
 
       <DialogContent>
@@ -205,12 +209,7 @@ export function NewStudentDialog({ open, onClose }: NewStudentDialogProps) {
         <Button variant="outlined" onClick={handleClose}>
           Cancel
         </Button>
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          loading={isSubmitting}
-          onClick={onSubmit}
-        >
+        <LoadingButton type="submit" variant="contained" loading={isSubmitting} onClick={onSubmit}>
           Create Student
         </LoadingButton>
       </DialogActions>
