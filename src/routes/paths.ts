@@ -55,5 +55,6 @@ export const paths = {
     projectDetails: (id: string) => `${ROOTS.DASHBOARD}/projects/${id}`,
     administrator: `${ROOTS.DASHBOARD}/administrator`,
     administratorDetails: (id: string) => `${ROOTS.DASHBOARD}/administrator/${id}`,
+    students: `${ROOTS.DASHBOARD}/students`,
   },
 };

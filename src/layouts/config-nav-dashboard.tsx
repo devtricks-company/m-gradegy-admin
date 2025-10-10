@@ -50,6 +50,7 @@ export const navData = [
     items: [
       { title: 'Organizations', path: paths.dashboard.organizations, icon: ICONS.folder },
       { title: 'Administrator', path: paths.dashboard.administrator, icon: ICONS.user },
+      { title: 'Students', path: paths.dashboard.students, icon: ICONS.user },
     ],
   },
 ];
