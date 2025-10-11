@@ -171,7 +171,7 @@ export function AssignmentDialogForm({
               label="Organization"
               required
               options={organizations.map((org) => ({
-                value: org._id,
+                value: (org as any)._id,
                 label: org.title,
               }))}
             />
@@ -183,7 +183,7 @@ export function AssignmentDialogForm({
               options={[
                 { value: '', label: 'None' },
                 ...projects.map((project) => ({
-                  value: project._id,
+                  value: (project as any)._id,
                   label: project.title,
                 })),
               ]}
@@ -196,7 +196,7 @@ export function AssignmentDialogForm({
               options={[
                 { value: '', label: 'None' },
                 ...(categories?.map((category) => ({
-                  value: category._id,
+                  value: (category as any)._id,
                   label: category.title,
                 })) || []),
               ]}
@@ -209,7 +209,7 @@ export function AssignmentDialogForm({
               options={[
                 { value: '', label: 'None' },
                 ...(subcategories?.map((subcategory) => ({
-                  value: subcategory._id,
+                  value: (subcategory as any)._id,
                   label: subcategory.title,
                 })) || []),
               ]}

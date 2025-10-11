@@ -52,7 +52,7 @@ export const accessControlControllerCreateAssignment = (
 ) => {
   return customInstance<UserAssignment>(
     {
-      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments`,
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createUserAssignmentDto,
