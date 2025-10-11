@@ -1,5 +1,7 @@
 import { z as zod } from 'zod';
 
+import type { ExperienceType } from 'src/lib/orval/generated/model';
+
 // ----------------------------------------------------------------------
 
 export const experienceSchema = zod.object({
@@ -10,7 +12,14 @@ export const experienceSchema = zod.object({
   image: zod.any().optional(),
 
   // Experience Type
-  experienceType: zod.string().min(1, 'Experience type is required'),
+  experienceType: zod
+    .object({
+      title: zod.string(),
+      color: zod.string(),
+      icon: zod.string(),
+    })
+    .nullable()
+    .refine((val) => val !== null, { message: 'Experience type is required' }) as zod.ZodType<ExperienceType>,
 
   // Category and Filters
   category: zod.string(),
@@ -54,7 +63,7 @@ export const defaultValues: ExperienceFormValues = {
   subtitle: '',
   description: '',
   image: undefined,
-  experienceType: '',
+  experienceType: null as any,
   category: 'all',
   subcategory: 'all',
   tags: 'all',

@@ -22,6 +22,7 @@ export function ExperienceCreateView() {
   const { handleSubmit, watch } = methods;
 
   const xpCompletion = watch('xpCompletion');
+  const experienceType = watch('experienceType');
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -52,13 +53,16 @@ export function ExperienceCreateView() {
             <Card
               sx={{
                 p: 3,
-                background: 'linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%)',
+                background: experienceType?.color
+                  ? `linear-gradient(135deg, ${experienceType.color} 0%, ${experienceType.color}dd 100%)`
+                  : 'linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%)',
                 color: 'white',
                 height: '100%',
                 minHeight: 700,
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
+                transition: 'background 0.3s ease-in-out',
               }}
             >
               <Box sx={{ mb: 3 }}>
