@@ -47,7 +47,10 @@ export const navData = [
    */
   {
     subheader: 'Students Management',
-    items: [{ title: 'Students', path: paths.dashboard.students, icon: ICONS.user }],
+    items: [
+      { title: 'Students', path: paths.dashboard.students, icon: ICONS.user },
+      { title: 'Experience', path: paths.dashboard.experience, icon: ICONS.course },
+    ],
     disabled: true,
   },
   /**
