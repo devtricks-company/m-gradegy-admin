@@ -20,12 +20,7 @@ type Props = TextFieldProps & {
   native?: boolean;
 };
 
-export function RHFSelectExperienceType({
-  name,
-  helperText,
-  native = false,
-  ...other
-}: Props) {
+export function RHFSelectExperienceType({ name, helperText, native = false, ...other }: Props) {
   const { control } = useFormContext();
 
   // Fetch experience types using Orval-generated hook
@@ -40,7 +35,31 @@ export function RHFSelectExperienceType({
           {...field}
           select
           fullWidth
-          SelectProps={{ native }}
+          onChange={(event) => {
+            console.log(event);
+          }}
+          SelectProps={{
+            native,
+            ...(!native && {
+              renderValue: (selected) => {
+                if (!selected) return <em>Select experience type</em>;
+                const selectedType = experienceTypes?.find((t) => t.title === selected);
+                if (!selectedType) return String(selected);
+                return (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    {selectedType.icon && (
+                      <Iconify
+                        icon={selectedType.icon}
+                        width={24}
+                        sx={{ color: selectedType.color }}
+                      />
+                    )}
+                    <Box component="span">{selectedType.title}</Box>
+                  </Box>
+                );
+              },
+            }),
+          }}
           error={!!error}
           helperText={error?.message ?? helperText}
           disabled={isLoading}
@@ -52,26 +71,26 @@ export function RHFSelectExperienceType({
           {...other}
         >
           {native ? (
-            <>
+            <div>
               <option value="">Select experience type</option>
               {experienceTypes?.map((type: ExperienceType) => (
                 <option key={type.title} value={type.title}>
                   {type.title}
                 </option>
               ))}
-            </>
+            </div>
           ) : (
-            <>
+            <div>
               <MenuItem value="">
                 <em>Select experience type</em>
               </MenuItem>
               {experienceTypes?.map((type: ExperienceType) => (
                 <MenuItem key={type.title} value={type.title}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
                     {type.icon && (
                       <Iconify icon={type.icon} width={24} sx={{ color: type.color }} />
                     )}
-                    <span>{type.title}</span>
+                    <Box component="span">{type.title}</Box>
                     <Chip
                       size="small"
                       sx={{
@@ -81,12 +100,12 @@ export function RHFSelectExperienceType({
                         height: 20,
                         '& .MuiChip-label': { px: 1 },
                       }}
-                      label={type.color}
+                      label={type.title}
                     />
                   </Box>
                 </MenuItem>
               ))}
-            </>
+            </div>
           )}
         </TextField>
       )}
