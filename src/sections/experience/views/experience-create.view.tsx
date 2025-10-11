@@ -15,6 +15,7 @@ import {
   FormControlLabel,
   Button,
   Divider,
+  Rating,
 } from '@mui/material';
 import { useState } from 'react';
 
@@ -44,6 +45,19 @@ export function ExperienceCreateView() {
   const [addLinkInText, setAddLinkInText] = useState(false);
   const [notification, setNotification] = useState(true);
 
+  // Tags section states
+  const [driver1, setDriver1] = useState('');
+  const [driver2, setDriver2] = useState('');
+  const [levelOfProgression, setLevelOfProgression] = useState('');
+  const [persona, setPersona] = useState('');
+
+  // Advanced section states
+  const [pastDue, setPastDue] = useState(false);
+  const [milestone, setMilestone] = useState(false);
+  const [weight, setWeight] = useState(3);
+  const [difficulty, setDifficulty] = useState(false);
+  const [fire, setFire] = useState(4);
+
   return (
     <DashboardContent maxWidth="xl">
       <CustomBreadcrumbs
@@ -56,6 +70,7 @@ export function ExperienceCreateView() {
         sx={{ mb: 3 }}
       />
 
+      {/* First Row: Experience Preview and Form Configuration */}
       <Grid container spacing={3}>
         {/* Left Side - Experience Card Preview */}
         <Grid item xs={12} md={4}>
@@ -353,117 +368,256 @@ export function ExperienceCreateView() {
                 </Grid>
               </Grid>
             </Card>
-
-            {/* Motivational Design Section */}
-            <Card sx={{ p: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
-                <Iconify icon="solar:play-bold" width={20} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Motivational Design
-                </Typography>
-              </Stack>
-
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    label="XP for Completion"
-                    type="number"
-                    value={xpCompletion}
-                    onChange={(e) => setXpCompletion(Number(e.target.value))}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    label="XP for viewing"
-                    type="number"
-                    value={xpViewing}
-                    onChange={(e) => setXpViewing(Number(e.target.value))}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    label="Gems"
-                    type="number"
-                    value={gems}
-                    onChange={(e) => setGems(Number(e.target.value))}
-                    fullWidth
-                  />
-                </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 3 }} />
-
-              <Stack spacing={2}>
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  Submission (completion types)
-                </Typography>
-                <FormControl fullWidth sx={{ maxWidth: 300 }}>
-                  <Select
-                    value={submissionType}
-                    onChange={(e) => setSubmissionType(e.target.value)}
-                    displayEmpty
-                  >
-                    <MenuItem value="student">Student</MenuItem>
-                    <MenuItem value="teacher">Teacher</MenuItem>
-                    <MenuItem value="auto">Auto</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={autoCompletion}
-                      onChange={(e) => setAutoCompletion(e.target.checked)}
-                      color="success"
-                    />
-                  }
-                  label="Auto Complition"
-                />
-              </Stack>
-            </Card>
-
-            {/* Additional Options Section */}
-            <Card sx={{ p: 3 }}>
-              <Stack spacing={3}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={addLinkInText}
-                      onChange={(e) => setAddLinkInText(e.target.checked)}
-                    />
-                  }
-                  label="Add Link in text"
-                />
-
-                <Divider />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={notification}
-                      onChange={(e) => setNotification(e.target.checked)}
-                      color="error"
-                    />
-                  }
-                  label="Notification"
-                />
-              </Stack>
-            </Card>
-
-            {/* Action Buttons */}
-            <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ pt: 2 }}>
-              <Button variant="outlined" size="large" sx={{ minWidth: 120 }}>
-                Cancel
-              </Button>
-              <Button variant="contained" size="large" sx={{ minWidth: 120 }}>
-                Create Experience
-              </Button>
-            </Stack>
           </Stack>
         </Grid>
       </Grid>
+
+      {/* Second Row: Motivational Design and Additional Section */}
+      <Grid container spacing={3} sx={{ mt: 0 }}>
+        {/* Left Column - Motivational Design */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ p: 3 }}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
+              <Iconify icon="solar:play-bold" width={20} />
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Motivational Design
+              </Typography>
+            </Stack>
+
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  label="XP for Completion"
+                  type="number"
+                  value={xpCompletion}
+                  onChange={(e) => setXpCompletion(Number(e.target.value))}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  label="XP for viewing"
+                  type="number"
+                  value={xpViewing}
+                  onChange={(e) => setXpViewing(Number(e.target.value))}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  label="Gems"
+                  type="number"
+                  value={gems}
+                  onChange={(e) => setGems(Number(e.target.value))}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 3 }} />
+
+            <Stack spacing={2}>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                Submission (completion types)
+              </Typography>
+              <FormControl fullWidth sx={{ maxWidth: 300 }}>
+                <Select
+                  value={submissionType}
+                  onChange={(e) => setSubmissionType(e.target.value)}
+                  displayEmpty
+                >
+                  <MenuItem value="student">Student</MenuItem>
+                  <MenuItem value="teacher">Teacher</MenuItem>
+                  <MenuItem value="auto">Auto</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={autoCompletion}
+                    onChange={(e) => setAutoCompletion(e.target.checked)}
+                    color="success"
+                  />
+                }
+                label="Auto Complition"
+              />
+            </Stack>
+
+            <Divider sx={{ my: 3 }} />
+
+            <Stack spacing={2}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={addLinkInText}
+                    onChange={(e) => setAddLinkInText(e.target.checked)}
+                  />
+                }
+                label="Add Link in text"
+              />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={notification}
+                    onChange={(e) => setNotification(e.target.checked)}
+                    color="error"
+                  />
+                }
+                label="Notification"
+              />
+            </Stack>
+          </Card>
+        </Grid>
+
+        {/* Right Column - Tags and Advanced */}
+        <Grid item xs={12} md={6}>
+          <Stack spacing={3}>
+            {/* Tags Section */}
+            <Card sx={{ p: 3 }}>
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
+                <Iconify icon="solar:tag-bold" width={20} />
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Tags
+                </Typography>
+              </Stack>
+
+              <Stack spacing={2}>
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Driver
+                  </Typography>
+                  <Stack spacing={1.5}>
+                    <TextField
+                      placeholder="Driver 1"
+                      value={driver1}
+                      onChange={(e) => setDriver1(e.target.value)}
+                      fullWidth
+                      size="small"
+                    />
+                    <TextField
+                      placeholder="Driver 2"
+                      value={driver2}
+                      onChange={(e) => setDriver2(e.target.value)}
+                      fullWidth
+                      size="small"
+                    />
+                  </Stack>
+                </Box>
+
+                <TextField
+                  label="Level of Progression"
+                  value={levelOfProgression}
+                  onChange={(e) => setLevelOfProgression(e.target.value)}
+                  fullWidth
+                  size="small"
+                />
+
+                <TextField
+                  label="Persona"
+                  value={persona}
+                  onChange={(e) => setPersona(e.target.value)}
+                  fullWidth
+                  size="small"
+                />
+              </Stack>
+            </Card>
+
+            {/* Advanced Section */}
+            <Card sx={{ p: 3 }}>
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
+                <Iconify icon="solar:settings-bold" width={20} />
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Advanced
+                </Typography>
+              </Stack>
+
+              <Stack spacing={2.5}>
+                {/* Past due */}
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2">Past due?</Typography>
+                  <Switch
+                    checked={pastDue}
+                    onChange={(e) => setPastDue(e.target.checked)}
+                    color="error"
+                  />
+                </Stack>
+
+                {/* Milestone */}
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2">Milestone</Typography>
+                  <Switch
+                    checked={milestone}
+                    onChange={(e) => setMilestone(e.target.checked)}
+                    color="error"
+                  />
+                </Stack>
+
+                {/* Weight */}
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2">Weight</Typography>
+                  <Rating
+                    value={weight}
+                    onChange={(event, newValue) => setWeight(newValue || 0)}
+                    max={3}
+                    sx={{
+                      '& .MuiRating-iconFilled': {
+                        color: '#fbbf24',
+                      },
+                    }}
+                  />
+                </Stack>
+
+                {/* Difficulty */}
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2">Difficulty</Typography>
+                  <Switch
+                    checked={difficulty}
+                    onChange={(e) => setDifficulty(e.target.checked)}
+                    color="error"
+                  />
+                </Stack>
+
+                {/* Fire */}
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2">fire</Typography>
+                  <Stack direction="row" spacing={0.5}>
+                    {[1, 2, 3, 4].map((index) => (
+                      <Box
+                        key={index}
+                        onClick={() => setFire(index)}
+                        sx={{
+                          cursor: 'pointer',
+                          fontSize: '20px',
+                          filter: index <= fire ? 'grayscale(0%)' : 'grayscale(100%)',
+                          opacity: index <= fire ? 1 : 0.3,
+                          transition: 'all 0.2s',
+                          '&:hover': {
+                            transform: 'scale(1.1)',
+                          },
+                        }}
+                      >
+                        🔥
+                      </Box>
+                    ))}
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Card>
+          </Stack>
+        </Grid>
+      </Grid>
+
+      {/* Action Buttons */}
+      <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+        <Button variant="outlined" size="large" sx={{ minWidth: 120 }}>
+          Cancel
+        </Button>
+        <Button variant="contained" size="large" sx={{ minWidth: 120 }}>
+          Create Experience
+        </Button>
+      </Stack>
     </DashboardContent>
   );
 }
