@@ -1,6 +1,6 @@
 import { z as zod } from 'zod';
 
-import type { ExperienceType } from 'src/lib/orval/generated/model';
+import type { ExperienceType, ExperienceImage } from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ export const experienceSchema = zod.object({
   subtitle: zod.string().optional(),
   description: zod.string().optional(),
   image: zod.any().optional(),
+  selectedImage: zod.custom<ExperienceImage>().optional(),
 
   // Experience Type
   experienceType: zod
@@ -63,6 +64,7 @@ export const defaultValues: ExperienceFormValues = {
   subtitle: '',
   description: '',
   image: undefined,
+  selectedImage: undefined,
   experienceType: null as any,
   category: 'all',
   subcategory: 'all',

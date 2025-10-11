@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Card, Grid, Stack, Typography, Divider, Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Image from 'next/image';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -15,9 +16,11 @@ import { useExperienceTypesControllerFindAll } from 'src/lib/orval/generated/exp
 import { useExperienceImagesControllerFindAll } from 'src/lib/orval/generated/experience-images/experience-images';
 
 import { experienceSchema, defaultValues, type ExperienceFormValues } from '../experience-schema';
-import Image from 'next/image';
+import { ImageSelectionDialog } from '../components/image-selection-dialog';
 
 export function ExperienceCreateView() {
+  const [openImageDialog, setOpenImageDialog] = useState(false);
+
   const methods = useForm<ExperienceFormValues>({
     resolver: zodResolver(experienceSchema),
     defaultValues,
@@ -25,10 +28,13 @@ export function ExperienceCreateView() {
 
   const { handleSubmit, watch, setValue } = methods;
   const { data: experienceTypes } = useExperienceTypesControllerFindAll();
-  const { data: experienceImages } = useExperienceImagesControllerFindAll();
+  const { data: experienceImages } = useExperienceImagesControllerFindAll({
+    limit: 1000,
+  });
 
   const xpCompletion = watch('xpCompletion');
   const experienceType = watch('experienceType');
+  const selectedImage = watch('selectedImage');
 
   // Set "Gradegy" as default experience type when data is loaded
   useEffect(() => {
@@ -40,12 +46,28 @@ export function ExperienceCreateView() {
     }
   }, [experienceTypes, experienceType, setValue]);
 
-  // Filter images by selected experience type and get the first one
-  const filteredImage = experienceType
-    ? experienceImages?.data?.find(
+  // Filter images by selected experience type
+  const filteredImages = experienceType
+    ? experienceImages?.data?.filter(
         (image) => image.experienceType.title === experienceType.title
-      )
-    : undefined;
+      ) || []
+    : [];
+
+  console.log(filteredImages);
+  // Use selected image or default to first filtered image
+  const displayImage = selectedImage || filteredImages[0];
+
+  const handleOpenImageDialog = () => {
+    setOpenImageDialog(true);
+  };
+
+  const handleCloseImageDialog = () => {
+    setOpenImageDialog(false);
+  };
+
+  const handleSelectImage = (image: typeof displayImage) => {
+    setValue('selectedImage', image, { shouldValidate: true });
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -166,6 +188,7 @@ export function ExperienceCreateView() {
 
               {/* Illustration placeholder */}
               <Box
+                onClick={handleOpenImageDialog}
                 sx={{
                   width: '100%',
                   height: 220,
@@ -179,17 +202,19 @@ export function ExperienceCreateView() {
                   cursor: 'pointer',
                   overflow: 'hidden',
                   position: 'relative',
+                  transition: 'all 0.2s',
                   '&:hover': {
                     bgcolor: 'rgba(255,255,255,0.25)',
+                    transform: 'scale(1.01)',
                   },
                 }}
               >
-                {filteredImage?.url ? (
+                {displayImage?.url ? (
                   <Image
-                    src={filteredImage.url}
+                    src={displayImage.url}
                     alt={
-                      typeof filteredImage.title === 'string'
-                        ? filteredImage.title
+                      typeof displayImage.title === 'string'
+                        ? displayImage.title
                         : 'Experience image'
                     }
                     fill
@@ -199,7 +224,7 @@ export function ExperienceCreateView() {
                   <Stack alignItems="center" spacing={1}>
                     <Iconify icon="solar:gallery-add-bold" width={48} sx={{ opacity: 0.7 }} />
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                      Upload Image
+                      Select Image
                     </Typography>
                   </Stack>
                 )}
@@ -514,6 +539,15 @@ export function ExperienceCreateView() {
           </Button>
         </Stack>
       </Form>
+
+      {/* Image Selection Dialog */}
+      <ImageSelectionDialog
+        open={openImageDialog}
+        onClose={handleCloseImageDialog}
+        images={filteredImages}
+        selectedImage={selectedImage}
+        onSelectImage={handleSelectImage}
+      />
     </DashboardContent>
   );
 }
