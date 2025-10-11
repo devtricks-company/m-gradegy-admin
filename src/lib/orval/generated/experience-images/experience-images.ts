@@ -43,7 +43,7 @@ export const experienceImagesControllerCreate = (
 ) => {
   return customInstance<ExperienceImage>(
     {
-      url: `http://localhost:5400/experience-images`,
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-images`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createExperienceImageDto,
@@ -128,7 +128,12 @@ export const experienceImagesControllerFindAll = (
   signal?: AbortSignal
 ) => {
   return customInstance<ExperienceImagesControllerFindAll200>(
-    { url: `http://localhost:5400/experience-images`, method: 'GET', params, signal },
+    {
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-images`,
+      method: 'GET',
+      params,
+      signal,
+    },
     options
   );
 };
@@ -136,7 +141,10 @@ export const experienceImagesControllerFindAll = (
 export const getExperienceImagesControllerFindAllQueryKey = (
   params?: ExperienceImagesControllerFindAllParams
 ) => {
-  return [`http://localhost:5400/experience-images`, ...(params ? [params] : [])] as const;
+  return [
+    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-images`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getExperienceImagesControllerFindAllQueryOptions = <
@@ -263,13 +271,19 @@ export const experienceImagesControllerFindOne = (
   signal?: AbortSignal
 ) => {
   return customInstance<ExperienceImage>(
-    { url: `http://localhost:5400/experience-images/${id}`, method: 'GET', signal },
+    {
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-images/${id}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getExperienceImagesControllerFindOneQueryKey = (id?: string) => {
-  return [`http://localhost:5400/experience-images/${id}`] as const;
+  return [
+    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-images/${id}`,
+  ] as const;
 };
 
 export const getExperienceImagesControllerFindOneQueryOptions = <
@@ -397,7 +411,7 @@ export const experienceImagesControllerUpdate = (
 ) => {
   return customInstance<ExperienceImage>(
     {
-      url: `http://localhost:5400/experience-images/${id}`,
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-images/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateExperienceImageDto,
@@ -480,7 +494,10 @@ export const experienceImagesControllerRemove = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<ExperienceImage>(
-    { url: `http://localhost:5400/experience-images/${id}`, method: 'DELETE' },
+    {
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-images/${id}`,
+      method: 'DELETE',
+    },
     options
   );
 };

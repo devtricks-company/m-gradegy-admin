@@ -43,7 +43,7 @@ export const schoolDistrictsControllerCreate = (
 ) => {
   return customInstance<SchoolDistrict>(
     {
-      url: `http://localhost:5400/school-districts`,
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/school-districts`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createSchoolDistrictDto,
@@ -128,7 +128,12 @@ export const schoolDistrictsControllerFindAll = (
   signal?: AbortSignal
 ) => {
   return customInstance<SchoolDistrictsControllerFindAll200>(
-    { url: `http://localhost:5400/school-districts`, method: 'GET', params, signal },
+    {
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/school-districts`,
+      method: 'GET',
+      params,
+      signal,
+    },
     options
   );
 };
@@ -136,7 +141,10 @@ export const schoolDistrictsControllerFindAll = (
 export const getSchoolDistrictsControllerFindAllQueryKey = (
   params?: SchoolDistrictsControllerFindAllParams
 ) => {
-  return [`http://localhost:5400/school-districts`, ...(params ? [params] : [])] as const;
+  return [
+    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/school-districts`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getSchoolDistrictsControllerFindAllQueryOptions = <
@@ -263,13 +271,19 @@ export const schoolDistrictsControllerFindOne = (
   signal?: AbortSignal
 ) => {
   return customInstance<SchoolDistrict>(
-    { url: `http://localhost:5400/school-districts/${id}`, method: 'GET', signal },
+    {
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/school-districts/${id}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getSchoolDistrictsControllerFindOneQueryKey = (id?: string) => {
-  return [`http://localhost:5400/school-districts/${id}`] as const;
+  return [
+    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/school-districts/${id}`,
+  ] as const;
 };
 
 export const getSchoolDistrictsControllerFindOneQueryOptions = <
@@ -397,7 +411,7 @@ export const schoolDistrictsControllerUpdate = (
 ) => {
   return customInstance<SchoolDistrict>(
     {
-      url: `http://localhost:5400/school-districts/${id}`,
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/school-districts/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateSchoolDistrictDto,
@@ -480,7 +494,10 @@ export const schoolDistrictsControllerRemove = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<SchoolDistrict>(
-    { url: `http://localhost:5400/school-districts/${id}`, method: 'DELETE' },
+    {
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/school-districts/${id}`,
+      method: 'DELETE',
+    },
     options
   );
 };
