@@ -45,7 +45,7 @@ export const experienceProgressControllerFindAll = (
 ) => {
   return customInstance<ExperienceProgressControllerFindAll200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress`,
       method: 'GET',
       signal,
     },
@@ -55,7 +55,7 @@ export const experienceProgressControllerFindAll = (
 
 export const getExperienceProgressControllerFindAllQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress`,
   ] as const;
 };
 
@@ -193,7 +193,7 @@ export const experienceProgressControllerFindOne = (
 ) => {
   return customInstance<ExperienceProgress>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/${id}`,
       method: 'GET',
       signal,
     },
@@ -203,7 +203,7 @@ export const experienceProgressControllerFindOne = (
 
 export const getExperienceProgressControllerFindOneQueryKey = (id?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/${id}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/${id}`,
   ] as const;
 };
 
@@ -352,7 +352,7 @@ export const experienceProgressControllerFindByExperience = (
 ) => {
   return customInstance<ExperienceProgressControllerFindByExperience200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/experiences/${experienceId}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/experiences/${experienceId}`,
       method: 'GET',
       signal,
     },
@@ -362,7 +362,7 @@ export const experienceProgressControllerFindByExperience = (
 
 export const getExperienceProgressControllerFindByExperienceQueryKey = (experienceId?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/experiences/${experienceId}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/experiences/${experienceId}`,
   ] as const;
 };
 
@@ -516,7 +516,7 @@ export const experienceProgressControllerFindByUser = (
 ) => {
   return customInstance<ExperienceProgressControllerFindByUser200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/users/${userId}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/users/${userId}`,
       method: 'GET',
       signal,
     },
@@ -526,7 +526,7 @@ export const experienceProgressControllerFindByUser = (
 
 export const getExperienceProgressControllerFindByUserQueryKey = (userId?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/users/${userId}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/users/${userId}`,
   ] as const;
 };
 
@@ -677,7 +677,7 @@ export const experienceProgressControllerMarkViewed = (
 ) => {
   return customInstance<ExperienceProgress>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/experiences/${experienceId}/view`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/experiences/${experienceId}/view`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: markExperienceViewedDto,
@@ -764,7 +764,7 @@ export const experienceProgressControllerSubmitEvidence = (
 ) => {
   return customInstance<ExperienceProgress>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/experiences/${experienceId}/submit`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/experiences/${experienceId}/submit`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: submitExperienceEvidenceDto,
@@ -851,7 +851,7 @@ export const experienceProgressControllerApprove = (
 ) => {
   return customInstance<ExperienceProgress>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/${id}/approve`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/${id}/approve`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: approveExperienceProgressDto,
@@ -938,7 +938,7 @@ export const experienceProgressControllerReject = (
 ) => {
   return customInstance<ExperienceProgress>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/${id}/reject`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-progress/${id}/reject`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: rejectExperienceProgressDto,

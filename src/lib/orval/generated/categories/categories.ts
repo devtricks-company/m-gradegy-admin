@@ -44,7 +44,7 @@ export const categoriesControllerCreate = (
 ) => {
   return customInstance<Category>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createCategoryDto,
@@ -129,7 +129,7 @@ export const categoriesControllerFindAll = (
 ) => {
   return customInstance<CategoriesControllerFindAll200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
       method: 'GET',
       signal,
     },
@@ -139,7 +139,7 @@ export const categoriesControllerFindAll = (
 
 export const getCategoriesControllerFindAllQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
   ] as const;
 };
 
@@ -262,7 +262,7 @@ export const categoriesControllerFindByProject = (
 ) => {
   return customInstance<CategoriesControllerFindByProject200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/project/${projectId}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/project/${projectId}`,
       method: 'GET',
       params,
       signal,
@@ -276,7 +276,7 @@ export const getCategoriesControllerFindByProjectQueryKey = (
   params?: CategoriesControllerFindByProjectParams
 ) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/project/${projectId}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/project/${projectId}`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -412,7 +412,7 @@ export const categoriesControllerFindOne = (
 ) => {
   return customInstance<Category>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
       method: 'GET',
       signal,
     },
@@ -422,7 +422,7 @@ export const categoriesControllerFindOne = (
 
 export const getCategoriesControllerFindOneQueryKey = (id?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
   ] as const;
 };
 
@@ -551,7 +551,7 @@ export const categoriesControllerUpdate = (
 ) => {
   return customInstance<Category>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateCategoryDto,
@@ -635,7 +635,7 @@ export const categoriesControllerRemove = (
 ) => {
   return customInstance<Category>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
       method: 'DELETE',
     },
     options

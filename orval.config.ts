@@ -12,8 +12,7 @@ export default defineConfig({
       schemas: 'src/lib/orval/generated/model',
       client: 'react-query',
       httpClient: 'axios',
-      baseUrl:
-        'http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net',
+      baseUrl: 'https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net',
       override: {
         mutator: {
           path: 'src/lib/orval/custom-instance.ts',

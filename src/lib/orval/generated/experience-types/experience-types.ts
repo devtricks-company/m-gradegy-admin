@@ -33,7 +33,7 @@ export const experienceTypesControllerFindAll = (
 ) => {
   return customInstance<ExperienceType[]>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-types`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-types`,
       method: 'GET',
       signal,
     },
@@ -43,7 +43,7 @@ export const experienceTypesControllerFindAll = (
 
 export const getExperienceTypesControllerFindAllQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-types`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experience-types`,
   ] as const;
 };
 

@@ -45,7 +45,7 @@ export const projectsControllerCreate = (
 ) => {
   return customInstance<Project>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createProjectDto,
@@ -130,7 +130,7 @@ export const projectsControllerFindAll = (
 ) => {
   return customInstance<ProjectsControllerFindAll200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
       method: 'GET',
       signal,
     },
@@ -140,7 +140,7 @@ export const projectsControllerFindAll = (
 
 export const getProjectsControllerFindAllQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
   ] as const;
 };
 
@@ -263,7 +263,7 @@ export const projectsControllerFindByOrganization = (
 ) => {
   return customInstance<ProjectsControllerFindByOrganization200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/organization/${organizationId}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/organization/${organizationId}`,
       method: 'GET',
       params,
       signal,
@@ -277,7 +277,7 @@ export const getProjectsControllerFindByOrganizationQueryKey = (
   params?: ProjectsControllerFindByOrganizationParams
 ) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/organization/${organizationId}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/organization/${organizationId}`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -439,7 +439,7 @@ export const projectsControllerFindOne = (
 ) => {
   return customInstance<ProjectsControllerFindOne200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
       method: 'GET',
       signal,
     },
@@ -449,7 +449,7 @@ export const projectsControllerFindOne = (
 
 export const getProjectsControllerFindOneQueryKey = (id?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
   ] as const;
 };
 
@@ -578,7 +578,7 @@ export const projectsControllerUpdate = (
 ) => {
   return customInstance<Project>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateProjectDto,
@@ -662,7 +662,7 @@ export const projectsControllerRemove = (
 ) => {
   return customInstance<Project>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
       method: 'DELETE',
     },
     options

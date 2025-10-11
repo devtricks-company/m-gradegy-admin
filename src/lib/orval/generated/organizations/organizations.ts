@@ -44,7 +44,7 @@ export const organizationsControllerCreate = (
 ) => {
   return customInstance<Organization>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createOrganizationDto,
@@ -130,7 +130,7 @@ export const organizationsControllerFindAll = (
 ) => {
   return customInstance<OrganizationsControllerFindAll200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
       method: 'GET',
       params,
       signal,
@@ -143,7 +143,7 @@ export const getOrganizationsControllerFindAllQueryKey = (
   params?: OrganizationsControllerFindAllParams
 ) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -273,7 +273,7 @@ export const organizationsControllerFindOne = (
 ) => {
   return customInstance<OrganizationsControllerFindOne200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
       method: 'GET',
       signal,
     },
@@ -283,7 +283,7 @@ export const organizationsControllerFindOne = (
 
 export const getOrganizationsControllerFindOneQueryKey = (id?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
   ] as const;
 };
 
@@ -412,7 +412,7 @@ export const organizationsControllerUpdate = (
 ) => {
   return customInstance<Organization>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateOrganizationDto,
@@ -496,7 +496,7 @@ export const organizationsControllerRemove = (
 ) => {
   return customInstance<Organization>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
       method: 'DELETE',
     },
     options

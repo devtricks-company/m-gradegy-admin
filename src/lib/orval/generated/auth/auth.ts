@@ -37,7 +37,7 @@ export const authControllerRegister = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/register`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/register`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: registerLocalDto,
@@ -123,7 +123,7 @@ export const authControllerRegisterAdmin = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/register/admin`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/register/admin`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: registerAdminDto,
@@ -209,7 +209,7 @@ export const authControllerLogin = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/login`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/login`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: loginDto,
@@ -295,7 +295,7 @@ export const authControllerRefresh = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/refresh`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/refresh`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: refreshTokenDto,
@@ -380,7 +380,7 @@ export const authControllerMe = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/me`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/me`,
       method: 'GET',
       signal,
     },
@@ -390,7 +390,7 @@ export const authControllerMe = (
 
 export const getAuthControllerMeQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/me`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/me`,
   ] as const;
 };
 
@@ -498,7 +498,7 @@ export const authControllerLogout = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/logout`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/logout`,
       method: 'POST',
       signal,
     },
@@ -574,7 +574,7 @@ export const authControllerGoogleAuth = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/google`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/google`,
       method: 'GET',
       signal,
     },
@@ -584,7 +584,7 @@ export const authControllerGoogleAuth = (
 
 export const getAuthControllerGoogleAuthQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/google`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/google`,
   ] as const;
 };
 
@@ -705,7 +705,7 @@ export const authControllerGoogleCallback = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/google/callback`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/google/callback`,
       method: 'GET',
       signal,
     },
@@ -715,7 +715,7 @@ export const authControllerGoogleCallback = (
 
 export const getAuthControllerGoogleCallbackQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/google/callback`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/google/callback`,
   ] as const;
 };
 
@@ -836,7 +836,7 @@ export const authControllerSnapchatAuth = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/snapchat`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/snapchat`,
       method: 'GET',
       signal,
     },
@@ -846,7 +846,7 @@ export const authControllerSnapchatAuth = (
 
 export const getAuthControllerSnapchatAuthQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/snapchat`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/snapchat`,
   ] as const;
 };
 
@@ -967,7 +967,7 @@ export const authControllerSnapchatCallback = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/snapchat/callback`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/snapchat/callback`,
       method: 'GET',
       signal,
     },
@@ -977,7 +977,7 @@ export const authControllerSnapchatCallback = (
 
 export const getAuthControllerSnapchatCallbackQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/snapchat/callback`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/auth/snapchat/callback`,
   ] as const;
 };
 

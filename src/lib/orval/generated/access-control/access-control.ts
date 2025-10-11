@@ -52,7 +52,7 @@ export const accessControlControllerCreateAssignment = (
 ) => {
   return customInstance<UserAssignment>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createUserAssignmentDto,
@@ -138,7 +138,7 @@ export const accessControlControllerRegisterStudentWithAccess = (
 ) => {
   return customInstance<AccessControlControllerRegisterStudentWithAccess201>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/students`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/students`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: registerStudentWithAccessDto,
@@ -229,7 +229,7 @@ export const accessControlControllerListStudents = (
 ) => {
   return customInstance<AccessControlControllerListStudents200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/students`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/students`,
       method: 'GET',
       params,
       signal,
@@ -242,7 +242,7 @@ export const getAccessControlControllerListStudentsQueryKey = (
   params?: AccessControlControllerListStudentsParams
 ) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/students`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/students`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -392,7 +392,7 @@ export const accessControlControllerListAssignments = (
 ) => {
   return customInstance<UserAssignment[]>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments/${userId}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments/${userId}`,
       method: 'GET',
       signal,
     },
@@ -402,7 +402,7 @@ export const accessControlControllerListAssignments = (
 
 export const getAccessControlControllerListAssignmentsQueryKey = (userId?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments/${userId}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments/${userId}`,
   ] as const;
 };
 
@@ -551,7 +551,7 @@ export const accessControlControllerRemoveAssignment = (
 ) => {
   return customInstance<UserAssignment>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments/${assignmentId}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments/${assignmentId}`,
       method: 'DELETE',
     },
     options
@@ -633,7 +633,7 @@ export const accessControlControllerListOrganizations = (
 ) => {
   return customInstance<Organization[]>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/organizations`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/organizations`,
       method: 'GET',
       signal,
     },
@@ -643,7 +643,7 @@ export const accessControlControllerListOrganizations = (
 
 export const getAccessControlControllerListOrganizationsQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/organizations`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/organizations`,
   ] as const;
 };
 
@@ -784,7 +784,7 @@ export const accessControlControllerListProjects = (
 ) => {
   return customInstance<Project[]>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/projects`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/projects`,
       method: 'GET',
       signal,
     },
@@ -794,7 +794,7 @@ export const accessControlControllerListProjects = (
 
 export const getAccessControlControllerListProjectsQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/projects`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/projects`,
   ] as const;
 };
 
@@ -932,7 +932,7 @@ export const accessControlControllerListCategories = (
 ) => {
   return customInstance<Category[]>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/categories`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/categories`,
       method: 'GET',
       params,
       signal,
@@ -945,7 +945,7 @@ export const getAccessControlControllerListCategoriesQueryKey = (
   params?: AccessControlControllerListCategoriesParams
 ) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/categories`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/categories`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -1096,7 +1096,7 @@ export const accessControlControllerListSubcategories = (
 ) => {
   return customInstance<Subcategory[]>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories`,
       method: 'GET',
       params,
       signal,
@@ -1109,7 +1109,7 @@ export const getAccessControlControllerListSubcategoriesQueryKey = (
   params?: AccessControlControllerListSubcategoriesParams
 ) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -1260,7 +1260,7 @@ export const accessControlControllerCreateSubcategory = (
 ) => {
   return customInstance<Subcategory>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createSubcategoryDto,
@@ -1346,7 +1346,7 @@ export const accessControlControllerGetSubcategory = (
 ) => {
   return customInstance<Subcategory>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
       method: 'GET',
       signal,
     },
@@ -1356,7 +1356,7 @@ export const accessControlControllerGetSubcategory = (
 
 export const getAccessControlControllerGetSubcategoryQueryKey = (id?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
   ] as const;
 };
 
@@ -1505,7 +1505,7 @@ export const accessControlControllerUpdateSubcategory = (
 ) => {
   return customInstance<Subcategory>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateSubcategoryDto,
@@ -1589,7 +1589,7 @@ export const accessControlControllerDeleteSubcategory = (
 ) => {
   return customInstance<Subcategory>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
       method: 'DELETE',
     },
     options

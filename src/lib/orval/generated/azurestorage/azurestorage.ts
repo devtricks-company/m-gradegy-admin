@@ -48,7 +48,7 @@ export const azurestorageControllerUploadImage = (
 
   return customInstance<UploadResultDto>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/azurestorage/image`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/azurestorage/image`,
       method: 'POST',
       headers: { 'Content-Type': 'multipart/form-data' },
       data: formData,
@@ -136,7 +136,7 @@ export const azurestorageControllerGetImageUrl = (
 ) => {
   return customInstance<UrlResponseDto>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/azurestorage/url/${blobName}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/azurestorage/url/${blobName}`,
       method: 'GET',
       signal,
     },
@@ -146,7 +146,7 @@ export const azurestorageControllerGetImageUrl = (
 
 export const getAzurestorageControllerGetImageUrlQueryKey = (blobName?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/azurestorage/url/${blobName}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/azurestorage/url/${blobName}`,
   ] as const;
 };
 

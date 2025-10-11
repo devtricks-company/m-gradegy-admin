@@ -43,7 +43,7 @@ export const universitiesControllerCreate = (
 ) => {
   return customInstance<University>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createUniversityDto,
@@ -129,7 +129,7 @@ export const universitiesControllerFindAll = (
 ) => {
   return customInstance<UniversitiesControllerFindAll200>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities`,
       method: 'GET',
       params,
       signal,
@@ -142,7 +142,7 @@ export const getUniversitiesControllerFindAllQueryKey = (
   params?: UniversitiesControllerFindAllParams
 ) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -272,7 +272,7 @@ export const universitiesControllerFindOne = (
 ) => {
   return customInstance<University>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities/${id}`,
       method: 'GET',
       signal,
     },
@@ -282,7 +282,7 @@ export const universitiesControllerFindOne = (
 
 export const getUniversitiesControllerFindOneQueryKey = (id?: string) => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities/${id}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities/${id}`,
   ] as const;
 };
 
@@ -411,7 +411,7 @@ export const universitiesControllerUpdate = (
 ) => {
   return customInstance<University>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateUniversityDto,
@@ -495,7 +495,7 @@ export const universitiesControllerRemove = (
 ) => {
   return customInstance<University>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/universities/${id}`,
       method: 'DELETE',
     },
     options

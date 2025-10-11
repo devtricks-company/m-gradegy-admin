@@ -28,7 +28,7 @@ export const appControllerGetHello = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/`,
       method: 'GET',
       signal,
     },
@@ -38,7 +38,7 @@ export const appControllerGetHello = (
 
 export const getAppControllerGetHelloQueryKey = () => {
   return [
-    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/`,
   ] as const;
 };
 
