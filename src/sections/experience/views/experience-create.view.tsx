@@ -14,6 +14,10 @@ import { Form } from 'src/components/hook-form/form-provider';
 import { Field } from 'src/components/hook-form/fields';
 import { useExperienceTypesControllerFindAll } from 'src/lib/orval/generated/experience-types/experience-types';
 import { useExperienceImagesControllerFindAll } from 'src/lib/orval/generated/experience-images/experience-images';
+import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
+import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
+import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
+import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
 
 import { experienceSchema, defaultValues, type ExperienceFormValues } from '../experience-schema';
 import { ImageSelectionDialog } from '../components/image-selection-dialog';
@@ -32,9 +36,54 @@ export function ExperienceCreateView() {
     limit: 1000,
   });
 
+  // Watch form values for cascading filters
   const xpCompletion = watch('xpCompletion');
   const experienceType = watch('experienceType');
   const selectedImage = watch('selectedImage');
+  const selectedOrganization = watch('organization');
+  const selectedProject = watch('project');
+  const selectedCategory = watch('category');
+
+  // Access Control hooks for cascading filters
+  const { data: organizations } = useAccessControlControllerListOrganizations();
+
+  // Fetch projects filtered by selected organization
+  const { data: projectsData } = useProjectsControllerFindByOrganization(
+    selectedOrganization || '',
+    undefined,
+    {
+      query: {
+        enabled: !!selectedOrganization,
+      },
+    }
+  );
+
+  // Fetch categories filtered by selected project
+  const { data: categoriesData } = useCategoriesControllerFindByProject(
+    selectedProject || '',
+    undefined,
+    {
+      query: {
+        enabled: !!selectedProject,
+      },
+    }
+  );
+
+  // Fetch subcategories filtered by selected category
+  const { data: subcategoriesData } = useSubcategoriesControllerFindAllByCategory(
+    selectedCategory || '',
+    undefined,
+    {
+      query: {
+        enabled: !!selectedCategory,
+      },
+    }
+  );
+
+  // Extract data arrays from paginated responses
+  const projects = projectsData?.data;
+  const categories = categoriesData?.data;
+  const subcategories = subcategoriesData?.data;
 
   // Set "Gradegy" as default experience type when data is loaded
   useEffect(() => {
@@ -45,6 +94,28 @@ export function ExperienceCreateView() {
       }
     }
   }, [experienceTypes, experienceType, setValue]);
+
+  // Reset project when organization changes
+  useEffect(() => {
+    setValue('project', undefined);
+    setValue('category', undefined);
+    setValue('subcategory', undefined);
+  }, [selectedOrganization, setValue]);
+
+  // Reset category and subcategory when project changes
+  useEffect(() => {
+    if (selectedProject) {
+      setValue('category', undefined);
+      setValue('subcategory', undefined);
+    }
+  }, [selectedProject, setValue]);
+
+  // Reset subcategory when category changes
+  useEffect(() => {
+    if (selectedCategory) {
+      setValue('subcategory', undefined);
+    }
+  }, [selectedCategory, setValue]);
 
   // Filter images by selected experience type
   const filteredImages = experienceType
@@ -218,7 +289,7 @@ export function ExperienceCreateView() {
                         : 'Experience image'
                     }
                     fill
-                    style={{ objectFit: 'cover' }}
+                    style={{ objectFit: 'contain' }}
                   />
                 ) : (
                   <Stack alignItems="center" spacing={1}>
@@ -284,24 +355,61 @@ export function ExperienceCreateView() {
 
               {/* Category and Filters Section */}
               <Card sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+                  Category and Filters
+                </Typography>
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={5}>
                     <Stack spacing={2}>
                       <Field.Select
+                        name="organization"
+                        label="Organization"
+                        options={[
+                          { label: 'Select Organization', value: '' },
+                          ...(organizations?.map((org: any) => ({
+                            label: org.title,
+                            value: org._id || org.id || org.title,
+                          })) || []),
+                        ]}
+                      />
+
+                      <Field.Select
+                        name="project"
+                        label="Project"
+                        disabled={!selectedOrganization}
+                        options={[
+                          { label: 'Select Project', value: '' },
+                          ...(projects?.map((project: any) => ({
+                            label: project.title,
+                            value: project._id || project.id || project.title,
+                          })) || []),
+                        ]}
+                      />
+
+                      <Field.Select
                         name="category"
                         label="Category"
+                        disabled={!selectedProject}
                         options={[
-                          { label: 'All', value: 'all' },
-                          { label: 'Academic', value: 'academic' },
-                          { label: 'Career', value: 'career' },
-                          { label: 'Personal', value: 'personal' },
+                          { label: 'Select Category', value: '' },
+                          ...(categories?.map((cat: any) => ({
+                            label: cat.title,
+                            value: cat._id || cat.id || cat.title,
+                          })) || []),
                         ]}
                       />
 
                       <Field.Select
                         name="subcategory"
                         label="Subcategory"
-                        options={[{ label: 'All', value: 'all' }]}
+                        disabled={!selectedCategory}
+                        options={[
+                          { label: 'Select Subcategory', value: '' },
+                          ...(subcategories?.map((sub: any) => ({
+                            label: sub.title,
+                            value: sub._id || sub.id || sub.title,
+                          })) || []),
+                        ]}
                       />
                     </Stack>
                   </Grid>

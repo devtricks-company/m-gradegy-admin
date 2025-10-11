@@ -22,9 +22,11 @@ export const experienceSchema = zod.object({
     .nullable()
     .refine((val) => val !== null, { message: 'Experience type is required' }) as zod.ZodType<ExperienceType>,
 
-  // Category and Filters
-  category: zod.string(),
-  subcategory: zod.string(),
+  // Access Control and Filters
+  organization: zod.string().optional(),
+  project: zod.string().optional(),
+  category: zod.string().optional(),
+  subcategory: zod.string().optional(),
   tags: zod.string(),
   educationPhase: zod.string(),
   semester: zod.string(),
@@ -66,8 +68,10 @@ export const defaultValues: ExperienceFormValues = {
   image: undefined,
   selectedImage: undefined,
   experienceType: null as any,
-  category: 'all',
-  subcategory: 'all',
+  organization: undefined,
+  project: undefined,
+  category: undefined,
+  subcategory: undefined,
   tags: 'all',
   educationPhase: 'all',
   semester: 'all',
