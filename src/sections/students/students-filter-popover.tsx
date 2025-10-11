@@ -150,13 +150,14 @@ export function StudentsFilterPopover({
   return (
     <CustomPopover
       open={open}
+      anchorEl={open}
       onClose={onClose}
       slotProps={{
         arrow: {
-          placement: 'bottom-right',
+          placement: 'top-right',
         },
         paper: {
-          sx: { width: 320, right: 200, position: 'absolute' },
+          sx: { width: 320 },
         },
       }}
     >
