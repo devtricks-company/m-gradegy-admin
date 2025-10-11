@@ -521,28 +521,8 @@ export function ExperienceCreateView() {
                   fullWidth
                   size="small"
                 />
-              </Stack>
-            </Card>
 
-            {/* Advanced Section */}
-            <Card sx={{ p: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
-                <Iconify icon="solar:settings-bold" width={20} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Advanced
-                </Typography>
-              </Stack>
-
-              <Stack spacing={2.5}>
-                {/* Past due */}
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="body2">Past due?</Typography>
-                  <Switch
-                    checked={pastDue}
-                    onChange={(e) => setPastDue(e.target.checked)}
-                    color="error"
-                  />
-                </Stack>
+                <Divider sx={{ my: 2 }} />
 
                 {/* Milestone */}
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -602,6 +582,28 @@ export function ExperienceCreateView() {
                       </Box>
                     ))}
                   </Stack>
+                </Stack>
+              </Stack>
+            </Card>
+
+            {/* Advanced Section */}
+            <Card sx={{ p: 3 }}>
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
+                <Iconify icon="solar:settings-bold" width={20} />
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Advanced
+                </Typography>
+              </Stack>
+
+              <Stack spacing={2.5}>
+                {/* Past due */}
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2">Past due?</Typography>
+                  <Switch
+                    checked={pastDue}
+                    onChange={(e) => setPastDue(e.target.checked)}
+                    color="error"
+                  />
                 </Stack>
               </Stack>
             </Card>
