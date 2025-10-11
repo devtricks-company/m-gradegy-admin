@@ -152,8 +152,11 @@ export function StudentsFilterPopover({
       open={open}
       onClose={onClose}
       slotProps={{
+        arrow: {
+          placement: 'bottom-right',
+        },
         paper: {
-          sx: { width: 320 },
+          sx: { width: 320, right: 200, position: 'absolute' },
         },
       }}
     >
