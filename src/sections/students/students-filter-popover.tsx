@@ -18,6 +18,36 @@ import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated
 import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
 
+import type {
+  Organization,
+  Project,
+  Category,
+  Subcategory,
+  ProjectsControllerFindByOrganization200,
+  CategoriesControllerFindByProject200,
+  SubcategoriesControllerFindAllByCategory200,
+} from 'src/lib/orval/generated/model';
+
+// ----------------------------------------------------------------------
+
+// Extend generated types to include _id field that exists in API responses
+type OrganizationWithId = Organization & { _id: string };
+type ProjectWithId = Project & { _id: string };
+type CategoryWithId = Category & { _id: string };
+type SubcategoryWithId = Subcategory & { _id: string };
+
+type ProjectsResponseWithId = Omit<ProjectsControllerFindByOrganization200, 'data'> & {
+  data?: ProjectWithId[];
+};
+
+type CategoriesResponseWithId = Omit<CategoriesControllerFindByProject200, 'data'> & {
+  data?: CategoryWithId[];
+};
+
+type SubcategoriesResponseWithId = Omit<SubcategoriesControllerFindAllByCategory200, 'data'> & {
+  data?: SubcategoryWithId[];
+};
+
 // ----------------------------------------------------------------------
 
 export type StudentsFilters = {
@@ -37,47 +67,61 @@ type StudentsFilterPopoverProps = {
 // ----------------------------------------------------------------------
 
 export function StudentsFilterPopover({
-  open,
+  open: anchorEl,
   onClose,
   filters,
   onFiltersChange,
 }: StudentsFilterPopoverProps) {
   // Fetch organizations
-  const { data: organizations, isLoading: loadingOrgs } =
-    useAccessControlControllerListOrganizations();
+  const { data: organizationsData, isLoading: loadingOrgs } =
+    useAccessControlControllerListOrganizations<OrganizationWithId[]>();
+
+  const organizations = organizationsData ?? [];
 
   // Fetch projects for the selected organization
   const { data: projectsData, isLoading: loadingProjects } =
-    useProjectsControllerFindByOrganization(filters.organizationId || '', undefined, {
-      query: {
-        enabled: !!filters.organizationId, // Only fetch when organization is selected
-      },
-    });
+    useProjectsControllerFindByOrganization<ProjectsResponseWithId>(
+      filters.organizationId || '',
+      undefined,
+      {
+        query: {
+          enabled: !!filters.organizationId, // Only fetch when organization is selected
+        },
+      }
+    );
 
-  const projects = projectsData?.data || [];
+  const projects = projectsData?.data ?? [];
 
   // Fetch categories for the selected project
   const { data: categoriesData, isLoading: loadingCategories } =
-    useCategoriesControllerFindByProject(filters.projectId || '', undefined, {
-      query: {
-        enabled: !!filters.projectId, // Only fetch when project is selected
-      },
-    });
+    useCategoriesControllerFindByProject<CategoriesResponseWithId>(
+      filters.projectId || '',
+      undefined,
+      {
+        query: {
+          enabled: !!filters.projectId, // Only fetch when project is selected
+        },
+      }
+    );
 
-  const categories = categoriesData?.data || [];
+  const categories = categoriesData?.data ?? [];
 
   // Fetch subcategories for the selected category
   const { data: subcategoriesData, isLoading: loadingSubcategories } =
-    useSubcategoriesControllerFindAllByCategory(filters.categoryId || '', undefined, {
-      query: {
-        enabled: !!filters.categoryId, // Only fetch when category is selected
-      },
-    });
+    useSubcategoriesControllerFindAllByCategory<SubcategoriesResponseWithId>(
+      filters.categoryId || '',
+      undefined,
+      {
+        query: {
+          enabled: !!filters.categoryId, // Only fetch when category is selected
+        },
+      }
+    );
 
-  const subcategories = subcategoriesData?.data || [];
+  const subcategories = subcategoriesData?.data ?? [];
 
   const handleOrganizationChange = useCallback(
-    (_event: any, value: any) => {
+    (_event: unknown, value: OrganizationWithId | null) => {
       onFiltersChange({
         ...filters,
         organizationId: value?._id,
@@ -91,7 +135,7 @@ export function StudentsFilterPopover({
   );
 
   const handleProjectChange = useCallback(
-    (_event: any, value: any) => {
+    (_event: unknown, value: ProjectWithId | null) => {
       onFiltersChange({
         ...filters,
         projectId: value?._id,
@@ -104,7 +148,7 @@ export function StudentsFilterPopover({
   );
 
   const handleCategoryChange = useCallback(
-    (_event: any, value: any) => {
+    (_event: unknown, value: CategoryWithId | null) => {
       onFiltersChange({
         ...filters,
         categoryId: value?._id,
@@ -116,7 +160,7 @@ export function StudentsFilterPopover({
   );
 
   const handleSubcategoryChange = useCallback(
-    (_event: any, value: any) => {
+    (_event: unknown, value: SubcategoryWithId | null) => {
       onFiltersChange({
         ...filters,
         subcategoryId: value?._id,
@@ -135,11 +179,11 @@ export function StudentsFilterPopover({
   }, [onFiltersChange]);
 
   const selectedOrganization =
-    organizations?.find((org: any) => org._id === filters.organizationId) || null;
-  const selectedProject = projects?.find((proj: any) => proj._id === filters.projectId) || null;
-  const selectedCategory = categories?.find((cat: any) => cat._id === filters.categoryId) || null;
+    organizations.find((org) => org._id === filters.organizationId) || null;
+  const selectedProject = projects.find((proj) => proj._id === filters.projectId) || null;
+  const selectedCategory = categories.find((cat) => cat._id === filters.categoryId) || null;
   const selectedSubcategory =
-    subcategories?.find((sub: any) => sub._id === filters.subcategoryId) || null;
+    subcategories.find((sub) => sub._id === filters.subcategoryId) || null;
 
   const hasActiveFilters =
     !!filters.organizationId ||
@@ -149,8 +193,8 @@ export function StudentsFilterPopover({
 
   return (
     <CustomPopover
-      open={open}
-      anchorEl={open}
+      open={Boolean(anchorEl)}
+      anchorEl={anchorEl}
       onClose={onClose}
       slotProps={{
         arrow: {
@@ -167,7 +211,7 @@ export function StudentsFilterPopover({
         <Autocomplete
           fullWidth
           size="small"
-          options={organizations || []}
+          options={organizations}
           loading={loadingOrgs}
           value={selectedOrganization}
           onChange={handleOrganizationChange}
@@ -193,7 +237,7 @@ export function StudentsFilterPopover({
         <Autocomplete
           fullWidth
           size="small"
-          options={projects || []}
+          options={projects}
           loading={loadingProjects}
           value={selectedProject}
           onChange={handleProjectChange}
@@ -219,7 +263,7 @@ export function StudentsFilterPopover({
         <Autocomplete
           fullWidth
           size="small"
-          options={categories || []}
+          options={categories}
           loading={loadingCategories}
           value={selectedCategory}
           onChange={handleCategoryChange}
@@ -246,7 +290,7 @@ export function StudentsFilterPopover({
         <Autocomplete
           fullWidth
           size="small"
-          options={subcategories || []}
+          options={subcategories}
           loading={loadingSubcategories}
           value={selectedSubcategory}
           onChange={handleSubcategoryChange}
