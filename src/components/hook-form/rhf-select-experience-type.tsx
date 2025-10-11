@@ -1,4 +1,5 @@
 import type { TextFieldProps } from '@mui/material/TextField';
+import type { ChangeEvent } from 'react';
 
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -35,8 +36,12 @@ export function RHFSelectExperienceType({ name, helperText, native = false, ...o
           {...field}
           select
           fullWidth
-          onChange={(event) => {
-            console.log(event);
+          value={field.value?.title || ''}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            const selectedTitle = event.target.value;
+            const selectedObject = experienceTypes?.find((t) => t.title === selectedTitle);
+            console.log('Selected object:', selectedObject);
+            field.onChange(selectedObject || null);
           }}
           SelectProps={{
             native,
@@ -70,43 +75,43 @@ export function RHFSelectExperienceType({ name, helperText, native = false, ...o
           }}
           {...other}
         >
-          {native ? (
-            <div>
-              <option value="">Select experience type</option>
-              {experienceTypes?.map((type: ExperienceType) => (
-                <option key={type.title} value={type.title}>
-                  {type.title}
-                </option>
-              ))}
-            </div>
-          ) : (
-            <div>
-              <MenuItem value="">
-                <em>Select experience type</em>
-              </MenuItem>
-              {experienceTypes?.map((type: ExperienceType) => (
-                <MenuItem key={type.title} value={type.title}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
-                    {type.icon && (
-                      <Iconify icon={type.icon} width={24} sx={{ color: type.color }} />
-                    )}
-                    <Box component="span">{type.title}</Box>
-                    <Chip
-                      size="small"
-                      sx={{
-                        ml: 'auto',
-                        bgcolor: type.color,
-                        color: 'white',
-                        height: 20,
-                        '& .MuiChip-label': { px: 1 },
-                      }}
-                      label={type.title}
-                    />
-                  </Box>
-                </MenuItem>
-              ))}
-            </div>
-          )}
+          {native
+            ? [
+                <option key="empty" value="">
+                  Select experience type
+                </option>,
+                ...(experienceTypes?.map((type: ExperienceType) => (
+                  <option key={type.title} value={type.title}>
+                    {type.title}
+                  </option>
+                )) || []),
+              ]
+            : [
+                <MenuItem key="empty" value="">
+                  <em>Select experience type</em>
+                </MenuItem>,
+                ...(experienceTypes?.map((type: ExperienceType) => (
+                  <MenuItem key={type.title} value={type.title}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
+                      {type.icon && (
+                        <Iconify icon={type.icon} width={24} sx={{ color: type.color }} />
+                      )}
+                      <Box component="span">{type.title}</Box>
+                      <Chip
+                        size="small"
+                        sx={{
+                          ml: 'auto',
+                          bgcolor: type.color,
+                          color: 'white',
+                          height: 20,
+                          '& .MuiChip-label': { px: 1 },
+                        }}
+                        label={type.title}
+                      />
+                    </Box>
+                  </MenuItem>
+                )) || []),
+              ]}
         </TextField>
       )}
     />
