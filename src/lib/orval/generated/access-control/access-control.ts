@@ -52,7 +52,7 @@ export const accessControlControllerCreateAssignment = (
 ) => {
   return customInstance<UserAssignment>(
     {
-      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments`,
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/assignments`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createUserAssignmentDto,
@@ -1260,7 +1260,11 @@ export const accessControlControllerCreateSubcategory = (
 ) => {
   return customInstance<Subcategory>(
     {
+<<<<<<< HEAD
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories`,
+=======
       url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories`,
+>>>>>>> main
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createSubcategoryDto,
@@ -1346,7 +1350,11 @@ export const accessControlControllerGetSubcategory = (
 ) => {
   return customInstance<Subcategory>(
     {
+<<<<<<< HEAD
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+=======
       url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+>>>>>>> main
       method: 'GET',
       signal,
     },
@@ -1356,7 +1364,11 @@ export const accessControlControllerGetSubcategory = (
 
 export const getAccessControlControllerGetSubcategoryQueryKey = (id?: string) => {
   return [
+<<<<<<< HEAD
+    `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+=======
     `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+>>>>>>> main
   ] as const;
 };
 
@@ -1505,7 +1517,11 @@ export const accessControlControllerUpdateSubcategory = (
 ) => {
   return customInstance<Subcategory>(
     {
+<<<<<<< HEAD
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+=======
       url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+>>>>>>> main
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateSubcategoryDto,
@@ -1589,7 +1605,11 @@ export const accessControlControllerDeleteSubcategory = (
 ) => {
   return customInstance<Subcategory>(
     {
+<<<<<<< HEAD
+      url: `http://localhost:https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+=======
       url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/access/subcategories/${id}`,
+>>>>>>> main
       method: 'DELETE',
     },
     options
