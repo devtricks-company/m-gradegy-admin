@@ -12,6 +12,7 @@ import { paths } from 'src/routes/paths';
 import { Form } from 'src/components/hook-form/form-provider';
 import { Field } from 'src/components/hook-form/fields';
 import { useExperienceTypesControllerFindAll } from 'src/lib/orval/generated/experience-types/experience-types';
+import { useExperienceImagesControllerFindAll } from 'src/lib/orval/generated/experience-images/experience-images';
 
 import { experienceSchema, defaultValues, type ExperienceFormValues } from '../experience-schema';
 import Image from 'next/image';
@@ -24,6 +25,7 @@ export function ExperienceCreateView() {
 
   const { handleSubmit, watch, setValue } = methods;
   const { data: experienceTypes } = useExperienceTypesControllerFindAll();
+  const { data: experienceImages } = useExperienceImagesControllerFindAll();
 
   const xpCompletion = watch('xpCompletion');
   const experienceType = watch('experienceType');
@@ -37,6 +39,13 @@ export function ExperienceCreateView() {
       }
     }
   }, [experienceTypes, experienceType, setValue]);
+
+  // Filter images by selected experience type and get the first one
+  const filteredImage = experienceType
+    ? experienceImages?.data?.find(
+        (image) => image.experienceType.title === experienceType.title
+      )
+    : undefined;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -168,17 +177,32 @@ export function ExperienceCreateView() {
                   mb: 3,
                   border: '2px dashed rgba(255,255,255,0.4)',
                   cursor: 'pointer',
+                  overflow: 'hidden',
+                  position: 'relative',
                   '&:hover': {
                     bgcolor: 'rgba(255,255,255,0.25)',
                   },
                 }}
               >
-                <Stack alignItems="center" spacing={1}>
-                  <Iconify icon="solar:gallery-add-bold" width={48} sx={{ opacity: 0.7 }} />
-                  <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                    Upload Image
-                  </Typography>
-                </Stack>
+                {filteredImage?.url ? (
+                  <Image
+                    src={filteredImage.url}
+                    alt={
+                      typeof filteredImage.title === 'string'
+                        ? filteredImage.title
+                        : 'Experience image'
+                    }
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <Stack alignItems="center" spacing={1}>
+                    <Iconify icon="solar:gallery-add-bold" width={48} sx={{ opacity: 0.7 }} />
+                    <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                      Upload Image
+                    </Typography>
+                  </Stack>
+                )}
               </Box>
 
               {/* XP and Complete Button */}
