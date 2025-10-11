@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Box, Card, Grid, Stack, Typography, Divider, Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +11,7 @@ import { Iconify } from 'src/components/iconify';
 import { paths } from 'src/routes/paths';
 import { Form } from 'src/components/hook-form/form-provider';
 import { Field } from 'src/components/hook-form/fields';
+import { useExperienceTypesControllerFindAll } from 'src/lib/orval/generated/experience-types/experience-types';
 
 import { experienceSchema, defaultValues, type ExperienceFormValues } from '../experience-schema';
 
@@ -19,10 +21,21 @@ export function ExperienceCreateView() {
     defaultValues,
   });
 
-  const { handleSubmit, watch } = methods;
+  const { handleSubmit, watch, setValue } = methods;
+  const { data: experienceTypes } = useExperienceTypesControllerFindAll();
 
   const xpCompletion = watch('xpCompletion');
   const experienceType = watch('experienceType');
+
+  // Set "Gradegy" as default experience type when data is loaded
+  useEffect(() => {
+    if (experienceTypes && !experienceType) {
+      const gradegyType = experienceTypes.find((type) => type.title === 'Gradegy');
+      if (gradegyType) {
+        setValue('experienceType', gradegyType);
+      }
+    }
+  }, [experienceTypes, experienceType, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
