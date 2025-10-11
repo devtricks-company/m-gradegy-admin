@@ -2,11 +2,9 @@
 
 import { useCallback } from 'react';
 
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
@@ -15,14 +13,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover } from 'src/components/custom-popover';
 
-import {
-  useAccessControlControllerListOrganizations,
-  useAccessControlControllerListProjects,
-  useAccessControlControllerListCategories,
-  useAccessControlControllerListSubcategories,
-} from 'src/lib/orval/generated/access-control/access-control';
-
-import type { Organization, Project, Category, Subcategory } from 'src/lib/orval/generated/model';
+import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
+import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
+import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
+import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
 
 // ----------------------------------------------------------------------
 
@@ -48,21 +42,42 @@ export function StudentsFilterPopover({
   filters,
   onFiltersChange,
 }: StudentsFilterPopoverProps) {
-  // Fetch filter options
+  // Fetch organizations
   const { data: organizations, isLoading: loadingOrgs } =
     useAccessControlControllerListOrganizations();
-  const { data: projects, isLoading: loadingProjects } = useAccessControlControllerListProjects();
-  const { data: categories, isLoading: loadingCategories } =
-    useAccessControlControllerListCategories(
-      filters.projectId ? { projectId: filters.projectId } : undefined
-    );
-  const { data: subcategories, isLoading: loadingSubcategories } =
-    useAccessControlControllerListSubcategories(
-      filters.categoryId ? { categoryId: filters.categoryId } : undefined
-    );
+
+  // Fetch projects for the selected organization
+  const { data: projectsData, isLoading: loadingProjects } =
+    useProjectsControllerFindByOrganization(filters.organizationId || '', undefined, {
+      query: {
+        enabled: !!filters.organizationId, // Only fetch when organization is selected
+      },
+    });
+
+  const projects = projectsData?.data || [];
+
+  // Fetch categories for the selected project
+  const { data: categoriesData, isLoading: loadingCategories } =
+    useCategoriesControllerFindByProject(filters.projectId || '', undefined, {
+      query: {
+        enabled: !!filters.projectId, // Only fetch when project is selected
+      },
+    });
+
+  const categories = categoriesData?.data || [];
+
+  // Fetch subcategories for the selected category
+  const { data: subcategoriesData, isLoading: loadingSubcategories } =
+    useSubcategoriesControllerFindAllByCategory(filters.categoryId || '', undefined, {
+      query: {
+        enabled: !!filters.categoryId, // Only fetch when category is selected
+      },
+    });
+
+  const subcategories = subcategoriesData?.data || [];
 
   const handleOrganizationChange = useCallback(
-    (_event: any, value: Organization | null) => {
+    (_event: any, value: any) => {
       onFiltersChange({
         ...filters,
         organizationId: value?._id,
@@ -76,7 +91,7 @@ export function StudentsFilterPopover({
   );
 
   const handleProjectChange = useCallback(
-    (_event: any, value: Project | null) => {
+    (_event: any, value: any) => {
       onFiltersChange({
         ...filters,
         projectId: value?._id,
@@ -89,7 +104,7 @@ export function StudentsFilterPopover({
   );
 
   const handleCategoryChange = useCallback(
-    (_event: any, value: Category | null) => {
+    (_event: any, value: any) => {
       onFiltersChange({
         ...filters,
         categoryId: value?._id,
@@ -101,7 +116,7 @@ export function StudentsFilterPopover({
   );
 
   const handleSubcategoryChange = useCallback(
-    (_event: any, value: Subcategory | null) => {
+    (_event: any, value: any) => {
       onFiltersChange({
         ...filters,
         subcategoryId: value?._id,
@@ -120,11 +135,11 @@ export function StudentsFilterPopover({
   }, [onFiltersChange]);
 
   const selectedOrganization =
-    organizations?.find((org) => org._id === filters.organizationId) || null;
-  const selectedProject = projects?.find((proj) => proj._id === filters.projectId) || null;
-  const selectedCategory = categories?.find((cat) => cat._id === filters.categoryId) || null;
+    organizations?.find((org: any) => org._id === filters.organizationId) || null;
+  const selectedProject = projects?.find((proj: any) => proj._id === filters.projectId) || null;
+  const selectedCategory = categories?.find((cat: any) => cat._id === filters.categoryId) || null;
   const selectedSubcategory =
-    subcategories?.find((sub) => sub._id === filters.subcategoryId) || null;
+    subcategories?.find((sub: any) => sub._id === filters.subcategoryId) || null;
 
   const hasActiveFilters =
     !!filters.organizationId ||
