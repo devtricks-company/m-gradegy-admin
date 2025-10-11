@@ -23,6 +23,8 @@ import type {
 
 import type {
   AccessControlControllerListCategoriesParams,
+  AccessControlControllerListStudents200,
+  AccessControlControllerListStudentsParams,
   AccessControlControllerListSubcategoriesParams,
   AccessControlControllerRegisterStudentWithAccess201,
   Category,
@@ -217,6 +219,161 @@ export const useAccessControlControllerRegisterStudentWithAccess = <
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary List students accessible to the current user within their scope.
+ */
+export const accessControlControllerListStudents = (
+  params?: AccessControlControllerListStudentsParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccessControlControllerListStudents200>(
+    { url: `http://localhost:5400/access/students`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getAccessControlControllerListStudentsQueryKey = (
+  params?: AccessControlControllerListStudentsParams
+) => {
+  return [`http://localhost:5400/access/students`, ...(params ? [params] : [])] as const;
+};
+
+export const getAccessControlControllerListStudentsQueryOptions = <
+  TData = Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+  TError = unknown,
+>(
+  params?: AccessControlControllerListStudentsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAccessControlControllerListStudentsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof accessControlControllerListStudents>>> = ({
+    signal,
+  }) => accessControlControllerListStudents(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccessControlControllerListStudentsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accessControlControllerListStudents>>
+>;
+export type AccessControlControllerListStudentsQueryError = unknown;
+
+export function useAccessControlControllerListStudents<
+  TData = Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+  TError = unknown,
+>(
+  params: undefined | AccessControlControllerListStudentsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+          TError,
+          Awaited<ReturnType<typeof accessControlControllerListStudents>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAccessControlControllerListStudents<
+  TData = Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+  TError = unknown,
+>(
+  params?: AccessControlControllerListStudentsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+          TError,
+          Awaited<ReturnType<typeof accessControlControllerListStudents>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAccessControlControllerListStudents<
+  TData = Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+  TError = unknown,
+>(
+  params?: AccessControlControllerListStudentsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary List students accessible to the current user within their scope.
+ */
+
+export function useAccessControlControllerListStudents<
+  TData = Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+  TError = unknown,
+>(
+  params?: AccessControlControllerListStudentsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof accessControlControllerListStudents>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAccessControlControllerListStudentsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * @summary List assignments for a specific user.
  */

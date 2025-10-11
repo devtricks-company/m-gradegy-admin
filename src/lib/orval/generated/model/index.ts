@@ -7,6 +7,11 @@
  */
 
 export * from './accessControlControllerListCategoriesParams';
+export * from './accessControlControllerListStudents200';
+export * from './accessControlControllerListStudents200DataItem';
+export * from './accessControlControllerListStudents200DataItemUser';
+export * from './accessControlControllerListStudents200Meta';
+export * from './accessControlControllerListStudentsParams';
 export * from './accessControlControllerListSubcategoriesParams';
 export * from './accessControlControllerRegisterStudentWithAccess201';
 export * from './administrativeRole';
