@@ -27,6 +27,7 @@ import { Iconify } from 'src/components/iconify';
 import { paths } from 'src/routes/paths';
 
 export function ExperienceCreateView() {
+  const [experienceType, setExperienceType] = useState('');
   const [timing, setTiming] = useState('delay_after_previous');
   const [days, setDays] = useState(0);
   const [completionRequired, setCompletionRequired] = useState(true);
@@ -200,47 +201,28 @@ export function ExperienceCreateView() {
         {/* Right Side - Form Configuration */}
         <Grid item xs={12} md={8}>
           <Stack spacing={3}>
-            {/* Timing Section */}
+            {/* Experience Type Section */}
             <Card sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                Timing
+              <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+                Experience Type
               </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={8}>
-                  <FormControl fullWidth>
-                    <Select
-                      value={timing}
-                      onChange={(e) => setTiming(e.target.value)}
-                      displayEmpty
-                    >
-                      <MenuItem value="delay_after_previous">Delay After Previous</MenuItem>
-                      <MenuItem value="immediate">Immediate</MenuItem>
-                      <MenuItem value="scheduled">Scheduled</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    label="# Days"
-                    type="number"
-                    value={days}
-                    onChange={(e) => setDays(Number(e.target.value))}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={completionRequired}
-                        onChange={(e) => setCompletionRequired(e.target.checked)}
-                        color="error"
-                      />
-                    }
-                    label="Completion Req'd"
-                  />
-                </Grid>
-              </Grid>
+              <FormControl fullWidth>
+                <InputLabel>Select Experience Type</InputLabel>
+                <Select
+                  value={experienceType}
+                  onChange={(e) => setExperienceType(e.target.value)}
+                  label="Select Experience Type"
+                >
+                  <MenuItem value="project">Project</MenuItem>
+                  <MenuItem value="assignment">Assignment</MenuItem>
+                  <MenuItem value="activity">Activity</MenuItem>
+                  <MenuItem value="reading">Reading</MenuItem>
+                  <MenuItem value="video">Video</MenuItem>
+                  <MenuItem value="quiz">Quiz</MenuItem>
+                  <MenuItem value="discussion">Discussion</MenuItem>
+                  <MenuItem value="presentation">Presentation</MenuItem>
+                </Select>
+              </FormControl>
             </Card>
 
             {/* Category and Filters Section */}
@@ -325,6 +307,49 @@ export function ExperienceCreateView() {
                       </Select>
                     </FormControl>
                   </Stack>
+                </Grid>
+              </Grid>
+            </Card>
+
+            {/* Timing Section */}
+            <Card sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Timing
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={8}>
+                  <FormControl fullWidth>
+                    <Select
+                      value={timing}
+                      onChange={(e) => setTiming(e.target.value)}
+                      displayEmpty
+                    >
+                      <MenuItem value="delay_after_previous">Delay After Previous</MenuItem>
+                      <MenuItem value="immediate">Immediate</MenuItem>
+                      <MenuItem value="scheduled">Scheduled</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    label="# Days"
+                    type="number"
+                    value={days}
+                    onChange={(e) => setDays(Number(e.target.value))}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={completionRequired}
+                        onChange={(e) => setCompletionRequired(e.target.checked)}
+                        color="error"
+                      />
+                    }
+                    label="Completion Req'd"
+                  />
                 </Grid>
               </Grid>
             </Card>
