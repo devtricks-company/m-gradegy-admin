@@ -39,7 +39,8 @@ type Props = {
 export function ProjectDetailsView({ id }: Props) {
   const queryClient = useQueryClient();
   const { data: project, isLoading, error } = useProjectsControllerFindOne(id);
-  const { data: categoriesData, isLoading: loadingCategories } = useCategoriesControllerFindByProject(id);
+  const { data: categoriesData, isLoading: loadingCategories } =
+    useCategoriesControllerFindByProject(id);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
@@ -196,7 +197,12 @@ export function ProjectDetailsView({ id }: Props) {
       {project && (
         <Card sx={{ mt: 3 }}>
           <CardContent>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ mb: 2 }}
+            >
               <Typography variant="h6">Categories</Typography>
               <CategoryForm projectId={id} />
             </Stack>
@@ -248,7 +254,11 @@ export function ProjectDetailsView({ id }: Props) {
         <ProjectForm
           open={openEditDialog}
           onClose={() => setOpenEditDialog(false)}
-          organizationId={typeof project.organizations[0] === 'string' ? project.organizations[0] : project.organizations[0]?.id || ''}
+          organizationId={
+            typeof project.organizations[0] === 'string'
+              ? project.organizations[0]
+              : (project.organizations[0] as any)?.id || ''
+          }
           project={project}
           projectId={id}
           isEdit
