@@ -47,6 +47,7 @@ export * from './experienceProgressControllerFindByUser200';
 export * from './experienceProgressControllerFindByUser200Meta';
 export * from './experienceProgressStatus';
 export * from './experienceTimingType';
+export * from './experienceType';
 export * from './experiencesControllerFindAll200';
 export * from './experiencesControllerFindAll200Meta';
 export * from './fileUploadDto';
