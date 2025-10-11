@@ -43,32 +43,24 @@ const ICONS = {
 
 export const navData = [
   /**
-   * Overview
+   * Students Management
    */
   {
-    subheader: 'Overview 6.0.0',
+    subheader: 'Students Management',
     items: [
-      { title: 'One', path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
-      { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
+      { title: 'Students', path: paths.dashboard.students, icon: ICONS.user },
+      { title: 'Experience', path: paths.dashboard.experience, icon: ICONS.course },
     ],
+    disabled: true,
   },
   /**
-   * Management
+   * Administrator Management
    */
   {
-    subheader: 'Management',
+    subheader: 'Administrator Management',
     items: [
-      {
-        title: 'Group',
-        path: paths.dashboard.group.root,
-        icon: ICONS.user,
-        children: [
-          { title: 'Four', path: paths.dashboard.group.root },
-          { title: 'Five', path: paths.dashboard.group.five },
-          { title: 'Six', path: paths.dashboard.group.six },
-        ],
-      },
+      { title: 'Organizations', path: paths.dashboard.organizations, icon: ICONS.folder },
+      { title: 'Administrator', path: paths.dashboard.administrator, icon: ICONS.user },
     ],
   },
 ];
