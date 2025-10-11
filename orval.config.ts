@@ -3,7 +3,8 @@ import { defineConfig } from 'orval';
 export default defineConfig({
   api: {
     input: {
-      target: 'http://localhost:5400/schema',
+      target:
+        'https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/schema',
     },
     output: {
       mode: 'tags-split',
@@ -11,7 +12,7 @@ export default defineConfig({
       schemas: 'src/lib/orval/generated/model',
       client: 'react-query',
       httpClient: 'axios',
-      baseUrl: 'http://localhost:5400',
+      baseUrl: 'https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net',
       override: {
         mutator: {
           path: 'src/lib/orval/custom-instance.ts',

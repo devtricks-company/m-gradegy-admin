@@ -42,7 +42,7 @@ export const experiencesControllerCreate = (
 ) => {
   return customInstance<Experience>(
     {
-      url: `http://localhost:5400/experiences`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experiences`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createExperienceDto,
@@ -126,13 +126,19 @@ export const experiencesControllerFindAll = (
   signal?: AbortSignal
 ) => {
   return customInstance<ExperiencesControllerFindAll200>(
-    { url: `http://localhost:5400/experiences`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experiences`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getExperiencesControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/experiences`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experiences`,
+  ] as const;
 };
 
 export const getExperiencesControllerFindAllQueryOptions = <
@@ -252,13 +258,19 @@ export const experiencesControllerFindOne = (
   signal?: AbortSignal
 ) => {
   return customInstance<Experience>(
-    { url: `http://localhost:5400/experiences/${id}`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experiences/${id}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getExperiencesControllerFindOneQueryKey = (id?: string) => {
-  return [`http://localhost:5400/experiences/${id}`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experiences/${id}`,
+  ] as const;
 };
 
 export const getExperiencesControllerFindOneQueryOptions = <
@@ -386,7 +398,7 @@ export const experiencesControllerUpdate = (
 ) => {
   return customInstance<Experience>(
     {
-      url: `http://localhost:5400/experiences/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experiences/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateExperienceDto,
@@ -469,7 +481,10 @@ export const experiencesControllerRemove = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Experience>(
-    { url: `http://localhost:5400/experiences/${id}`, method: 'DELETE' },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/experiences/${id}`,
+      method: 'DELETE',
+    },
     options
   );
 };

@@ -45,7 +45,7 @@ export const projectsControllerCreate = (
 ) => {
   return customInstance<Project>(
     {
-      url: `http://localhost:5400/projects`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createProjectDto,
@@ -129,13 +129,19 @@ export const projectsControllerFindAll = (
   signal?: AbortSignal
 ) => {
   return customInstance<ProjectsControllerFindAll200>(
-    { url: `http://localhost:5400/projects`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getProjectsControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/projects`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects`,
+  ] as const;
 };
 
 export const getProjectsControllerFindAllQueryOptions = <
@@ -257,7 +263,7 @@ export const projectsControllerFindByOrganization = (
 ) => {
   return customInstance<ProjectsControllerFindByOrganization200>(
     {
-      url: `http://localhost:5400/projects/organization/${organizationId}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/organization/${organizationId}`,
       method: 'GET',
       params,
       signal,
@@ -271,7 +277,7 @@ export const getProjectsControllerFindByOrganizationQueryKey = (
   params?: ProjectsControllerFindByOrganizationParams
 ) => {
   return [
-    `http://localhost:5400/projects/organization/${organizationId}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/organization/${organizationId}`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -432,13 +438,19 @@ export const projectsControllerFindOne = (
   signal?: AbortSignal
 ) => {
   return customInstance<ProjectsControllerFindOne200>(
-    { url: `http://localhost:5400/projects/${id}`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getProjectsControllerFindOneQueryKey = (id?: string) => {
-  return [`http://localhost:5400/projects/${id}`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
+  ] as const;
 };
 
 export const getProjectsControllerFindOneQueryOptions = <
@@ -566,7 +578,7 @@ export const projectsControllerUpdate = (
 ) => {
   return customInstance<Project>(
     {
-      url: `http://localhost:5400/projects/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateProjectDto,
@@ -649,7 +661,10 @@ export const projectsControllerRemove = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Project>(
-    { url: `http://localhost:5400/projects/${id}`, method: 'DELETE' },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/projects/${id}`,
+      method: 'DELETE',
+    },
     options
   );
 };
