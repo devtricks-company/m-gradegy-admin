@@ -44,7 +44,7 @@ export const categoriesControllerCreate = (
 ) => {
   return customInstance<Category>(
     {
-      url: `http://localhost:5400/categories`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createCategoryDto,
@@ -128,13 +128,19 @@ export const categoriesControllerFindAll = (
   signal?: AbortSignal
 ) => {
   return customInstance<CategoriesControllerFindAll200>(
-    { url: `http://localhost:5400/categories`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getCategoriesControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/categories`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories`,
+  ] as const;
 };
 
 export const getCategoriesControllerFindAllQueryOptions = <
@@ -255,7 +261,12 @@ export const categoriesControllerFindByProject = (
   signal?: AbortSignal
 ) => {
   return customInstance<CategoriesControllerFindByProject200>(
-    { url: `http://localhost:5400/categories/project/${projectId}`, method: 'GET', params, signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/project/${projectId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
     options
   );
 };
@@ -265,7 +276,7 @@ export const getCategoriesControllerFindByProjectQueryKey = (
   params?: CategoriesControllerFindByProjectParams
 ) => {
   return [
-    `http://localhost:5400/categories/project/${projectId}`,
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/project/${projectId}`,
     ...(params ? [params] : []),
   ] as const;
 };
@@ -400,13 +411,19 @@ export const categoriesControllerFindOne = (
   signal?: AbortSignal
 ) => {
   return customInstance<Category>(
-    { url: `http://localhost:5400/categories/${id}`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getCategoriesControllerFindOneQueryKey = (id?: string) => {
-  return [`http://localhost:5400/categories/${id}`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
+  ] as const;
 };
 
 export const getCategoriesControllerFindOneQueryOptions = <
@@ -534,7 +551,7 @@ export const categoriesControllerUpdate = (
 ) => {
   return customInstance<Category>(
     {
-      url: `http://localhost:5400/categories/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateCategoryDto,
@@ -617,7 +634,10 @@ export const categoriesControllerRemove = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Category>(
-    { url: `http://localhost:5400/categories/${id}`, method: 'DELETE' },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/categories/${id}`,
+      method: 'DELETE',
+    },
     options
   );
 };

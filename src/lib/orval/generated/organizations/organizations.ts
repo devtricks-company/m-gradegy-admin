@@ -44,7 +44,7 @@ export const organizationsControllerCreate = (
 ) => {
   return customInstance<Organization>(
     {
-      url: `http://localhost:5400/organizations`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createOrganizationDto,
@@ -129,7 +129,12 @@ export const organizationsControllerFindAll = (
   signal?: AbortSignal
 ) => {
   return customInstance<OrganizationsControllerFindAll200>(
-    { url: `http://localhost:5400/organizations`, method: 'GET', params, signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
+      method: 'GET',
+      params,
+      signal,
+    },
     options
   );
 };
@@ -137,7 +142,10 @@ export const organizationsControllerFindAll = (
 export const getOrganizationsControllerFindAllQueryKey = (
   params?: OrganizationsControllerFindAllParams
 ) => {
-  return [`http://localhost:5400/organizations`, ...(params ? [params] : [])] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getOrganizationsControllerFindAllQueryOptions = <
@@ -264,13 +272,19 @@ export const organizationsControllerFindOne = (
   signal?: AbortSignal
 ) => {
   return customInstance<OrganizationsControllerFindOne200>(
-    { url: `http://localhost:5400/organizations/${id}`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getOrganizationsControllerFindOneQueryKey = (id?: string) => {
-  return [`http://localhost:5400/organizations/${id}`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
+  ] as const;
 };
 
 export const getOrganizationsControllerFindOneQueryOptions = <
@@ -398,7 +412,7 @@ export const organizationsControllerUpdate = (
 ) => {
   return customInstance<Organization>(
     {
-      url: `http://localhost:5400/organizations/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateOrganizationDto,
@@ -481,7 +495,10 @@ export const organizationsControllerRemove = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Organization>(
-    { url: `http://localhost:5400/organizations/${id}`, method: 'DELETE' },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/organizations/${id}`,
+      method: 'DELETE',
+    },
     options
   );
 };

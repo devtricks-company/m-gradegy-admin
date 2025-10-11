@@ -26,11 +26,20 @@ export const appControllerGetHello = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<void>({ url: `http://localhost:5400/`, method: 'GET', signal }, options);
+  return customInstance<void>(
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getAppControllerGetHelloQueryKey = () => {
-  return [`http://localhost:5400/`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/`,
+  ] as const;
 };
 
 export const getAppControllerGetHelloQueryOptions = <

@@ -43,7 +43,7 @@ export const usersControllerCreate = (
 ) => {
   return customInstance<User>(
     {
-      url: `http://localhost:5400/users`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createUserDto,
@@ -127,13 +127,19 @@ export const usersControllerFindAll = (
   signal?: AbortSignal
 ) => {
   return customInstance<User[]>(
-    { url: `http://localhost:5400/users`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getUsersControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/users`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users`,
+  ] as const;
 };
 
 export const getUsersControllerFindAllQueryOptions = <
@@ -252,7 +258,12 @@ export const usersControllerFindAllAdministrative = (
   signal?: AbortSignal
 ) => {
   return customInstance<UsersControllerFindAllAdministrative200>(
-    { url: `http://localhost:5400/users/admins`, method: 'GET', params, signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users/admins`,
+      method: 'GET',
+      params,
+      signal,
+    },
     options
   );
 };
@@ -260,7 +271,10 @@ export const usersControllerFindAllAdministrative = (
 export const getUsersControllerFindAllAdministrativeQueryKey = (
   params?: UsersControllerFindAllAdministrativeParams
 ) => {
-  return [`http://localhost:5400/users/admins`, ...(params ? [params] : [])] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users/admins`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getUsersControllerFindAllAdministrativeQueryOptions = <
@@ -408,13 +422,19 @@ export const usersControllerFindOne = (
   signal?: AbortSignal
 ) => {
   return customInstance<User>(
-    { url: `http://localhost:5400/users/${id}`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users/${id}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getUsersControllerFindOneQueryKey = (id?: string) => {
-  return [`http://localhost:5400/users/${id}`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users/${id}`,
+  ] as const;
 };
 
 export const getUsersControllerFindOneQueryOptions = <
@@ -541,7 +561,7 @@ export const usersControllerUpdate = (
 ) => {
   return customInstance<User>(
     {
-      url: `http://localhost:5400/users/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateUserDto,
@@ -624,7 +644,10 @@ export const usersControllerRemove = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<User>(
-    { url: `http://localhost:5400/users/${id}`, method: 'DELETE' },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/users/${id}`,
+      method: 'DELETE',
+    },
     options
   );
 };

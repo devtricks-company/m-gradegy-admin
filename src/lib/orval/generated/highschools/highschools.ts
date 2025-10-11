@@ -42,7 +42,7 @@ export const highschoolsControllerCreate = (
 ) => {
   return customInstance<Highschool>(
     {
-      url: `http://localhost:5400/highschools`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/highschools`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       data: createHighschoolDto,
@@ -126,13 +126,19 @@ export const highschoolsControllerFindAll = (
   signal?: AbortSignal
 ) => {
   return customInstance<HighschoolsControllerFindAll200>(
-    { url: `http://localhost:5400/highschools`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/highschools`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getHighschoolsControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/highschools`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/highschools`,
+  ] as const;
 };
 
 export const getHighschoolsControllerFindAllQueryOptions = <
@@ -252,13 +258,19 @@ export const highschoolsControllerFindOne = (
   signal?: AbortSignal
 ) => {
   return customInstance<Highschool>(
-    { url: `http://localhost:5400/highschools/${id}`, method: 'GET', signal },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/highschools/${id}`,
+      method: 'GET',
+      signal,
+    },
     options
   );
 };
 
 export const getHighschoolsControllerFindOneQueryKey = (id?: string) => {
-  return [`http://localhost:5400/highschools/${id}`] as const;
+  return [
+    `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/highschools/${id}`,
+  ] as const;
 };
 
 export const getHighschoolsControllerFindOneQueryOptions = <
@@ -386,7 +398,7 @@ export const highschoolsControllerUpdate = (
 ) => {
   return customInstance<Highschool>(
     {
-      url: `http://localhost:5400/highschools/${id}`,
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/highschools/${id}`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       data: updateHighschoolDto,
@@ -469,7 +481,10 @@ export const highschoolsControllerRemove = (
   options?: SecondParameter<typeof customInstance>
 ) => {
   return customInstance<Highschool>(
-    { url: `http://localhost:5400/highschools/${id}`, method: 'DELETE' },
+    {
+      url: `https://new-backend-gradegy-achjhuf0ekbsgtfv.canadacentral-01.azurewebsites.net/highschools/${id}`,
+      method: 'DELETE',
+    },
     options
   );
 };
