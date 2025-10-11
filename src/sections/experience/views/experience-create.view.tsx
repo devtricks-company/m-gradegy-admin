@@ -14,6 +14,7 @@ import { Field } from 'src/components/hook-form/fields';
 import { useExperienceTypesControllerFindAll } from 'src/lib/orval/generated/experience-types/experience-types';
 
 import { experienceSchema, defaultValues, type ExperienceFormValues } from '../experience-schema';
+import Image from 'next/image';
 
 export function ExperienceCreateView() {
   const methods = useForm<ExperienceFormValues>({
@@ -182,10 +183,19 @@ export function ExperienceCreateView() {
 
               {/* XP and Complete Button */}
               <Box>
-                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent={'space-between'}
+                  sx={{ mb: 2 }}
+                >
                   <Typography variant="h3" sx={{ fontWeight: 'bold' }}>
                     {xpCompletion}XP
                   </Typography>
+                  {experienceType?.icon && (
+                    <Image src={experienceType.icon} width={50} height={50} alt="sdf" />
+                  )}
                 </Stack>
                 <Button
                   fullWidth
