@@ -115,7 +115,7 @@ export function CategoryForm({ projectId }: CategoryFormProps) {
               <Iconify icon="mingcute:close-line" />
             </IconButton>
           </Stack>
-          {error && (
+          {!!error && (
             <Alert severity="error">
               {error instanceof Error ? error.message : 'Failed to create category'}
             </Alert>

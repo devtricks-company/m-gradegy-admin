@@ -75,7 +75,7 @@ export function OrganizationForm({
     defaultValues: currentOrganization
       ? {
           title: currentOrganization.title || '',
-          short_title: currentOrganization.short_title || '',
+          short_title: (currentOrganization.short_title as unknown as string) || '',
           organization_type: currentOrganization.organization_type || 'secondary',
           image: currentOrganization.image || '',
           ufcs_member: currentOrganization.ufcs_member || false,
@@ -112,7 +112,7 @@ export function OrganizationForm({
       // Edit mode - populate with organization data
       reset({
         title: currentOrganization.title || '',
-        short_title: currentOrganization.short_title || '',
+        short_title: (currentOrganization.short_title as unknown as string) || '',
         organization_type: currentOrganization.organization_type || 'secondary',
         image: currentOrganization.image || '',
         ufcs_member: currentOrganization.ufcs_member || false,
@@ -170,7 +170,7 @@ export function OrganizationForm({
     if (isEditMode && currentOrganization) {
       // Update existing organization
       updateOrganization(
-        { id: currentOrganization._id, data: payload as UpdateOrganizationDto },
+        { id: (currentOrganization as any)._id, data: payload as UpdateOrganizationDto },
         {
           onSuccess: () => {
             // Invalidate both list and detail queries
@@ -178,7 +178,7 @@ export function OrganizationForm({
               queryKey: getOrganizationsControllerFindAllQueryKey(),
             });
             queryClient.invalidateQueries({
-              queryKey: getOrganizationsControllerFindOneQueryKey(currentOrganization._id),
+              queryKey: getOrganizationsControllerFindOneQueryKey((currentOrganization as any)._id),
             });
             methods.reset();
             onSuccess?.();

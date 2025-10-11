@@ -443,7 +443,7 @@ export function CategoryDetailsDrawer({
             </Stack>
           )}
 
-          {createSubcategoryError && <Alert severity="error">Failed to create subcategory</Alert>}
+          {!!createSubcategoryError && <Alert severity="error">Failed to create subcategory</Alert>}
 
           {isLoadingSubcategories ? (
             <Stack alignItems="center" justifyContent="center" sx={{ py: 4 }}>

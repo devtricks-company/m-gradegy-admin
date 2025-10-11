@@ -222,9 +222,9 @@ export function OrganizationDetailsView({ id }: Props) {
                     Lead Contact :
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {organization.lead_contact?.firstName +
-                      ' ' +
-                      organization.lead_contact?.lastName || 'N/A'}
+                    {organization.lead_contact?.firstName && organization.lead_contact?.lastName
+                      ? `${organization.lead_contact.firstName} ${organization.lead_contact.lastName}`
+                      : 'N/A'}
                   </Typography>
                 </Stack>
 
