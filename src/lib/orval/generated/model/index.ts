@@ -40,6 +40,7 @@ export * from './errorResponseDto';
 export * from './evidencePayloadDto';
 export * from './experience';
 export * from './experienceCompletionType';
+export * from './experienceDriverType';
 export * from './experienceEvidence';
 export * from './experienceImage';
 export * from './experienceImageTags';

@@ -1,6 +1,7 @@
 import { z as zod } from 'zod';
 
 import type { ExperienceType, ExperienceImage } from 'src/lib/orval/generated/model';
+import { ExperienceDriverType } from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
 
@@ -40,19 +41,23 @@ export const experienceSchema = zod.object({
   endDate: zod.date().optional(),
   endTime: zod.date().optional(),
   completionRequired: zod.boolean(),
+  endWithParent: zod.boolean(),
 
   // Motivational Design
   xpCompletion: zod.number().min(0),
   xpViewing: zod.number().min(0),
   gems: zod.number().min(0),
   submissionType: zod.string(),
+  submissionLink: zod.string().url().optional(),
   autoCompletion: zod.boolean(),
   addLinkInText: zod.boolean(),
+  linkTitle: zod.string().optional(),
+  linkUrl: zod.string().url().optional(),
   notification: zod.boolean(),
 
   // Tags section
-  driver1: zod.string().optional(),
-  driver2: zod.string().optional(),
+  driver1: zod.nativeEnum(ExperienceDriverType).optional(),
+  driver2: zod.nativeEnum(ExperienceDriverType).optional(),
   levelOfProgression: zod.string().optional(),
   persona: zod.string().optional(),
   milestone: zod.boolean(),
@@ -88,15 +93,19 @@ export const defaultValues: ExperienceFormValues = {
   endDate: undefined,
   endTime: undefined,
   completionRequired: true,
+  endWithParent: false,
   xpCompletion: 0,
   xpViewing: 0,
   gems: 0,
   submissionType: 'student',
+  submissionLink: undefined,
   autoCompletion: true,
   addLinkInText: false,
+  linkTitle: '',
+  linkUrl: '',
   notification: true,
-  driver1: '',
-  driver2: '',
+  driver1: undefined,
+  driver2: undefined,
   levelOfProgression: '',
   persona: '',
   milestone: false,

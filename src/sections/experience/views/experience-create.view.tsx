@@ -18,6 +18,7 @@ import { useAccessControlControllerListOrganizations } from 'src/lib/orval/gener
 import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
 import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
+import { ExperienceCompletionType, ExperienceDriverType } from 'src/lib/orval/generated/model';
 
 import { experienceSchema, defaultValues, type ExperienceFormValues } from '../experience-schema';
 import { ImageSelectionDialog } from '../components/image-selection-dialog';
@@ -44,6 +45,11 @@ export function ExperienceCreateView() {
   const selectedProject = watch('project');
   const selectedCategory = watch('category');
   const timingType = watch('timing');
+  const submissionType = watch('submissionType');
+  const addLinkInText = watch('addLinkInText');
+  const linkTitle = watch('linkTitle');
+  const driver1 = watch('driver1');
+  const driver2 = watch('driver2');
 
   // Access Control hooks for cascading filters
   const { data: organizations } = useAccessControlControllerListOrganizations();
@@ -256,6 +262,33 @@ export function ExperienceCreateView() {
                     },
                   }}
                 />
+
+                {/* Display link title if addLinkInText is enabled */}
+                {addLinkInText && linkTitle && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      p: 1.5,
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      borderRadius: 1,
+                      border: '1px solid rgba(255,255,255,0.3)',
+                    }}
+                  >
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Iconify icon="solar:link-bold" width={20} sx={{ color: 'white' }} />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'white',
+                          fontWeight: 500,
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        {linkTitle}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                )}
               </Box>
 
               {/* Illustration placeholder */}
@@ -513,8 +546,12 @@ export function ExperienceCreateView() {
                     <Field.Switch
                       name="completionRequired"
                       label="Completion Req'd"
-                      color="error"
+                      color="primary"
                     />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Field.Switch name="endWithParent" label="End with Parent" color="primary" />
                   </Grid>
                 </Grid>
               </Card>
@@ -555,12 +592,23 @@ export function ExperienceCreateView() {
                 <Field.Select
                   name="submissionType"
                   options={[
-                    { label: 'Student', value: 'student' },
-                    { label: 'Teacher', value: 'teacher' },
-                    { label: 'Auto', value: 'auto' },
+                    { label: 'Student', value: ExperienceCompletionType.student },
+                    { label: 'Photo', value: ExperienceCompletionType.photo },
+                    { label: 'Admin', value: ExperienceCompletionType.admin },
+                    { label: 'Link', value: ExperienceCompletionType.link },
                   ]}
                   sx={{ maxWidth: 300 }}
                 />
+
+                {submissionType === ExperienceCompletionType.link && (
+                  <Field.Text
+                    name="submissionLink"
+                    label="Submission Link URL"
+                    placeholder="https://example.com"
+                    type="url"
+                    sx={{ maxWidth: 300 }}
+                  />
+                )}
 
                 <Field.Switch name="autoCompletion" label="Auto Complition" color="success" />
               </Stack>
@@ -569,6 +617,24 @@ export function ExperienceCreateView() {
 
               <Stack spacing={2}>
                 <Field.Switch name="addLinkInText" label="Add Link in text" />
+
+                {addLinkInText && (
+                  <Stack spacing={2} sx={{ ml: 2 }}>
+                    <Field.Text
+                      name="linkTitle"
+                      label="Link Title"
+                      placeholder="Enter link title"
+                      size="small"
+                    />
+                    <Field.Text
+                      name="linkUrl"
+                      label="Link URL"
+                      placeholder="https://example.com"
+                      type="url"
+                      size="small"
+                    />
+                  </Stack>
+                )}
 
                 <Field.Switch name="notification" label="Notification" color="error" />
               </Stack>
@@ -593,8 +659,34 @@ export function ExperienceCreateView() {
                       Driver
                     </Typography>
                     <Stack spacing={1.5}>
-                      <Field.Text name="driver1" placeholder="Driver 1" size="small" />
-                      <Field.Text name="driver2" placeholder="Driver 2" size="small" />
+                      <Field.Select
+                        name="driver1"
+                        label="Driver 1"
+                        size="small"
+                        options={[
+                          { label: 'Select Driver 1', value: '' },
+                          ...Object.entries(ExperienceDriverType)
+                            .filter(([_, value]) => value !== driver2)
+                            .map(([key, value]) => ({
+                              label: key.replace(/TAG$/, ' TAG'),
+                              value,
+                            })),
+                        ]}
+                      />
+                      <Field.Select
+                        name="driver2"
+                        label="Driver 2"
+                        size="small"
+                        options={[
+                          { label: 'Select Driver 2', value: '' },
+                          ...Object.entries(ExperienceDriverType)
+                            .filter(([_, value]) => value !== driver1)
+                            .map(([key, value]) => ({
+                              label: key.replace(/TAG$/, ' TAG'),
+                              value,
+                            })),
+                        ]}
+                      />
                     </Stack>
                   </Box>
 
