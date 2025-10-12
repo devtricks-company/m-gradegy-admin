@@ -36,6 +36,9 @@ export const experienceSchema = zod
     educationPhase: zod.string(),
     semester: zod.string(),
 
+    // Prerequisite - parent experience
+    prerequisite: zod.string().optional(),
+
     // Timing
     timing: zod.nativeEnum(ExperienceTimingType),
     days: zod.number().min(0).optional(),
@@ -160,6 +163,7 @@ export const defaultValues: ExperienceFormValues = {
   tags: 'all',
   educationPhase: 'all',
   semester: 'all',
+  prerequisite: undefined,
   timing: ExperienceTimingType.delay_after_previous,
   days: undefined,
   startDate: undefined,

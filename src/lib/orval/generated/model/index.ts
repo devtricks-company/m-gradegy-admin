@@ -60,6 +60,7 @@ export * from './experienceTimingType';
 export * from './experienceType';
 export * from './experiencesControllerFindAll200';
 export * from './experiencesControllerFindAll200Meta';
+export * from './experiencesControllerFindAllParams';
 export * from './fileUploadDto';
 export * from './highschool';
 export * from './highschoolsControllerFindAll200';
