@@ -172,25 +172,30 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
         headerName: '',
         width: 60,
         sortable: false,
-        renderCell: (params) => (
-          <Tooltip title="Add child experience">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAddChildExperience(params.row._id);
-              }}
-              sx={{
-                '&:hover': {
-                  bgcolor: 'primary.lighter',
-                },
-              }}
-            >
-              <Iconify icon="mingcute:add-circle-line" width={24} />
-            </IconButton>
-          </Tooltip>
-        ),
+        renderCell: (params) => {
+          // Only show add button for parent rows, not child rows
+          if (params.row.isChild) return null;
+
+          return (
+            <Tooltip title="Add child experience">
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddChildExperience(params.row._id);
+                }}
+                sx={{
+                  '&:hover': {
+                    bgcolor: 'primary.lighter',
+                  },
+                }}
+              >
+                <Iconify icon="mingcute:add-circle-line" width={24} />
+              </IconButton>
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'image',
