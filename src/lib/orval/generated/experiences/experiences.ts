@@ -25,6 +25,7 @@ import type {
   CreateExperienceDto,
   Experience,
   ExperiencesControllerFindAll200,
+  ExperiencesControllerFindAllParams,
   UpdateExperienceDto,
 } from '.././model';
 
@@ -122,35 +123,41 @@ export const useExperiencesControllerCreate = <TError = unknown, TContext = unkn
  * @summary Retrieve a paginated list of experiences
  */
 export const experiencesControllerFindAll = (
+  params?: ExperiencesControllerFindAllParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<ExperiencesControllerFindAll200>(
-    { url: `http://localhost:5400/experiences`, method: 'GET', signal },
+    { url: `http://localhost:5400/experiences`, method: 'GET', params, signal },
     options
   );
 };
 
-export const getExperiencesControllerFindAllQueryKey = () => {
-  return [`http://localhost:5400/experiences`] as const;
+export const getExperiencesControllerFindAllQueryKey = (
+  params?: ExperiencesControllerFindAllParams
+) => {
+  return [`http://localhost:5400/experiences`, ...(params ? [params] : [])] as const;
 };
 
 export const getExperiencesControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof experiencesControllerFindAll>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof experiencesControllerFindAll>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}) => {
+>(
+  params?: ExperiencesControllerFindAllParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof experiencesControllerFindAll>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getExperiencesControllerFindAllQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getExperiencesControllerFindAllQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof experiencesControllerFindAll>>> = ({
     signal,
-  }) => experiencesControllerFindAll(requestOptions, signal);
+  }) => experiencesControllerFindAll(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof experiencesControllerFindAll>>,
@@ -168,6 +175,7 @@ export function useExperiencesControllerFindAll<
   TData = Awaited<ReturnType<typeof experiencesControllerFindAll>>,
   TError = unknown,
 >(
+  params: undefined | ExperiencesControllerFindAllParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof experiencesControllerFindAll>>, TError, TData>
@@ -188,6 +196,7 @@ export function useExperiencesControllerFindAll<
   TData = Awaited<ReturnType<typeof experiencesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: ExperiencesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof experiencesControllerFindAll>>, TError, TData>
@@ -208,6 +217,7 @@ export function useExperiencesControllerFindAll<
   TData = Awaited<ReturnType<typeof experiencesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: ExperiencesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof experiencesControllerFindAll>>, TError, TData>
@@ -224,6 +234,7 @@ export function useExperiencesControllerFindAll<
   TData = Awaited<ReturnType<typeof experiencesControllerFindAll>>,
   TError = unknown,
 >(
+  params?: ExperiencesControllerFindAllParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof experiencesControllerFindAll>>, TError, TData>
@@ -232,7 +243,7 @@ export function useExperiencesControllerFindAll<
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getExperiencesControllerFindAllQueryOptions(options);
+  const queryOptions = getExperiencesControllerFindAllQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
