@@ -41,5 +41,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: new-admin-gradegy
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C72B4C5CE7974E08B4615160A6CBFAE8 }}
           package: ./_deploy
