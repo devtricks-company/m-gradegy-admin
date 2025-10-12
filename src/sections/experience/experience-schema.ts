@@ -33,7 +33,12 @@ export const experienceSchema = zod.object({
 
   // Timing
   timing: zod.string(),
-  days: zod.number().min(0),
+  days: zod.number().min(0).optional(),
+  startDate: zod.date().optional(),
+  length: zod.number().min(0).optional(),
+  startTime: zod.date().optional(),
+  endDate: zod.date().optional(),
+  endTime: zod.date().optional(),
   completionRequired: zod.boolean(),
 
   // Motivational Design
@@ -76,7 +81,12 @@ export const defaultValues: ExperienceFormValues = {
   educationPhase: 'all',
   semester: 'all',
   timing: 'delay_after_previous',
-  days: 0,
+  days: undefined,
+  startDate: undefined,
+  length: undefined,
+  startTime: undefined,
+  endDate: undefined,
+  endTime: undefined,
   completionRequired: true,
   xpCompletion: 0,
   xpViewing: 0,

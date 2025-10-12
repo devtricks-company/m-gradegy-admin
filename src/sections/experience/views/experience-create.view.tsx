@@ -43,6 +43,7 @@ export function ExperienceCreateView() {
   const selectedOrganization = watch('organization');
   const selectedProject = watch('project');
   const selectedCategory = watch('category');
+  const timingType = watch('timing');
 
   // Access Control hooks for cascading filters
   const { data: organizations } = useAccessControlControllerListOrganizations();
@@ -459,19 +460,55 @@ export function ExperienceCreateView() {
                   Timing
                 </Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={8}>
+                  <Grid item xs={12}>
                     <Field.Select
                       name="timing"
+                      label="Timing Type"
                       options={[
                         { label: 'Delay After Previous', value: 'delay_after_previous' },
-                        { label: 'Immediate', value: 'immediate' },
-                        { label: 'Scheduled', value: 'scheduled' },
+                        { label: 'Start Date and Length', value: 'start_date_and_length' },
+                        { label: 'Date Range', value: 'date_range' },
                       ]}
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
-                    <Field.Text name="days" label="# Days" type="number" />
-                  </Grid>
+
+                  {/* Delay After Previous - Show Days field */}
+                  {timingType === 'delay_after_previous' && (
+                    <Grid item xs={12} md={6}>
+                      <Field.Text name="days" label="# Days" type="number" />
+                    </Grid>
+                  )}
+
+                  {/* Start Date and Length - Show DatePicker and Length field */}
+                  {timingType === 'start_date_and_length' && (
+                    <>
+                      <Grid item xs={12} md={6}>
+                        <Field.DatePicker name="startDate" label="Start Date" />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field.Text name="length" label="Length (Days)" type="number" />
+                      </Grid>
+                    </>
+                  )}
+
+                  {/* Date Range - Show Start Date/Time and End Date/Time */}
+                  {timingType === 'date_range' && (
+                    <>
+                      <Grid item xs={12} md={6}>
+                        <Field.DatePicker name="startDate" label="Start Date" />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field.TimePicker name="startTime" label="Start Time" />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field.DatePicker name="endDate" label="End Date" />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field.TimePicker name="endTime" label="End Time" />
+                      </Grid>
+                    </>
+                  )}
+
                   <Grid item xs={12}>
                     <Field.Switch
                       name="completionRequired"

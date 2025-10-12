@@ -11,6 +11,7 @@ import { primary } from 'src/theme/core/palette';
 import { QueryProvider } from 'src/lib/react-query';
 import { schemeConfig } from 'src/theme/scheme-config';
 import { ThemeProvider } from 'src/theme/theme-provider';
+import { LocalizationProvider } from 'src/lib/localization-provider';
 
 import { ProgressBar } from 'src/components/progress-bar';
 import { MotionLazy } from 'src/components/animate/motion-lazy';
@@ -54,11 +55,13 @@ export default async function RootLayout({ children }: Props) {
             <WorkspaceProvider>
               <SettingsProvider settings={defaultSettings}>
                 <ThemeProvider>
-                  <MotionLazy>
-                    <ProgressBar />
-                    <SettingsDrawer />
-                    {children}
-                  </MotionLazy>
+                  <LocalizationProvider>
+                    <MotionLazy>
+                      <ProgressBar />
+                      <SettingsDrawer />
+                      {children}
+                    </MotionLazy>
+                  </LocalizationProvider>
                 </ThemeProvider>
               </SettingsProvider>
             </WorkspaceProvider>
