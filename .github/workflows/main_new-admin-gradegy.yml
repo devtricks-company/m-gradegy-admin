@@ -24,7 +24,7 @@ jobs:
           node-version: '22'
 
       - name: npm install, build, and test
-        run: npm install --force
+        run: npm install
           npm run build
           zip -r deploy.zip .next public package.json node_modules
 
