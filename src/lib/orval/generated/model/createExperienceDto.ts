@@ -5,6 +5,7 @@
  * Interactive documentation for the Gradegy API
  * OpenAPI spec version: 1.0
  */
+import type { ExperienceDriverType } from './experienceDriverType';
 import type { ExperienceTimingType } from './experienceTimingType';
 import type { ExperienceCompletionType } from './experienceCompletionType';
 
@@ -27,6 +28,10 @@ export interface CreateExperienceDto {
   category?: string;
   /** Optional subcategory audience constraint. */
   subcategory?: string;
+  /** Primary TAG driver associated with the experience. */
+  driver_one?: ExperienceDriverType;
+  /** Secondary TAG driver associated with the experience. */
+  driver_two?: ExperienceDriverType;
   /** Determines how the experience availability window is calculated. */
   timing_type: ExperienceTimingType;
   /**
@@ -42,6 +47,8 @@ export interface CreateExperienceDto {
   completion_required?: boolean;
   /** End this delay-after-previous child experience when the parent ends. */
   end_with_parent?: boolean;
+  /** Set to true to publish the experience to learners. */
+  expPublish?: boolean;
   /** Calendar date when the experience becomes visible to learners. */
   start_date?: string;
   /** 24-hour time when the experience unlocks on the start date. */

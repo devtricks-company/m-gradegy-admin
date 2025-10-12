@@ -12,12 +12,20 @@ import { Iconify } from 'src/components/iconify';
 import { paths } from 'src/routes/paths';
 import { Form } from 'src/components/hook-form/form-provider';
 import { Field } from 'src/components/hook-form/fields';
+import { toast } from 'src/components/snackbar';
 import { useExperienceTypesControllerFindAll } from 'src/lib/orval/generated/experience-types/experience-types';
 import { useExperienceImagesControllerFindAll } from 'src/lib/orval/generated/experience-images/experience-images';
 import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
 import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
 import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
+import { useExperiencesControllerCreate } from 'src/lib/orval/generated/experiences/experiences';
+import {
+  ExperienceCompletionType,
+  ExperienceDriverType,
+  ExperienceTimingType,
+  type CreateExperienceDto,
+} from 'src/lib/orval/generated/model';
 
 import { experienceSchema, defaultValues, type ExperienceFormValues } from '../experience-schema';
 import { ImageSelectionDialog } from '../components/image-selection-dialog';
@@ -36,6 +44,9 @@ export function ExperienceCreateView() {
     limit: 1000,
   });
 
+  // Mutation hook for creating experience
+  const { mutate: createExperience, isPending } = useExperiencesControllerCreate();
+
   // Watch form values for cascading filters
   const xpCompletion = watch('xpCompletion');
   const experienceType = watch('experienceType');
@@ -43,6 +54,12 @@ export function ExperienceCreateView() {
   const selectedOrganization = watch('organization');
   const selectedProject = watch('project');
   const selectedCategory = watch('category');
+  const timingType = watch('timing');
+  const submissionType = watch('submissionType');
+  const addLinkInText = watch('addLinkInText');
+  const linkTitle = watch('linkTitle');
+  const driver1 = watch('driver1');
+  const driver2 = watch('driver2');
 
   // Access Control hooks for cascading filters
   const { data: organizations } = useAccessControlControllerListOrganizations();
@@ -142,10 +159,74 @@ export function ExperienceCreateView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('Form data:', data);
-      // TODO: Add API call to create experience
+      // Transform form data to API payload
+      const payload: CreateExperienceDto = {
+        title: data.title,
+        subtitle: data.subtitle,
+        description: data.description || '',
+        image: displayImage.url,
+        experience_type: (data.experienceType as any)._id!,
+        organization: data.organization || '',
+        project: data.project,
+        category: data.category,
+        subcategory: data.subcategory,
+        driver_one: data.driver1,
+        driver_two: data.driver2,
+        timing_type: data.timing as ExperienceTimingType,
+        delay_days: data.days,
+        completion_required: data.completionRequired,
+        end_with_parent: data.endWithParent,
+        expPublish: data.expPublish,
+        start_date: data.startDate?.toISOString(),
+        start_time: data.startTime?.toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        length_days: data.length,
+        end_date: data.endDate?.toISOString(),
+        end_time: data.endTime?.toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        xp_completion: data.xpCompletion,
+        xp_view: data.xpViewing,
+        gems: data.gems,
+        completion_type: data.submissionType as ExperienceCompletionType,
+        complete_url: data.submissionLink,
+        auto_complete: data.autoCompletion,
+        link_text: data.linkTitle,
+        link_url: data.linkUrl,
+      };
+
+      console.log('payload', payload);
+      console.log('exptype', data);
+      createExperience(
+        { data: payload },
+        {
+          onSuccess: (response) => {
+            console.log('Experience created successfully:', response);
+            toast.success('Experience created successfully!', {
+              description: 'The experience has been added to the system.',
+            });
+            // TODO: Navigate to experience list or detail page
+          },
+          onError: (error: any) => {
+            console.error('Error creating experience:', error);
+            const errorMessage =
+              error?.response?.data?.message || error?.message || 'An unexpected error occurred';
+            toast.error('Failed to create experience', {
+              description: errorMessage,
+            });
+          },
+        }
+      );
     } catch (error) {
-      console.error('Error creating experience:', error);
+      console.error('Error preparing experience data:', error);
+      toast.error('Failed to prepare experience data', {
+        description: 'Please check the form and try again.',
+      });
     }
   });
 
@@ -255,6 +336,33 @@ export function ExperienceCreateView() {
                     },
                   }}
                 />
+
+                {/* Display link title if addLinkInText is enabled */}
+                {addLinkInText && linkTitle && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      p: 1.5,
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      borderRadius: 1,
+                      border: '1px solid rgba(255,255,255,0.3)',
+                    }}
+                  >
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Iconify icon="solar:link-bold" width={20} sx={{ color: 'white' }} />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'white',
+                          fontWeight: 500,
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        {linkTitle}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                )}
               </Box>
 
               {/* Illustration placeholder */}
@@ -459,25 +567,65 @@ export function ExperienceCreateView() {
                   Timing
                 </Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={8}>
+                  <Grid item xs={12}>
                     <Field.Select
                       name="timing"
+                      label="Timing Type"
                       options={[
                         { label: 'Delay After Previous', value: 'delay_after_previous' },
-                        { label: 'Immediate', value: 'immediate' },
-                        { label: 'Scheduled', value: 'scheduled' },
+                        { label: 'Start Date and Length', value: 'start_date_and_length' },
+                        { label: 'Date Range', value: 'date_range' },
                       ]}
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
-                    <Field.Text name="days" label="# Days" type="number" />
-                  </Grid>
+
+                  {/* Delay After Previous - Show Days field */}
+                  {timingType === 'delay_after_previous' && (
+                    <Grid item xs={12} md={6}>
+                      <Field.Text name="days" label="# Days" type="number" />
+                    </Grid>
+                  )}
+
+                  {/* Start Date and Length - Show DatePicker and Length field */}
+                  {timingType === 'start_date_and_length' && (
+                    <>
+                      <Grid item xs={12} md={6}>
+                        <Field.DatePicker name="startDate" label="Start Date" />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field.Text name="length" label="Length (Days)" type="number" />
+                      </Grid>
+                    </>
+                  )}
+
+                  {/* Date Range - Show Start Date/Time and End Date/Time */}
+                  {timingType === 'date_range' && (
+                    <>
+                      <Grid item xs={12} md={6}>
+                        <Field.DatePicker name="startDate" label="Start Date" />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field.TimePicker name="startTime" label="Start Time" />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field.DatePicker name="endDate" label="End Date" />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Field.TimePicker name="endTime" label="End Time" />
+                      </Grid>
+                    </>
+                  )}
+
                   <Grid item xs={12}>
                     <Field.Switch
                       name="completionRequired"
                       label="Completion Req'd"
-                      color="error"
+                      color="primary"
                     />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Field.Switch name="endWithParent" label="End with Parent" color="primary" />
                   </Grid>
                 </Grid>
               </Card>
@@ -518,12 +666,23 @@ export function ExperienceCreateView() {
                 <Field.Select
                   name="submissionType"
                   options={[
-                    { label: 'Student', value: 'student' },
-                    { label: 'Teacher', value: 'teacher' },
-                    { label: 'Auto', value: 'auto' },
+                    { label: 'Student', value: ExperienceCompletionType.student },
+                    { label: 'Photo', value: ExperienceCompletionType.photo },
+                    { label: 'Admin', value: ExperienceCompletionType.admin },
+                    { label: 'Link', value: ExperienceCompletionType.link },
                   ]}
                   sx={{ maxWidth: 300 }}
                 />
+
+                {submissionType === ExperienceCompletionType.link && (
+                  <Field.Text
+                    name="submissionLink"
+                    label="Submission Link URL"
+                    placeholder="https://example.com"
+                    type="url"
+                    sx={{ maxWidth: 300 }}
+                  />
+                )}
 
                 <Field.Switch name="autoCompletion" label="Auto Complition" color="success" />
               </Stack>
@@ -532,6 +691,24 @@ export function ExperienceCreateView() {
 
               <Stack spacing={2}>
                 <Field.Switch name="addLinkInText" label="Add Link in text" />
+
+                {addLinkInText && (
+                  <Stack spacing={2} sx={{ ml: 2 }}>
+                    <Field.Text
+                      name="linkTitle"
+                      label="Link Title"
+                      placeholder="Enter link title"
+                      size="small"
+                    />
+                    <Field.Text
+                      name="linkUrl"
+                      label="Link URL"
+                      placeholder="https://example.com"
+                      type="url"
+                      size="small"
+                    />
+                  </Stack>
+                )}
 
                 <Field.Switch name="notification" label="Notification" color="error" />
               </Stack>
@@ -556,8 +733,34 @@ export function ExperienceCreateView() {
                       Driver
                     </Typography>
                     <Stack spacing={1.5}>
-                      <Field.Text name="driver1" placeholder="Driver 1" size="small" />
-                      <Field.Text name="driver2" placeholder="Driver 2" size="small" />
+                      <Field.Select
+                        name="driver1"
+                        label="Driver 1"
+                        size="small"
+                        options={[
+                          { label: 'Select Driver 1', value: '' },
+                          ...Object.entries(ExperienceDriverType)
+                            .filter(([_, value]) => value !== driver2)
+                            .map(([key, value]) => ({
+                              label: key.replace(/TAG$/, ' TAG'),
+                              value,
+                            })),
+                        ]}
+                      />
+                      <Field.Select
+                        name="driver2"
+                        label="Driver 2"
+                        size="small"
+                        options={[
+                          { label: 'Select Driver 2', value: '' },
+                          ...Object.entries(ExperienceDriverType)
+                            .filter(([_, value]) => value !== driver1)
+                            .map(([key, value]) => ({
+                              label: key.replace(/TAG$/, ' TAG'),
+                              value,
+                            })),
+                        ]}
+                      />
                     </Stack>
                   </Box>
 
@@ -626,6 +829,12 @@ export function ExperienceCreateView() {
                 </Stack>
 
                 <Stack spacing={2.5}>
+                  {/* Publish */}
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography variant="body2">Publish</Typography>
+                    <Field.Switch name="expPublish" color="success" />
+                  </Stack>
+
                   {/* Past due */}
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Typography variant="body2">Past due?</Typography>
@@ -639,11 +848,17 @@ export function ExperienceCreateView() {
 
         {/* Action Buttons */}
         <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button variant="outlined" size="large" sx={{ minWidth: 120 }}>
+          <Button variant="outlined" size="large" sx={{ minWidth: 120 }} disabled={isPending}>
             Cancel
           </Button>
-          <Button type="submit" variant="contained" size="large" sx={{ minWidth: 120 }}>
-            Create Experience
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            sx={{ minWidth: 120 }}
+            disabled={isPending}
+          >
+            {isPending ? 'Creating...' : 'Create Experience'}
           </Button>
         </Stack>
       </Form>
