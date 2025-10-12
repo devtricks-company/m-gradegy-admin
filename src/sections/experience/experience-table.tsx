@@ -6,6 +6,7 @@ import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -93,6 +94,22 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
 
   const columns: GridColDef<ExperienceRow>[] = useMemo(
     () => [
+      {
+        field: 'image',
+        headerName: 'Image',
+        width: 80,
+        sortable: false,
+        renderCell: (params) => (
+          <Avatar
+            src={params.row.image}
+            alt={params.row.title}
+            variant="rounded"
+            sx={{ width: 48, height: 48 }}
+          >
+            <Iconify icon="eva:image-outline" width={24} />
+          </Avatar>
+        ),
+      },
       {
         field: 'title',
         headerName: 'Title',
