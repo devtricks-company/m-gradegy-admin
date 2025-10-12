@@ -12,13 +12,20 @@ import { Iconify } from 'src/components/iconify';
 import { paths } from 'src/routes/paths';
 import { Form } from 'src/components/hook-form/form-provider';
 import { Field } from 'src/components/hook-form/fields';
+import { toast } from 'src/components/snackbar';
 import { useExperienceTypesControllerFindAll } from 'src/lib/orval/generated/experience-types/experience-types';
 import { useExperienceImagesControllerFindAll } from 'src/lib/orval/generated/experience-images/experience-images';
 import { useAccessControlControllerListOrganizations } from 'src/lib/orval/generated/access-control/access-control';
 import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
 import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
-import { ExperienceCompletionType, ExperienceDriverType } from 'src/lib/orval/generated/model';
+import { useExperiencesControllerCreate } from 'src/lib/orval/generated/experiences/experiences';
+import {
+  ExperienceCompletionType,
+  ExperienceDriverType,
+  ExperienceTimingType,
+  type CreateExperienceDto,
+} from 'src/lib/orval/generated/model';
 
 import { experienceSchema, defaultValues, type ExperienceFormValues } from '../experience-schema';
 import { ImageSelectionDialog } from '../components/image-selection-dialog';
@@ -36,6 +43,9 @@ export function ExperienceCreateView() {
   const { data: experienceImages } = useExperienceImagesControllerFindAll({
     limit: 1000,
   });
+
+  // Mutation hook for creating experience
+  const { mutate: createExperience, isPending } = useExperiencesControllerCreate();
 
   // Watch form values for cascading filters
   const xpCompletion = watch('xpCompletion');
@@ -149,10 +159,74 @@ export function ExperienceCreateView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('Form data:', data);
-      // TODO: Add API call to create experience
+      // Transform form data to API payload
+      const payload: CreateExperienceDto = {
+        title: data.title,
+        subtitle: data.subtitle,
+        description: data.description || '',
+        image: displayImage.url,
+        experience_type: (data.experienceType as any)._id!,
+        organization: data.organization || '',
+        project: data.project,
+        category: data.category,
+        subcategory: data.subcategory,
+        driver_one: data.driver1,
+        driver_two: data.driver2,
+        timing_type: data.timing as ExperienceTimingType,
+        delay_days: data.days,
+        completion_required: data.completionRequired,
+        end_with_parent: data.endWithParent,
+        expPublish: data.expPublish,
+        start_date: data.startDate?.toISOString(),
+        start_time: data.startTime?.toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        length_days: data.length,
+        end_date: data.endDate?.toISOString(),
+        end_time: data.endTime?.toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        xp_completion: data.xpCompletion,
+        xp_view: data.xpViewing,
+        gems: data.gems,
+        completion_type: data.submissionType as ExperienceCompletionType,
+        complete_url: data.submissionLink,
+        auto_complete: data.autoCompletion,
+        link_text: data.linkTitle,
+        link_url: data.linkUrl,
+      };
+
+      console.log('payload', payload);
+      console.log('exptype', data);
+      createExperience(
+        { data: payload },
+        {
+          onSuccess: (response) => {
+            console.log('Experience created successfully:', response);
+            toast.success('Experience created successfully!', {
+              description: 'The experience has been added to the system.',
+            });
+            // TODO: Navigate to experience list or detail page
+          },
+          onError: (error: any) => {
+            console.error('Error creating experience:', error);
+            const errorMessage =
+              error?.response?.data?.message || error?.message || 'An unexpected error occurred';
+            toast.error('Failed to create experience', {
+              description: errorMessage,
+            });
+          },
+        }
+      );
     } catch (error) {
-      console.error('Error creating experience:', error);
+      console.error('Error preparing experience data:', error);
+      toast.error('Failed to prepare experience data', {
+        description: 'Please check the form and try again.',
+      });
     }
   });
 
@@ -755,6 +829,12 @@ export function ExperienceCreateView() {
                 </Stack>
 
                 <Stack spacing={2.5}>
+                  {/* Publish */}
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography variant="body2">Publish</Typography>
+                    <Field.Switch name="expPublish" color="success" />
+                  </Stack>
+
                   {/* Past due */}
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Typography variant="body2">Past due?</Typography>
@@ -768,11 +848,17 @@ export function ExperienceCreateView() {
 
         {/* Action Buttons */}
         <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button variant="outlined" size="large" sx={{ minWidth: 120 }}>
+          <Button variant="outlined" size="large" sx={{ minWidth: 120 }} disabled={isPending}>
             Cancel
           </Button>
-          <Button type="submit" variant="contained" size="large" sx={{ minWidth: 120 }}>
-            Create Experience
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            sx={{ minWidth: 120 }}
+            disabled={isPending}
+          >
+            {isPending ? 'Creating...' : 'Create Experience'}
           </Button>
         </Stack>
       </Form>

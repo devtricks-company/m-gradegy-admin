@@ -1,7 +1,7 @@
 import { z as zod } from 'zod';
 
 import type { ExperienceType, ExperienceImage } from 'src/lib/orval/generated/model';
-import { ExperienceDriverType } from 'src/lib/orval/generated/model';
+import { ExperienceDriverType, ExperienceTimingType } from 'src/lib/orval/generated/model';
 
 // ----------------------------------------------------------------------
 
@@ -19,9 +19,12 @@ export const experienceSchema = zod.object({
       title: zod.string(),
       color: zod.string(),
       icon: zod.string(),
+      _id: zod.string(),
     })
     .nullable()
-    .refine((val) => val !== null, { message: 'Experience type is required' }) as zod.ZodType<ExperienceType>,
+    .refine((val) => val !== null, {
+      message: 'Experience type is required',
+    }) as zod.ZodType<ExperienceType>,
 
   // Access Control and Filters
   organization: zod.string().optional(),
@@ -33,7 +36,7 @@ export const experienceSchema = zod.object({
   semester: zod.string(),
 
   // Timing
-  timing: zod.string(),
+  timing: zod.nativeEnum(ExperienceTimingType),
   days: zod.number().min(0).optional(),
   startDate: zod.date().optional(),
   length: zod.number().min(0).optional(),
@@ -67,6 +70,7 @@ export const experienceSchema = zod.object({
 
   // Advanced
   pastDue: zod.boolean(),
+  expPublish: zod.boolean(),
 });
 
 export type ExperienceFormValues = zod.infer<typeof experienceSchema>;
@@ -85,7 +89,7 @@ export const defaultValues: ExperienceFormValues = {
   tags: 'all',
   educationPhase: 'all',
   semester: 'all',
-  timing: 'delay_after_previous',
+  timing: ExperienceTimingType.delay_after_previous,
   days: undefined,
   startDate: undefined,
   length: undefined,
@@ -113,4 +117,5 @@ export const defaultValues: ExperienceFormValues = {
   difficulty: false,
   fire: 4,
   pastDue: false,
+  expPublish: true,
 };
