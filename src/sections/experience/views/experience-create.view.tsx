@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Box, Card, Grid, Stack, Typography, Divider, Button } from '@mui/material';
+import { Box, Card, Grid, Stack, Typography, Divider, Button, Alert } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
@@ -10,6 +10,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Iconify } from 'src/components/iconify';
 import { paths } from 'src/routes/paths';
+import { useSearchParams } from 'src/routes/hooks';
 import { Form } from 'src/components/hook-form/form-provider';
 import { Field } from 'src/components/hook-form/fields';
 import { toast } from 'src/components/snackbar';
@@ -19,7 +20,10 @@ import { useAccessControlControllerListOrganizations } from 'src/lib/orval/gener
 import { useProjectsControllerFindByOrganization } from 'src/lib/orval/generated/projects/projects';
 import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/categories/categories';
 import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
-import { useExperiencesControllerCreate } from 'src/lib/orval/generated/experiences/experiences';
+import {
+  useExperiencesControllerCreate,
+  useExperiencesControllerFindOne,
+} from 'src/lib/orval/generated/experiences/experiences';
 import {
   ExperienceCompletionType,
   ExperienceDriverType,
@@ -31,6 +35,8 @@ import { experienceSchema, defaultValues, type ExperienceFormValues } from '../e
 import { ImageSelectionDialog } from '../components/image-selection-dialog';
 
 export function ExperienceCreateView() {
+  const searchParams = useSearchParams();
+  const prerequisiteId = searchParams.get('prerequisite');
   const [openImageDialog, setOpenImageDialog] = useState(false);
 
   const methods = useForm<ExperienceFormValues>({
@@ -46,6 +52,13 @@ export function ExperienceCreateView() {
 
   // Mutation hook for creating experience
   const { mutate: createExperience, isPending } = useExperiencesControllerCreate();
+
+  // Fetch parent experience if prerequisiteId exists
+  const { data: parentExperience } = useExperiencesControllerFindOne(prerequisiteId || '', {
+    query: {
+      enabled: !!prerequisiteId,
+    },
+  });
 
   // Watch form values for cascading filters
   const xpCompletion = watch('xpCompletion');
@@ -101,6 +114,13 @@ export function ExperienceCreateView() {
   const projects = projectsData?.data;
   const categories = categoriesData?.data;
   const subcategories = subcategoriesData?.data;
+
+  // Set prerequisite from URL parameter if present
+  useEffect(() => {
+    if (prerequisiteId) {
+      setValue('prerequisite', prerequisiteId);
+    }
+  }, [prerequisiteId, setValue]);
 
   // Set "Gradegy" as default experience type when data is loaded
   useEffect(() => {
@@ -170,6 +190,7 @@ export function ExperienceCreateView() {
         project: data.project,
         category: data.category,
         subcategory: data.subcategory,
+        prerequisite: data.prerequisite,
         driver_one: data.driver1,
         driver_two: data.driver2,
         timing_type: data.timing as ExperienceTimingType,
@@ -241,6 +262,17 @@ export function ExperienceCreateView() {
         ]}
         sx={{ mb: 3 }}
       />
+
+      {prerequisiteId && parentExperience && (
+        <Alert severity="info" icon={<Iconify icon="solar:info-circle-bold" />} sx={{ mb: 3 }}>
+          <Typography variant="subtitle2">
+            Creating child experience for: <strong>{parentExperience.title}</strong>
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            This experience will be set as a prerequisite for the new experience.
+          </Typography>
+        </Alert>
+      )}
 
       <Form methods={methods} onSubmit={onSubmit}>
         {/* First Row: Experience Preview and Form Configuration */}

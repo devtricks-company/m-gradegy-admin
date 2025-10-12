@@ -11,8 +11,13 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import type { GridColDef, GridSortModel, GridPaginationModel } from '@mui/x-data-grid';
 import { DataGrid } from '@mui/x-data-grid';
+
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 import { useDebounce } from 'src/hooks/use-debounce';
 
@@ -33,6 +38,7 @@ type ExperienceTableProps = {
 };
 
 export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -92,8 +98,40 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
     setSortModel(newModel);
   }, []);
 
+  const handleAddChildExperience = useCallback(
+    (parentId: string) => {
+      router.push(`${paths.dashboard.experienceNew}?prerequisite=${parentId}`);
+    },
+    [router]
+  );
+
   const columns: GridColDef<ExperienceRow>[] = useMemo(
     () => [
+      {
+        field: 'actions',
+        headerName: '',
+        width: 60,
+        sortable: false,
+        renderCell: (params) => (
+          <Tooltip title="Add child experience">
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddChildExperience(params.row._id);
+              }}
+              sx={{
+                '&:hover': {
+                  bgcolor: 'primary.lighter',
+                },
+              }}
+            >
+              <Iconify icon="mingcute:add-circle-line" width={24} />
+            </IconButton>
+          </Tooltip>
+        ),
+      },
       {
         field: 'image',
         headerName: 'Image',
@@ -164,7 +202,7 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
         ),
       },
     ],
-    []
+    [handleAddChildExperience]
   );
 
   // Extract rows from API response
