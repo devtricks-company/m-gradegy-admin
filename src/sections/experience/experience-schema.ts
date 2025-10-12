@@ -87,12 +87,19 @@ export const experienceSchema = zod
     }
 
     if (data.timing === ExperienceTimingType.start_date_and_length) {
-      // When "Start Date and Length" is selected, startDate and length are required
+      // When "Start Date and Length" is selected, startDate, startTime, and length are required
       if (!data.startDate) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
           message: 'Start date is required when timing is "Start Date and Length"',
           path: ['startDate'],
+        });
+      }
+      if (!data.startTime) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: 'Start time is required when timing is "Start Date and Length"',
+          path: ['startTime'],
         });
       }
       if (data.length === undefined || data.length === null) {

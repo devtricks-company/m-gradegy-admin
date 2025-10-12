@@ -586,13 +586,16 @@ export function ExperienceCreateView() {
                     </Grid>
                   )}
 
-                  {/* Start Date and Length - Show DatePicker and Length field */}
+                  {/* Start Date and Length - Show DatePicker, TimePicker and Length field */}
                   {timingType === 'start_date_and_length' && (
                     <>
-                      <Grid item xs={12} md={6}>
+                      <Grid item xs={12} md={4}>
                         <Field.DatePicker name="startDate" label="Start Date" />
                       </Grid>
-                      <Grid item xs={12} md={6}>
+                      <Grid item xs={12} md={4}>
+                        <Field.TimePicker name="startTime" label="Start Time" />
+                      </Grid>
+                      <Grid item xs={12} md={4}>
                         <Field.Text name="length" label="Length (Days)" type="number" />
                       </Grid>
                     </>
