@@ -13,6 +13,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 import type { GridColDef, GridSortModel, GridPaginationModel } from '@mui/x-data-grid';
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -31,7 +32,11 @@ import type { ExperienceFilters } from './experience-filter-popover';
 
 // ----------------------------------------------------------------------
 
-type ExperienceRow = Experience & { _id: string };
+type ExperienceRow = Experience & {
+  _id: string;
+  isChild?: boolean;
+  parentId?: string;
+};
 
 type ExperienceTableProps = {
   filters?: ExperienceFilters;
@@ -40,6 +45,7 @@ type ExperienceTableProps = {
 export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 10,
@@ -105,8 +111,62 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
     [router]
   );
 
+  const handleToggleExpand = useCallback((rowId: string) => {
+    console.log('rowID', rowId);
+    setExpandedRows((prev) => {
+      console.log('prev', prev);
+      const newSet = new Set(prev);
+      if (newSet.has(rowId)) {
+        newSet.delete(rowId);
+      } else {
+        newSet.add(rowId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  // Get all experiences for checking children
+  const allExperiences = useMemo(() => {
+    if (!data?.data) return [];
+    return data.data as ExperienceRow[];
+  }, [data]);
+
   const columns: GridColDef<ExperienceRow>[] = useMemo(
     () => [
+      {
+        field: 'expand',
+        headerName: 'Child',
+        width: 60,
+        sortable: false,
+        renderCell: (params) => {
+          // Only show expand icon for parent rows that have children
+          const hasChildren = allExperiences.some((exp) => {
+            return (exp.prerequisite as any)?._id === params.row._id;
+          });
+
+          const isExpanded = expandedRows.has(params.row._id);
+
+          if (!hasChildren || params.row.isChild) return null;
+
+          return (
+            <Tooltip title={isExpanded ? 'Collapse' : 'Expand'}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleExpand(params.row._id);
+                }}
+                sx={{
+                  transition: 'transform 0.2s',
+                  transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                }}
+              >
+                <Iconify icon="eva:arrow-ios-forward-fill" width={20} />
+              </IconButton>
+            </Tooltip>
+          );
+        },
+      },
       {
         field: 'actions',
         headerName: '',
@@ -153,6 +213,17 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
         headerName: 'Title',
         flex: 1,
         minWidth: 200,
+        renderCell: (params) => (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              pl: params.row.isChild ? 4 : 0,
+            }}
+          >
+            {params.row.title || 'N/A'}
+          </Box>
+        ),
         valueGetter: (_value, row) => row.title || 'N/A',
       },
       {
@@ -202,14 +273,62 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
         ),
       },
     ],
-    [handleAddChildExperience]
+    [handleAddChildExperience, handleToggleExpand, expandedRows, allExperiences]
   );
 
-  // Extract rows from API response
+  // Extract rows from API response and build hierarchical structure
   const rows = useMemo(() => {
-    if (!data?.data) return [];
-    return data.data as ExperienceRow[];
-  }, [data]);
+    if (!allExperiences.length) return [];
+
+    console.log('Building rows, allExperiences:', allExperiences);
+    console.log('expandedRows:', Array.from(expandedRows));
+
+    // Separate parents and children
+    const parents: ExperienceRow[] = [];
+    const childrenMap = new Map<string, ExperienceRow[]>();
+
+    allExperiences.forEach((exp) => {
+      // Handle prerequisite which might be an object with _id or a string
+      const prerequisiteId =
+        typeof exp.prerequisite === 'object' && exp.prerequisite !== null
+          ? (exp.prerequisite as any)._id
+          : exp.prerequisite;
+
+      if (prerequisiteId) {
+        // This is a child experience
+        if (!childrenMap.has(prerequisiteId)) {
+          childrenMap.set(prerequisiteId, []);
+        }
+        childrenMap.get(prerequisiteId)!.push({
+          ...exp,
+          isChild: true,
+          parentId: prerequisiteId,
+        });
+      } else {
+        // This is a parent experience
+        parents.push(exp);
+      }
+    });
+
+    console.log('Parents:', parents.length);
+    console.log('Children map:', childrenMap);
+
+    // Build flat list with expanded children
+    const flatRows: ExperienceRow[] = [];
+    parents.forEach((parent) => {
+      flatRows.push(parent);
+
+      // If this parent is expanded, add its children
+      if (expandedRows.has(parent._id)) {
+        const children = childrenMap.get(parent._id) || [];
+        console.log(`Parent ${parent._id} is expanded, children:`, children);
+        flatRows.push(...children);
+      }
+    });
+
+    console.log('Final flatRows:', flatRows.length);
+    return flatRows;
+  }, [allExperiences, expandedRows]);
 
   // Extract pagination metadata
   const rowCount = data?.meta?.totalItems || 0;
@@ -256,6 +375,7 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
               pageSizeOptions={[5, 10, 25, 50, 100]}
               getRowId={(row) => row._id || ''}
               disableRowSelectionOnClick
+              getRowClassName={(params) => (params.row.isChild ? 'child-row' : 'parent-row')}
               sx={{
                 border: 0,
                 '& .MuiDataGrid-cell:focus': {
@@ -263,6 +383,12 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
                 },
                 '& .MuiDataGrid-row': {
                   cursor: 'pointer',
+                },
+                '& .child-row': {
+                  bgcolor: 'action.hover',
+                  '&:hover': {
+                    bgcolor: 'action.selected',
+                  },
                 },
               }}
             />
