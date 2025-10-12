@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
@@ -14,8 +14,24 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
-import type { GridColDef, GridSortModel, GridPaginationModel } from '@mui/x-data-grid';
-import { DataGrid } from '@mui/x-data-grid';
+import {
+  closestCenter,
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import { SortableContext, arrayMove, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import type {
+  GridColDef,
+  GridSortModel,
+  GridPaginationModel,
+  GridRowProps,
+} from '@mui/x-data-grid';
+import { DataGrid, GridRow } from '@mui/x-data-grid';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
@@ -23,8 +39,12 @@ import { paths } from 'src/routes/paths';
 import { useDebounce } from 'src/hooks/use-debounce';
 
 import { Iconify } from 'src/components/iconify';
+import { toast } from 'src/components/snackbar';
 
-import { useExperiencesControllerFindAll } from 'src/lib/orval/generated/experiences/experiences';
+import {
+  useExperiencesControllerFindAll,
+  useExperiencesControllerUpdate,
+} from 'src/lib/orval/generated/experiences/experiences';
 
 import type { Experience } from 'src/lib/orval/generated/model';
 
@@ -42,6 +62,61 @@ type ExperienceTableProps = {
   filters?: ExperienceFilters;
 };
 
+type SortableRowMeta = {
+  isChild: boolean;
+  parentId: string | null;
+};
+
+const SortableDataGridRow = (props: GridRowProps) => {
+  const { rowId, row, style, className, ...other } = props;
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: rowId,
+    data: {
+      isChild: Boolean((row as ExperienceRow).isChild),
+      parentId: ((row as ExperienceRow).parentId as string | undefined) ?? null,
+    } satisfies SortableRowMeta,
+  });
+
+  const transformStyle = transform
+    ? CSS.Transform.toString({
+        ...transform,
+        scaleX: 1,
+        scaleY: 1,
+      })
+    : '';
+
+  const mergedTransform =
+    style?.transform && transformStyle
+      ? `${style.transform} ${transformStyle}`
+      : style?.transform || transformStyle || undefined;
+
+  const mergedTransition = transition ?? style?.transition;
+
+  const { role: _role, ...restAttributes } = attributes;
+
+  return (
+    <GridRow
+      ref={setNodeRef}
+      rowId={rowId}
+      row={row}
+      style={{
+        ...style,
+        transform: mergedTransform,
+        transition: mergedTransition,
+        cursor: 'grab',
+        opacity: isDragging ? 0.85 : style?.opacity,
+        zIndex: isDragging ? 2 : style?.zIndex,
+      }}
+      className={`${className ?? ''}${isDragging ? ' MuiDataGrid-row--dragging' : ''}`}
+      {...other}
+      {...restAttributes}
+      {...listeners}
+      role="row"
+    />
+  );
+};
+
 export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,6 +126,19 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
     pageSize: 10,
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const queryClient = useQueryClient();
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 6 },
+    })
+  );
+  const [parentOrder, setParentOrder] = useState<ExperienceRow[]>([]);
+  const [childrenOrder, setChildrenOrder] = useState<Record<string, ExperienceRow[]>>({});
+  const [displayRows, setDisplayRows] = useState<ExperienceRow[]>([]);
+  const sortableRowIds = useMemo(
+    () => displayRows.map((row) => row._id).filter(Boolean),
+    [displayRows]
+  );
 
   const debouncedSearch = useDebounce(searchQuery, 500);
 
@@ -83,13 +171,22 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
   }, [filters]);
 
   // Fetch experiences with server-side pagination, sorting, search, and filters
-  const { data, isLoading, error } = useExperiencesControllerFindAll({
+  const experiencesQuery = useExperiencesControllerFindAll({
     page: paginationModel.page + 1, // API uses 1-based pagination
     limit: paginationModel.pageSize,
     sort: sortString,
     search: debouncedSearch || undefined,
     filters: apiFilters,
   });
+  const { data, isLoading, error } = experiencesQuery;
+  const updateExperienceMutation = useExperiencesControllerUpdate({
+    mutation: {
+      onError: () => {
+        toast.error('Unable to update experience order');
+      },
+    },
+  });
+  const isSavingOrder = updateExperienceMutation.isPending;
 
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -112,9 +209,7 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
   );
 
   const handleToggleExpand = useCallback((rowId: string) => {
-    console.log('rowID', rowId);
     setExpandedRows((prev) => {
-      console.log('prev', prev);
       const newSet = new Set(prev);
       if (newSet.has(rowId)) {
         newSet.delete(rowId);
@@ -282,25 +377,25 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
   );
 
   // Extract rows from API response and build hierarchical structure
-  const rows = useMemo(() => {
-    if (!allExperiences.length) return [];
+  const { flatRows, parentList, childrenByParent } = useMemo(() => {
+    if (!allExperiences.length) {
+      return {
+        flatRows: [] as ExperienceRow[],
+        parentList: [] as ExperienceRow[],
+        childrenByParent: new Map<string, ExperienceRow[]>(),
+      };
+    }
 
-    console.log('Building rows, allExperiences:', allExperiences);
-    console.log('expandedRows:', Array.from(expandedRows));
-
-    // Separate parents and children
     const parents: ExperienceRow[] = [];
     const childrenMap = new Map<string, ExperienceRow[]>();
 
     allExperiences.forEach((exp) => {
-      // Handle prerequisite which might be an object with _id or a string
       const prerequisiteId =
         typeof exp.prerequisite === 'object' && exp.prerequisite !== null
-          ? (exp.prerequisite as any)._id
+          ? (exp.prerequisite as { _id?: string })._id
           : exp.prerequisite;
 
       if (prerequisiteId) {
-        // This is a child experience
         if (!childrenMap.has(prerequisiteId)) {
           childrenMap.set(prerequisiteId, []);
         }
@@ -310,30 +405,200 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
           parentId: prerequisiteId,
         });
       } else {
-        // This is a parent experience
         parents.push(exp);
       }
     });
 
-    console.log('Parents:', parents.length);
-    console.log('Children map:', childrenMap);
+    const sortedParents = [...parents].sort((a, b) => {
+      const seqA = a.sequence ?? Number.MAX_SAFE_INTEGER;
+      const seqB = b.sequence ?? Number.MAX_SAFE_INTEGER;
+      return seqA - seqB;
+    });
 
-    // Build flat list with expanded children
+    const sortedChildrenMap = new Map<string, ExperienceRow[]>();
+    childrenMap.forEach((children, parentId) => {
+      const sortedChildren = [...children].sort((a, b) => {
+        const seqA = a.sequence ?? Number.MAX_SAFE_INTEGER;
+        const seqB = b.sequence ?? Number.MAX_SAFE_INTEGER;
+        return seqA - seqB;
+      });
+      sortedChildrenMap.set(parentId, sortedChildren);
+    });
+
     const flatRows: ExperienceRow[] = [];
-    parents.forEach((parent) => {
+    sortedParents.forEach((parent) => {
       flatRows.push(parent);
 
-      // If this parent is expanded, add its children
       if (expandedRows.has(parent._id)) {
-        const children = childrenMap.get(parent._id) || [];
-        console.log(`Parent ${parent._id} is expanded, children:`, children);
-        flatRows.push(...children);
+        flatRows.push(...(sortedChildrenMap.get(parent._id) || []));
       }
     });
 
-    console.log('Final flatRows:', flatRows.length);
-    return flatRows;
+    return {
+      flatRows,
+      parentList: sortedParents,
+      childrenByParent: sortedChildrenMap,
+    };
   }, [allExperiences, expandedRows]);
+
+  useEffect(() => {
+    setParentOrder(parentList);
+    const normalizedChildren: Record<string, ExperienceRow[]> = {};
+    childrenByParent.forEach((value, key) => {
+      normalizedChildren[key] = value;
+    });
+    setChildrenOrder(normalizedChildren);
+  }, [parentList, childrenByParent]);
+
+  useEffect(() => {
+    const nextRows: ExperienceRow[] = [];
+    parentOrder.forEach((parent) => {
+      nextRows.push(parent);
+      if (expandedRows.has(parent._id)) {
+        nextRows.push(...(childrenOrder[parent._id] || []));
+      }
+    });
+    setDisplayRows(nextRows);
+  }, [parentOrder, childrenOrder, expandedRows]);
+
+  const persistSequenceChanges = useCallback(
+    async (updates: { id: string; sequence: number }[]) => {
+      if (!updates.length) return;
+
+      try {
+        await updates.reduce<Promise<void>>(
+          (chain, { id, sequence }) =>
+            chain.then(() =>
+              updateExperienceMutation.mutateAsync({ id, data: { sequence } }).then(() => undefined)
+            ),
+          Promise.resolve()
+        );
+        await queryClient.invalidateQueries({ queryKey: experiencesQuery.queryKey });
+        toast.success('Experience order updated');
+      } catch (error) {
+        await experiencesQuery.refetch();
+      }
+    },
+    [experiencesQuery, queryClient, updateExperienceMutation]
+  );
+
+  const handleDragEnd = useCallback(
+    async ({ active, over }: DragEndEvent) => {
+      if (isSavingOrder) {
+        toast.info('Please wait for the current reorder to finish.');
+        return;
+      }
+
+      if (!over || active.id === over.id) {
+        return;
+      }
+
+      const activeRow = displayRows.find((row) => row._id === active.id);
+      const overRow = displayRows.find((row) => row._id === over.id);
+
+      if (!activeRow || !overRow) {
+        return;
+      }
+
+      if (activeRow.isChild) {
+        if (!overRow.isChild || activeRow.parentId !== overRow.parentId) {
+          toast.warning('Child experiences can only reorder within the same parent.');
+          return;
+        }
+
+        const parentId = activeRow.parentId!;
+        const siblings = childrenOrder[parentId] ?? [];
+        const sourceIndex = siblings.findIndex((row) => row._id === active.id);
+        const targetIndex = siblings.findIndex((row) => row._id === over.id);
+
+        if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) {
+          return;
+        }
+
+        const reorderedSiblings = arrayMove(siblings, sourceIndex, targetIndex);
+        const numericSequences = siblings
+          .map((row) => row.sequence)
+          .filter((value): value is number => typeof value === 'number')
+          .sort((a, b) => a - b);
+        const baseSequence = numericSequences.length ? numericSequences[0]! : 1;
+
+        const updates: { id: string; sequence: number }[] = [];
+        const updatedSiblings = reorderedSiblings.map((child, index) => {
+          const sequence = baseSequence + index;
+          if (child.sequence !== sequence) {
+            updates.push({ id: child._id, sequence });
+          }
+          return { ...child, sequence };
+        });
+
+        setChildrenOrder((prev) => ({
+          ...prev,
+          [parentId]: updatedSiblings,
+        }));
+
+        await persistSequenceChanges(updates);
+        return;
+      }
+
+      if (overRow.isChild) {
+        toast.warning('Place parent experiences among other parents.');
+        return;
+      }
+
+      const sourceIndex = parentOrder.findIndex((row) => row._id === active.id);
+      const targetIndex = parentOrder.findIndex((row) => row._id === over.id);
+
+      if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) {
+        return;
+      }
+
+      const reorderedParents = arrayMove(parentOrder, sourceIndex, targetIndex);
+      const flattenedOldOrder = parentOrder.flatMap((parent) => [
+        parent,
+        ...(childrenOrder[parent._id] || []),
+      ]);
+
+      const existingSequences = flattenedOldOrder
+        .map((row) => row.sequence)
+        .filter((seq): seq is number => typeof seq === 'number')
+        .sort((a, b) => a - b);
+
+      const baseSequence = existingSequences.length ? existingSequences[0]! : 1;
+
+      const updates: { id: string; sequence: number }[] = [];
+      let sequenceCounter = baseSequence;
+      const nextChildrenOrder: Record<string, ExperienceRow[]> = {};
+      const nextParents = reorderedParents.map((parent) => {
+        const parentSequence = sequenceCounter;
+        const updatedParent = { ...parent, sequence: parentSequence };
+        if (parent.sequence !== parentSequence) {
+          updates.push({ id: parent._id, sequence: parentSequence });
+        }
+        sequenceCounter += 1;
+
+        const childList = childrenOrder[parent._id] || [];
+        const updatedChildren = childList.map((child) => {
+          const childSequence = sequenceCounter;
+          const updatedChild = { ...child, sequence: childSequence };
+          if (child.sequence !== childSequence) {
+            updates.push({ id: child._id, sequence: childSequence });
+          }
+          sequenceCounter += 1;
+          return updatedChild;
+        });
+
+        nextChildrenOrder[parent._id] = updatedChildren;
+
+        return updatedParent;
+      });
+
+      setParentOrder(nextParents);
+      setChildrenOrder(nextChildrenOrder);
+
+      await persistSequenceChanges(updates);
+    },
+    [childrenOrder, displayRows, isSavingOrder, parentOrder, persistSequenceChanges]
+  );
 
   // Extract pagination metadata
   const rowCount = data?.meta?.totalItems || 0;
@@ -358,7 +623,7 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
         <Alert severity="error">Failed to load experiences</Alert>
       ) : (
         <Card>
-          {isLoading && rows.length === 0 ? (
+          {isLoading && displayRows.length === 0 ? (
             <Stack alignItems="center" justifyContent="center" sx={{ height: 400 }}>
               <CircularProgress />
               <Typography variant="body2" sx={{ mt: 2 }}>
@@ -366,37 +631,46 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
               </Typography>
             </Stack>
           ) : (
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              loading={isLoading}
-              rowCount={rowCount}
-              paginationMode="server"
-              sortingMode="server"
-              paginationModel={paginationModel}
-              onPaginationModelChange={handlePaginationModelChange}
-              sortModel={sortModel}
-              onSortModelChange={handleSortModelChange}
-              pageSizeOptions={[5, 10, 25, 50, 100]}
-              getRowId={(row) => row._id || ''}
-              disableRowSelectionOnClick
-              getRowClassName={(params) => (params.row.isChild ? 'child-row' : 'parent-row')}
-              sx={{
-                border: 0,
-                '& .MuiDataGrid-cell:focus': {
-                  outline: 'none',
-                },
-                '& .MuiDataGrid-row': {
-                  cursor: 'pointer',
-                },
-                '& .child-row': {
-                  bgcolor: 'action.hover',
-                  '&:hover': {
-                    bgcolor: 'action.selected',
-                  },
-                },
-              }}
-            />
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext items={sortableRowIds}>
+                <DataGrid
+                  rows={displayRows}
+                  columns={columns}
+                  loading={isLoading || isSavingOrder}
+                  rowCount={rowCount}
+                  paginationMode="server"
+                  sortingMode="server"
+                  paginationModel={paginationModel}
+                  onPaginationModelChange={handlePaginationModelChange}
+                  sortModel={sortModel}
+                  onSortModelChange={handleSortModelChange}
+                  pageSizeOptions={[5, 10, 25, 50, 100]}
+                  getRowId={(row) => row._id || ''}
+                  disableRowSelectionOnClick
+                  getRowClassName={(params) => (params.row.isChild ? 'child-row' : 'parent-row')}
+                  slots={{ row: SortableDataGridRow }}
+                  sx={{
+                    border: 0,
+                    '& .MuiDataGrid-cell:focus': {
+                      outline: 'none',
+                    },
+                    '& .MuiDataGrid-row': {
+                      cursor: 'pointer',
+                    },
+                    '& .child-row': {
+                      bgcolor: 'action.hover',
+                      '&:hover': {
+                        bgcolor: 'action.selected',
+                      },
+                    },
+                  }}
+                />
+              </SortableContext>
+            </DndContext>
           )}
         </Card>
       )}
