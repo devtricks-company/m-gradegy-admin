@@ -26,6 +26,8 @@ import type {
   Experience,
   ExperiencesControllerFindAll200,
   ExperiencesControllerFindAllParams,
+  ExperiencesControllerListStudentsWithAccess200,
+  ExperiencesControllerListStudentsWithAccessParams,
   UpdateExperienceDto,
 } from '.././model';
 
@@ -244,6 +246,174 @@ export function useExperiencesControllerFindAll<
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getExperiencesControllerFindAllQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary List students who can access the specified experience.
+ */
+export const experiencesControllerListStudentsWithAccess = (
+  id: string,
+  params?: ExperiencesControllerListStudentsWithAccessParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ExperiencesControllerListStudentsWithAccess200>(
+    { url: `http://localhost:5400/experiences/${id}/students`, method: 'GET', params, signal },
+    options
+  );
+};
+
+export const getExperiencesControllerListStudentsWithAccessQueryKey = (
+  id?: string,
+  params?: ExperiencesControllerListStudentsWithAccessParams
+) => {
+  return [`http://localhost:5400/experiences/${id}/students`, ...(params ? [params] : [])] as const;
+};
+
+export const getExperiencesControllerListStudentsWithAccessQueryOptions = <
+  TData = Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+  TError = unknown,
+>(
+  id: string,
+  params?: ExperiencesControllerListStudentsWithAccessParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getExperiencesControllerListStudentsWithAccessQueryKey(id, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>
+  > = ({ signal }) =>
+    experiencesControllerListStudentsWithAccess(id, params, requestOptions, signal);
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ExperiencesControllerListStudentsWithAccessQueryResult = NonNullable<
+  Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>
+>;
+export type ExperiencesControllerListStudentsWithAccessQueryError = unknown;
+
+export function useExperiencesControllerListStudentsWithAccess<
+  TData = Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+  TError = unknown,
+>(
+  id: string,
+  params: undefined | ExperiencesControllerListStudentsWithAccessParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+          TError,
+          Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useExperiencesControllerListStudentsWithAccess<
+  TData = Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+  TError = unknown,
+>(
+  id: string,
+  params?: ExperiencesControllerListStudentsWithAccessParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+          TError,
+          Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useExperiencesControllerListStudentsWithAccess<
+  TData = Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+  TError = unknown,
+>(
+  id: string,
+  params?: ExperiencesControllerListStudentsWithAccessParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary List students who can access the specified experience.
+ */
+
+export function useExperiencesControllerListStudentsWithAccess<
+  TData = Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+  TError = unknown,
+>(
+  id: string,
+  params?: ExperiencesControllerListStudentsWithAccessParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof experiencesControllerListStudentsWithAccess>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getExperiencesControllerListStudentsWithAccessQueryOptions(
+    id,
+    params,
+    options
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

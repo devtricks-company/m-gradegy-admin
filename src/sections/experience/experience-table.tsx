@@ -215,6 +215,13 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
     [router]
   );
 
+  const handleReviewExperience = useCallback(
+    (experienceId: string) => {
+      router.push(paths.dashboard.experienceReview(experienceId));
+    },
+    [router]
+  );
+
   const handleToggleExpand = useCallback((rowId: string) => {
     setExpandedRows((prev) => {
       const newSet = new Set(prev);
@@ -268,53 +275,6 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
             </Tooltip>
           );
         },
-      },
-      {
-        field: 'actions',
-        headerName: 'Actions',
-        width: 120,
-        sortable: false,
-        renderCell: (params) => (
-          <Stack direction="row" spacing={0.5}>
-            <Tooltip title="Edit experience">
-              <IconButton
-                size="small"
-                color="primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditExperience(params.row._id);
-                }}
-                sx={{
-                  '&:hover': {
-                    bgcolor: 'primary.lighter',
-                  },
-                }}
-              >
-                <Iconify icon="solar:pen-bold" width={20} />
-              </IconButton>
-            </Tooltip>
-            {/* Only show add button for parent rows, not child rows */}
-            {!params.row.isChild && (
-              <Tooltip title="Add child experience">
-                <IconButton
-                  size="small"
-                  color="primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAddChildExperience(params.row._id);
-                  }}
-                  sx={{
-                    '&:hover': {
-                      bgcolor: 'primary.lighter',
-                    },
-                  }}
-                >
-                  <Iconify icon="mingcute:add-circle-line" width={24} />
-                </IconButton>
-              </Tooltip>
-            )}
-          </Stack>
-        ),
       },
       {
         field: 'image',
@@ -396,8 +356,72 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
           />
         ),
       },
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        width: 160,
+        sortable: false,
+        renderCell: (params) => (
+          <Stack direction="row" spacing={0.5}>
+            <Tooltip title="Edit experience">
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditExperience(params.row._id);
+                }}
+                sx={{
+                  '&:hover': {
+                    bgcolor: 'primary.lighter',
+                  },
+                }}
+              >
+                <Iconify icon="solar:pen-bold" width={20} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Review experience">
+              <IconButton
+                size="small"
+                color="info"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleReviewExperience(params.row._id);
+                }}
+                sx={{
+                  '&:hover': {
+                    bgcolor: 'info.lighter',
+                  },
+                }}
+              >
+                <Iconify icon="solar:clipboard-check-bold" width={20} />
+              </IconButton>
+            </Tooltip>
+            {/* Only show add button for parent rows, not child rows */}
+            {!params.row.isChild && (
+              <Tooltip title="Add child experience">
+                <IconButton
+                  size="small"
+                  color="primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddChildExperience(params.row._id);
+                  }}
+                  sx={{
+                    '&:hover': {
+                      bgcolor: 'primary.lighter',
+                    },
+                  }}
+                >
+                  <Iconify icon="mingcute:add-circle-line" width={24} />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Stack>
+        ),
+      },
     ],
-    [handleEditExperience, handleAddChildExperience, handleToggleExpand, expandedRows, allExperiences]
+    [handleEditExperience, handleAddChildExperience, handleReviewExperience, handleToggleExpand, expandedRows, allExperiences]
   );
 
   // Extract rows from API response and build hierarchical structure
