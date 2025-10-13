@@ -313,12 +313,213 @@ export function ExperienceReviewView({ id }: ExperienceReviewViewProps) {
           </Stack>
         </Grid>
 
-        {/* Second Column - To be implemented */}
+        {/* Second Column - Statistics Charts */}
         <Grid xs={12} md={6}>
-          <Card sx={{ p: 3, height: '100%' }}>
-            <Typography variant="body2" color="text.secondary">
-              Second column - To be implemented
+          <Card sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Completion Statistics
             </Typography>
+
+            <Stack spacing={4} sx={{ mt: 3 }}>
+              {/* Donut Chart for Completion Percentage */}
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                  <svg width="200" height="200" viewBox="0 0 200 200">
+                    {/* Background circle */}
+                    <circle
+                      cx="100"
+                      cy="100"
+                      r="80"
+                      fill="none"
+                      stroke="#f0f0f0"
+                      strokeWidth="20"
+                    />
+                    {/* Progress circle */}
+                    <circle
+                      cx="100"
+                      cy="100"
+                      r="80"
+                      fill="none"
+                      stroke="#4CAF50"
+                      strokeWidth="20"
+                      strokeDasharray={`${
+                        stats.totalStudents > 0
+                          ? (stats.completed / stats.totalStudents) * 502.65
+                          : 0
+                      } 502.65`}
+                      strokeLinecap="round"
+                      transform="rotate(-90 100 100)"
+                    />
+                  </svg>
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <Typography variant="h3" sx={{ fontWeight: 'bold' }}>
+                      {stats.totalStudents > 0
+                        ? Math.round((stats.completed / stats.totalStudents) * 100)
+                        : 0}
+                      %
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Complete
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Bar Charts */}
+              <Stack spacing={3}>
+                {/* Total Students Bar */}
+                <Box>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      Total Students
+                    </Typography>
+                    <Typography variant="h6">{stats.totalStudents}</Typography>
+                  </Stack>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: 8,
+                      bgcolor: 'grey.300',
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        bgcolor: 'primary.main',
+                        borderRadius: 1,
+                      }}
+                    />
+                  </Box>
+                </Box>
+
+                {/* Complete Bar */}
+                <Box>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      Complete
+                    </Typography>
+                    <Typography variant="h6">{stats.completed}</Typography>
+                  </Stack>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: 8,
+                      bgcolor: 'grey.300',
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: `${
+                          stats.totalStudents > 0
+                            ? (stats.completed / stats.totalStudents) * 100
+                            : 0
+                        }%`,
+                        height: '100%',
+                        bgcolor: 'success.main',
+                        borderRadius: 1,
+                      }}
+                    />
+                  </Box>
+                </Box>
+
+                {/* Not Complete Bar */}
+                <Box>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      Not Complete
+                    </Typography>
+                    <Typography variant="h6" color="error.main">
+                      {stats.notCompleted}
+                    </Typography>
+                  </Stack>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: 8,
+                      bgcolor: 'grey.300',
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: `${
+                          stats.totalStudents > 0
+                            ? (stats.notCompleted / stats.totalStudents) * 100
+                            : 0
+                        }%`,
+                        height: '100%',
+                        bgcolor: 'error.main',
+                        borderRadius: 1,
+                      }}
+                    />
+                  </Box>
+                </Box>
+
+                {/* Viewed Bar */}
+                <Box>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      Viewed
+                    </Typography>
+                    <Typography variant="h6">{stats.viewed}</Typography>
+                  </Stack>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: 8,
+                      bgcolor: 'grey.300',
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: `${
+                          stats.totalStudents > 0 ? (stats.viewed / stats.totalStudents) * 100 : 0
+                        }%`,
+                        height: '100%',
+                        bgcolor: 'info.main',
+                        borderRadius: 1,
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Stack>
+            </Stack>
           </Card>
         </Grid>
       </Grid>
