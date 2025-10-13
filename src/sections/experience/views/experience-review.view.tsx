@@ -8,6 +8,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Avatar from '@mui/material/Avatar';
+import Switch from '@mui/material/Switch';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -111,25 +112,17 @@ export function ExperienceReviewView({ id }: ExperienceReviewViewProps) {
       },
       {
         field: 'status',
-        headerName: '',
-        width: 60,
+        headerName: 'Complete',
+        width: 100,
         sortable: false,
         renderCell: (params) => (
-          <Box
-            sx={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: params.row.completed ? 'success.main' : 'grey.300',
+          <Switch
+            checked={params.row.completed || false}
+            onChange={() => {
+              // Functionality will be implemented later
             }}
-          >
-            {params.row.completed && (
-              <Iconify icon="eva:checkmark-fill" width={20} sx={{ color: 'common.white' }} />
-            )}
-          </Box>
+            color="success"
+          />
         ),
       },
     ],
