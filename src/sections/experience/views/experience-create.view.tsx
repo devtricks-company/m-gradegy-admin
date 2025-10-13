@@ -22,6 +22,7 @@ import { useCategoriesControllerFindByProject } from 'src/lib/orval/generated/ca
 import { useSubcategoriesControllerFindAllByCategory } from 'src/lib/orval/generated/subcategories/subcategories';
 import {
   useExperiencesControllerCreate,
+  useExperiencesControllerUpdate,
   useExperiencesControllerFindOne,
 } from 'src/lib/orval/generated/experiences/experiences';
 import {
@@ -37,7 +38,9 @@ import { ImageSelectionDialog } from '../components/image-selection-dialog';
 export function ExperienceCreateView() {
   const searchParams = useSearchParams();
   const prerequisiteId = searchParams.get('prerequisite');
+  const editExperienceId = searchParams.get('edit');
   const [openImageDialog, setOpenImageDialog] = useState(false);
+  const [isLoadingEditData, setIsLoadingEditData] = useState(false);
 
   const methods = useForm<ExperienceFormValues>({
     resolver: zodResolver(experienceSchema),
@@ -50,8 +53,18 @@ export function ExperienceCreateView() {
     limit: 1000,
   });
 
-  // Mutation hook for creating experience
-  const { mutate: createExperience, isPending } = useExperiencesControllerCreate();
+  // Mutation hooks for creating and updating experience
+  const { mutate: createExperience, isPending: isCreating } = useExperiencesControllerCreate();
+  const { mutate: updateExperience, isPending: isUpdating } = useExperiencesControllerUpdate();
+  const isPending = isCreating || isUpdating;
+
+  // Fetch experience to edit if editExperienceId exists
+  const { data: experienceToEdit, isLoading: isLoadingExperience } =
+    useExperiencesControllerFindOne(editExperienceId || '', {
+      query: {
+        enabled: !!editExperienceId,
+      },
+    });
 
   // Fetch parent experience if prerequisiteId exists
   const { data: parentExperience } = useExperiencesControllerFindOne(prerequisiteId || '', {
@@ -78,15 +91,21 @@ export function ExperienceCreateView() {
   const { data: organizations } = useAccessControlControllerListOrganizations();
 
   // Fetch projects filtered by selected organization
-  const { data: projectsData } = useProjectsControllerFindByOrganization(
-    selectedOrganization || '',
-    undefined,
-    {
+  const { data: projectsData, isLoading: isLoadingProjects } =
+    useProjectsControllerFindByOrganization(selectedOrganization || '', undefined, {
       query: {
         enabled: !!selectedOrganization,
       },
+    });
+
+  // Debug logging
+  useEffect(() => {
+    if (editExperienceId && selectedOrganization) {
+      console.log('Organization selected:', selectedOrganization);
+      console.log('Projects data:', projectsData);
+      console.log('Is loading projects:', isLoadingProjects);
     }
-  );
+  }, [selectedOrganization, projectsData, isLoadingProjects, editExperienceId]);
 
   // Fetch categories filtered by selected project
   const { data: categoriesData } = useCategoriesControllerFindByProject(
@@ -122,6 +141,233 @@ export function ExperienceCreateView() {
     }
   }, [prerequisiteId, setValue]);
 
+  // Populate form when editing an experience - Step 1: Basic fields and organization
+  useEffect(() => {
+    if (experienceToEdit && experienceTypes && experienceImages?.data && !selectedOrganization) {
+      setIsLoadingEditData(true);
+
+      console.log('Step 1: Loading basic fields and organization');
+      console.log('Experience to edit:', experienceToEdit);
+
+      // Set basic fields
+      setValue('title', experienceToEdit.title || '');
+      setValue('subtitle', experienceToEdit.subtitle || '');
+      setValue('description', experienceToEdit.description || '');
+
+      // Set experience type
+      const expType = experienceTypes.find(
+        (type) =>
+          (type as any)._id === (experienceToEdit.experience_type as any)?._id ||
+          (type as any)._id === experienceToEdit.experience_type
+      );
+      if (expType) {
+        setValue('experienceType', expType);
+      }
+
+      // Set organization ID first
+      let organizationId: string | undefined;
+
+      if (
+        typeof experienceToEdit.organization === 'object' &&
+        experienceToEdit.organization !== null
+      ) {
+        const orgAny = experienceToEdit.organization as any;
+        const resolvedOrgId =
+          orgAny?._id ??
+          orgAny?.id ??
+          orgAny?.organization_id ??
+          orgAny?.organizationId ??
+          orgAny?.title;
+
+        if (resolvedOrgId) {
+          organizationId = String(resolvedOrgId);
+        }
+      } else if (experienceToEdit.organization) {
+        organizationId = String(experienceToEdit.organization);
+      }
+
+      if (organizationId) {
+        setValue('organization', organizationId);
+        console.log('Step 1: Set organization ID:', organizationId);
+      }
+
+      // Set image
+      const image = experienceImages.data.find((img) => img.url === experienceToEdit.image);
+      if (image) {
+        setValue('selectedImage', image);
+      }
+
+      // Set drivers
+      if (experienceToEdit.driver_one) {
+        setValue('driver1', experienceToEdit.driver_one);
+      }
+      if (experienceToEdit.driver_two) {
+        setValue('driver2', experienceToEdit.driver_two);
+      }
+
+      // Set timing
+      if (experienceToEdit.timing_type) {
+        setValue('timing', experienceToEdit.timing_type);
+      }
+      if (experienceToEdit.delay_days) {
+        setValue('days', experienceToEdit.delay_days);
+      }
+      if (experienceToEdit.length_days) {
+        setValue('length', experienceToEdit.length_days);
+      }
+      if (experienceToEdit.start_date) {
+        setValue('startDate', new Date(experienceToEdit.start_date));
+      }
+      if (experienceToEdit.start_time) {
+        const [hours, minutes] = experienceToEdit.start_time.split(':');
+        const time = new Date();
+        time.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+        setValue('startTime', time);
+      }
+      if (experienceToEdit.end_date) {
+        setValue('endDate', new Date(experienceToEdit.end_date));
+      }
+      if (experienceToEdit.end_time) {
+        const [hours, minutes] = experienceToEdit.end_time.split(':');
+        const time = new Date();
+        time.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+        setValue('endTime', time);
+      }
+
+      // Set completion fields
+      setValue('completionRequired', experienceToEdit.completion_required || false);
+      setValue('endWithParent', experienceToEdit.end_with_parent || false);
+
+      // Set motivational design fields
+      setValue('xpCompletion', experienceToEdit.xp_completion || 0);
+      setValue('xpViewing', experienceToEdit.xp_view || 0);
+      setValue('gems', experienceToEdit.gems || 0);
+
+      // Set submission type
+      if (experienceToEdit.completion_type) {
+        setValue('submissionType', experienceToEdit.completion_type);
+      }
+      if (experienceToEdit.complete_url) {
+        setValue('submissionLink', experienceToEdit.complete_url);
+      }
+      setValue('autoCompletion', experienceToEdit.auto_complete || false);
+
+      // Set link fields
+      if (experienceToEdit.link_text) {
+        setValue('addLinkInText', true);
+        setValue('linkTitle', experienceToEdit.link_text);
+      }
+      if (experienceToEdit.link_url) {
+        setValue('linkUrl', experienceToEdit.link_url);
+      }
+
+      // Set publish status
+      setValue('expPublish', experienceToEdit.expPublish || false);
+
+      // Set prerequisite if exists
+      if (
+        typeof experienceToEdit.prerequisite === 'object' &&
+        experienceToEdit.prerequisite !== null
+      ) {
+        setValue('prerequisite', (experienceToEdit.prerequisite as any)._id);
+      } else if (experienceToEdit.prerequisite) {
+        setValue('prerequisite', experienceToEdit.prerequisite as string);
+      }
+    }
+  }, [experienceToEdit, experienceTypes, experienceImages, setValue, selectedOrganization]);
+
+  // Step 2: Set project after projects are loaded
+  useEffect(() => {
+    if (
+      experienceToEdit &&
+      projectsData?.data &&
+      selectedOrganization &&
+      !selectedProject &&
+      isLoadingEditData
+    ) {
+      console.log('Step 2: Projects loaded, setting project');
+      console.log('Available projects:', projectsData.data);
+
+      if (typeof experienceToEdit.project === 'object' && experienceToEdit.project !== null) {
+        const projectId = (experienceToEdit.project as any)._id;
+        setValue('project', projectId);
+        console.log('Step 2: Set project ID:', projectId);
+      } else if (experienceToEdit.project) {
+        setValue('project', experienceToEdit.project as string);
+        console.log('Step 2: Set project ID:', experienceToEdit.project);
+      }
+    }
+  }, [
+    projectsData,
+    experienceToEdit,
+    setValue,
+    selectedOrganization,
+    selectedProject,
+    isLoadingEditData,
+  ]);
+
+  // Step 3: Set category after categories are loaded
+  useEffect(() => {
+    if (
+      experienceToEdit &&
+      categoriesData?.data &&
+      selectedProject &&
+      !selectedCategory &&
+      isLoadingEditData
+    ) {
+      console.log('Step 3: Categories loaded, setting category');
+      console.log('Available categories:', categoriesData.data);
+
+      if (typeof experienceToEdit.category === 'object' && experienceToEdit.category !== null) {
+        const categoryId = (experienceToEdit.category as any)._id;
+        setValue('category', categoryId);
+        console.log('Step 3: Set category ID:', categoryId);
+      } else if (experienceToEdit.category) {
+        setValue('category', experienceToEdit.category as string);
+        console.log('Step 3: Set category ID:', experienceToEdit.category);
+      }
+    }
+  }, [
+    categoriesData,
+    experienceToEdit,
+    setValue,
+    selectedProject,
+    selectedCategory,
+    isLoadingEditData,
+  ]);
+
+  // Step 4: Set subcategory after subcategories are loaded
+  useEffect(() => {
+    if (experienceToEdit && subcategoriesData?.data && selectedCategory && isLoadingEditData) {
+      console.log('Step 4: Subcategories loaded, setting subcategory');
+      console.log('Available subcategories:', subcategoriesData.data);
+
+      if (
+        typeof experienceToEdit.subcategory === 'object' &&
+        experienceToEdit.subcategory !== null
+      ) {
+        const subcategoryId = (experienceToEdit.subcategory as any)._id;
+        setValue('subcategory', subcategoryId);
+        console.log('Step 4: Set subcategory ID:', subcategoryId);
+      } else if (experienceToEdit.subcategory) {
+        setValue('subcategory', experienceToEdit.subcategory as string);
+        console.log('Step 4: Set subcategory ID:', experienceToEdit.subcategory);
+      }
+
+      // All done loading
+      setIsLoadingEditData(false);
+      console.log('All fields loaded successfully');
+    }
+  }, [subcategoriesData, experienceToEdit, setValue, selectedCategory, isLoadingEditData]);
+
+  // Handle case where project is set but no category exists (turn off loading)
+  useEffect(() => {
+    if (experienceToEdit && selectedProject && !experienceToEdit.category && isLoadingEditData) {
+      console.log('No category in experience, finishing load');
+      setIsLoadingEditData(false);
+    }
+  }, [experienceToEdit, selectedProject, isLoadingEditData]);
+
   // Set "Gradegy" as default experience type when data is loaded
   useEffect(() => {
     if (experienceTypes && !experienceType) {
@@ -132,27 +378,29 @@ export function ExperienceCreateView() {
     }
   }, [experienceTypes, experienceType, setValue]);
 
-  // Reset project when organization changes
+  // Reset project when organization changes (skip if loading edit data)
   useEffect(() => {
-    setValue('project', undefined);
-    setValue('category', undefined);
-    setValue('subcategory', undefined);
-  }, [selectedOrganization, setValue]);
-
-  // Reset category and subcategory when project changes
-  useEffect(() => {
-    if (selectedProject) {
+    if (!isLoadingEditData && !editExperienceId) {
+      setValue('project', undefined);
       setValue('category', undefined);
       setValue('subcategory', undefined);
     }
-  }, [selectedProject, setValue]);
+  }, [selectedOrganization, setValue, isLoadingEditData, editExperienceId]);
 
-  // Reset subcategory when category changes
+  // Reset category and subcategory when project changes (skip if loading edit data)
   useEffect(() => {
-    if (selectedCategory) {
+    if (selectedProject && !isLoadingEditData && !editExperienceId) {
+      setValue('category', undefined);
       setValue('subcategory', undefined);
     }
-  }, [selectedCategory, setValue]);
+  }, [selectedProject, setValue, isLoadingEditData, editExperienceId]);
+
+  // Reset subcategory when category changes (skip if loading edit data)
+  useEffect(() => {
+    if (selectedCategory && !isLoadingEditData && !editExperienceId) {
+      setValue('subcategory', undefined);
+    }
+  }, [selectedCategory, setValue, isLoadingEditData, editExperienceId]);
 
   // Filter images by selected experience type
   const filteredImages = experienceType
@@ -223,26 +471,51 @@ export function ExperienceCreateView() {
 
       console.log('payload', payload);
       console.log('exptype', data);
-      createExperience(
-        { data: payload },
-        {
-          onSuccess: (response) => {
-            console.log('Experience created successfully:', response);
-            toast.success('Experience created successfully!', {
-              description: 'The experience has been added to the system.',
-            });
-            // TODO: Navigate to experience list or detail page
-          },
-          onError: (error: any) => {
-            console.error('Error creating experience:', error);
-            const errorMessage =
-              error?.response?.data?.message || error?.message || 'An unexpected error occurred';
-            toast.error('Failed to create experience', {
-              description: errorMessage,
-            });
-          },
-        }
-      );
+
+      // Use update mutation if editing, otherwise create
+      if (editExperienceId) {
+        updateExperience(
+          { id: editExperienceId, data: payload },
+          {
+            onSuccess: (response) => {
+              console.log('Experience updated successfully:', response);
+              toast.success('Experience updated successfully!', {
+                description: 'The experience has been updated in the system.',
+              });
+              // TODO: Navigate to experience list or detail page
+            },
+            onError: (error: any) => {
+              console.error('Error updating experience:', error);
+              const errorMessage =
+                error?.response?.data?.message || error?.message || 'An unexpected error occurred';
+              toast.error('Failed to update experience', {
+                description: errorMessage,
+              });
+            },
+          }
+        );
+      } else {
+        createExperience(
+          { data: payload },
+          {
+            onSuccess: (response) => {
+              console.log('Experience created successfully:', response);
+              toast.success('Experience created successfully!', {
+                description: 'The experience has been added to the system.',
+              });
+              // TODO: Navigate to experience list or detail page
+            },
+            onError: (error: any) => {
+              console.error('Error creating experience:', error);
+              const errorMessage =
+                error?.response?.data?.message || error?.message || 'An unexpected error occurred';
+              toast.error('Failed to create experience', {
+                description: errorMessage,
+              });
+            },
+          }
+        );
+      }
     } catch (error) {
       console.error('Error preparing experience data:', error);
       toast.error('Failed to prepare experience data', {
@@ -251,17 +524,40 @@ export function ExperienceCreateView() {
     }
   });
 
+  // Show loading state when fetching experience to edit
+  if (editExperienceId && isLoadingExperience) {
+    return (
+      <DashboardContent maxWidth="xl">
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}
+        >
+          <Stack alignItems="center" spacing={2}>
+            <Typography variant="h6">Loading experience...</Typography>
+          </Stack>
+        </Box>
+      </DashboardContent>
+    );
+  }
+
   return (
     <DashboardContent maxWidth="xl">
       <CustomBreadcrumbs
-        heading="Add Experience"
+        heading={editExperienceId ? 'Edit Experience' : 'Add Experience'}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Experience', href: paths.dashboard.experience },
-          { name: 'Add Experience' },
+          { name: editExperienceId ? 'Edit Experience' : 'Add Experience' },
         ]}
         sx={{ mb: 3 }}
       />
+
+      {editExperienceId && experienceToEdit && (
+        <Alert severity="info" icon={<Iconify icon="solar:info-circle-bold" />} sx={{ mb: 3 }}>
+          <Typography variant="subtitle2">
+            Editing experience: <strong>{experienceToEdit.title}</strong>
+          </Typography>
+        </Alert>
+      )}
 
       {prerequisiteId && parentExperience && (
         <Alert severity="info" icon={<Iconify icon="solar:info-circle-bold" />} sx={{ mb: 3 }}>
@@ -891,9 +1187,15 @@ export function ExperienceCreateView() {
             variant="contained"
             size="large"
             sx={{ minWidth: 120 }}
-            disabled={isPending}
+            disabled={isPending || isLoadingExperience}
           >
-            {isPending ? 'Creating...' : 'Create Experience'}
+            {isPending
+              ? editExperienceId
+                ? 'Updating...'
+                : 'Creating...'
+              : editExperienceId
+                ? 'Update Experience'
+                : 'Create Experience'}
           </Button>
         </Stack>
       </Form>
