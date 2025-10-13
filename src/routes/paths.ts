@@ -58,5 +58,6 @@ export const paths = {
     students: `${ROOTS.DASHBOARD}/students`,
     experience: `${ROOTS.DASHBOARD}/experience`,
     experienceNew: `${ROOTS.DASHBOARD}/experience/new`,
+    experienceReview: (id: string) => `${ROOTS.DASHBOARD}/experience/review/${id}`,
   },
 };
