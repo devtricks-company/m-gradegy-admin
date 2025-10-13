@@ -201,6 +201,13 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
     setSortModel(newModel);
   }, []);
 
+  const handleEditExperience = useCallback(
+    (experienceId: string) => {
+      router.push(`${paths.dashboard.experienceNew}?edit=${experienceId}`);
+    },
+    [router]
+  );
+
   const handleAddChildExperience = useCallback(
     (parentId: string) => {
       router.push(`${paths.dashboard.experienceNew}?prerequisite=${parentId}`);
@@ -264,21 +271,18 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
       },
       {
         field: 'actions',
-        headerName: '',
-        width: 60,
+        headerName: 'Actions',
+        width: 120,
         sortable: false,
-        renderCell: (params) => {
-          // Only show add button for parent rows, not child rows
-          if (params.row.isChild) return null;
-
-          return (
-            <Tooltip title="Add child experience">
+        renderCell: (params) => (
+          <Stack direction="row" spacing={0.5}>
+            <Tooltip title="Edit experience">
               <IconButton
                 size="small"
                 color="primary"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleAddChildExperience(params.row._id);
+                  handleEditExperience(params.row._id);
                 }}
                 sx={{
                   '&:hover': {
@@ -286,11 +290,31 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
                   },
                 }}
               >
-                <Iconify icon="mingcute:add-circle-line" width={24} />
+                <Iconify icon="solar:pen-bold" width={20} />
               </IconButton>
             </Tooltip>
-          );
-        },
+            {/* Only show add button for parent rows, not child rows */}
+            {!params.row.isChild && (
+              <Tooltip title="Add child experience">
+                <IconButton
+                  size="small"
+                  color="primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddChildExperience(params.row._id);
+                  }}
+                  sx={{
+                    '&:hover': {
+                      bgcolor: 'primary.lighter',
+                    },
+                  }}
+                >
+                  <Iconify icon="mingcute:add-circle-line" width={24} />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Stack>
+        ),
       },
       {
         field: 'image',
@@ -373,7 +397,7 @@ export function ExperienceTable({ filters = {} }: ExperienceTableProps) {
         ),
       },
     ],
-    [handleAddChildExperience, handleToggleExpand, expandedRows, allExperiences]
+    [handleEditExperience, handleAddChildExperience, handleToggleExpand, expandedRows, allExperiences]
   );
 
   // Extract rows from API response and build hierarchical structure

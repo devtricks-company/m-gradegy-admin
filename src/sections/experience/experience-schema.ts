@@ -28,7 +28,7 @@ export const experienceSchema = zod
       }) as zod.ZodType<ExperienceType>,
 
     // Access Control and Filters
-    organization: zod.string().optional(),
+    organization: zod.any().optional(),
     project: zod.string().optional(),
     category: zod.string().optional(),
     subcategory: zod.string().optional(),
